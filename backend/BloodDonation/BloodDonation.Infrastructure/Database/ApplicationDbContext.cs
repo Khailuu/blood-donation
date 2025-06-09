@@ -3,6 +3,7 @@ using BloodDonation.Domain.BlogPost;
 using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
+using BloodDonation.Domain.QuestionForm;
 using BloodDonation.Domain.Users;
 using BloodDonation.Infrastructure.Database;
 using MediatR;
@@ -17,6 +18,7 @@ public sealed class ApplicationDbContext(
 {
     public DbSet<User> Users { get; set; }
     public DbSet<DonorInformation> DonorInformation { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<BloodType> BloodTypes { get; set; }
     public DbSet<BloodStored> BloodStored { get; set; }
     public DbSet<BloodCompatibility> BloodCompatibility { get; set; }
@@ -24,6 +26,9 @@ public sealed class ApplicationDbContext(
     public DbSet<DonationMatch> DonationMatches { get; set; }
     public DbSet<DonationHistory> DonationsHistory { get; set; }
     public DbSet<BlogPost> BlogPosts { get; set; }
+    public DbSet<HealthForm> HealthForms { get; set; }
+    public DbSet<HealthQuestion> HealthQuestions { get; set; }
+    public DbSet<HealthAnswer> HealthAnswers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

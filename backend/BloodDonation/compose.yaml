@@ -1,27 +1,29 @@
 ﻿services:
   blooddonation.apis:
-    image: blooddonation.apis
     build:
       context: .
       dockerfile: BloodDonation.Apis/Dockerfile
+    image: blooddonation.apis
     ports:
       - "5152:8080"
       - "7165:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
   
-  postgres:
-    image: postgres:17
-    container_name: postgres
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: sqlserver
     environment:
-      - POSTGRES_DB=blood_donation
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - pg_data:/var/lib/postgresql/data
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Passw0rd@
     ports:
-      - "5432:5432"
-  
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    restart: always
+      
+    
   seq:
     image: datalust/seq:2024.3
     container_name: seq
@@ -29,3 +31,7 @@
       - ACCEPT_EULA=Y
     ports:
       - "8081:80"
+  
+volumes:
+  sql_data:
+    

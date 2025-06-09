@@ -1,9 +1,12 @@
-﻿using BloodDonation.Apis.Extensions;
+﻿using System.Security.Claims;
+using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Users.CreateUser;
 using BloodDonation.Application.Users.GetUser;
+using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Domain.Common;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +23,7 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
     
-    [HttpPost("user/create")]
+    [HttpPost("user/create-user")]
     public async Task<IResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
         CreateUserCommand command = new CreateUserCommand
@@ -47,6 +50,56 @@ public class UserController : ControllerBase
             PageNumber = pageNumber,
             PageSize = pageSize,
         }, cancellation);
+        return result.MatchOk();
+    }
+    
+    // [Authorize]
+    [HttpPut("user/update-current-user")]
+    public async Task<IResult> UpdateSelf([FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Results.Unauthorized();
+
+        var command = new UpdateUserCommand
+        {
+            UserId = Guid.Parse(userId),
+            FullName = request.FullName,
+            Email = request.Email,
+            Role = null,              
+            Status = null,
+            BloodType = null,
+            IsDonor = null,
+            DateOfBirth = request.DateOfBirth,
+            Gender = request.Gender,
+            Address = request.Address,
+            Phone = request.Phone
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    // [Authorize(Roles = "Staff")]
+    [HttpPut("user/update-user")]
+    public async Task<IResult> UpdateByStaff( [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateUserCommand
+        {
+            UserId = request.UserId,
+            FullName = request.FullName,
+            Email = request.Email,
+            Role = request.Role,
+            Status = request.Status,
+            BloodType = request.BloodType,
+            IsDonor = request.IsDonor,
+            DateOfBirth = request.DateOfBirth,
+            Gender = request.Gender,
+            Address = request.Address,
+            Phone = request.Phone
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
 }

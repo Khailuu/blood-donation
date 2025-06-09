@@ -81,6 +81,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey<DonorInformation>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Property(x => x.IsVerified).IsRequired().HasDefaultValue(false);
 
     }
 }

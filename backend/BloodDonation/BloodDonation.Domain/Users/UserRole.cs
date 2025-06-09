@@ -6,5 +6,5 @@ public enum UserRole
     Staff = 2,
     BloodNeed = 3,
     BloodDonor = 4,
-    Guest = 5
+    // Guest = 5
 }
