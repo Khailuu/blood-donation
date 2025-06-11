@@ -28,7 +28,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(10);
 
         builder.Property(x => x.Gender)
-            .HasConversion<int>() // enum -> int
+            .HasConversion<string>() 
             .IsRequired();
 
         builder.Property(x => x.Address)
@@ -81,6 +81,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey<DonorInformation>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Property(x => x.IsVerified).IsRequired().HasDefaultValue(false);
 
     }
 }

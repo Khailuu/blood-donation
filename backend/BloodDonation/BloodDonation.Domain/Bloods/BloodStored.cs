@@ -7,5 +7,5 @@ public class BloodStored
     public int Quantity { get; set; }
     public DateTime LastUpdated { get; set; }
     
-    public BloodType? BloodType { get; set; }
+    public BloodType BloodType { get; set; } = default!;
 }
