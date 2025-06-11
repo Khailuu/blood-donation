@@ -1,13 +1,12 @@
 using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Application.Abstraction.Messaging;
-using BloodDonation.Application.Register;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Users;
 using BloodDonation.Domain.Users.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace BloodDonation.Application.Register;
+namespace BloodDonation.Application.Users.Register;
 
 public class RegisterCommandHandler(
     IDbContext context,

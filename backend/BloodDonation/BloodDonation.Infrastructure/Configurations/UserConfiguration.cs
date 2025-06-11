@@ -28,7 +28,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(10);
 
         builder.Property(x => x.Gender)
-            .HasConversion<int>() // enum -> int
+            .HasConversion<string>() 
             .IsRequired();
 
         builder.Property(x => x.Address)

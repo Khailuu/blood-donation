@@ -1,12 +1,12 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
-using BloodDonation.Application.Register;
 using BloodDonation.Application.Users.Login;
+using BloodDonation.Application.Users.Register;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BloodDonation.Apis.Controllers;
+namespace BloodDonation.Apis.Controller;
 
 
 [Route("api/")]

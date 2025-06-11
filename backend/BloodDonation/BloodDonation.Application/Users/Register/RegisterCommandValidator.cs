@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace BloodDonation.Application.Register;
+namespace BloodDonation.Application.Users.Register;
 
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {

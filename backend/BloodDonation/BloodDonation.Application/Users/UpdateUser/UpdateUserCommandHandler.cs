@@ -21,9 +21,9 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
             return Result.Failure<UpdateUserResponse>(UserErrors.NotFound(request.UserId));
         }
         
-        var currentUserResult = await sender.Send(new GetCurrentUserQuery(), cancellationToken);
-        var currentUser = currentUserResult.Value;
-        bool isStaff = currentUser.Role == UserRole.Staff.ToString();
+        // var currentUserResult = await sender.Send(new GetCurrentUserQuery(), cancellationToken);
+        // var currentUser = currentUserResult.Value;
+        // bool isStaff = currentUser.Role == UserRole.Staff.ToString();
         
 
         user.Name = request.FullName ?? user.Name;
@@ -33,13 +33,13 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
         user.Address = request.Address ?? user.Address;
         user.Phone = request.Phone ?? user.Phone;
 
-        if (isStaff)
-        {
+        // if (isStaff)
+        // {
             user.Role = request.Role ?? user.Role;
             user.Status = request.Status ?? user.Status;
             user.IsDonor = request.IsDonor ?? user.IsDonor;
             user.BloodType = request.BloodType ?? user.BloodType;
-        }
+        // }
 
         await context.SaveChangesAsync(cancellationToken);
 
