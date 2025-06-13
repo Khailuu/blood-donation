@@ -1,0 +1,19 @@
+.container {
+  width: 100%;
+  /* margin-top: 50px;
+  margin-bottom: 80px; */
+  border: 1px solid #1dea23;
+  padding: 20px;
+}
+
+.stat {
+  font-weight: 700;
+  color: #e53935;
+}
+
+
+
+.highlight {
+  font-weight: 600;
+  color: #e53935;
+}
