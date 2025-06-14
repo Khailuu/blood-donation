@@ -10,13 +10,15 @@ public class BloodCompatibilityConfiguration : IEntityTypeConfiguration<BloodCom
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.FromBloodType)
-            .IsRequired()
-            .HasMaxLength(10);
+        builder.HasOne(x => x.FromBloodType)
+            .WithMany()
+            .HasForeignKey(x => x.FromBloodTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.ToBloodType)
-            .IsRequired()
-            .HasMaxLength(10);
+        builder.HasOne(x => x.ToBloodType)
+            .WithMany()
+            .HasForeignKey(x => x.ToBloodTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.ComponentType)
             .HasConversion<string>()

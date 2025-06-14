@@ -17,7 +17,7 @@ public class CreateBloodStoredCommandHandler(IDbContext context) : ICommandHandl
 
         if (bloodType == null)
         {
-            return Result.Failure<CreateBloodStoredResponse>(BloodErrors.NotFound);
+            return Result.Failure<CreateBloodStoredResponse>(BloodErrors.BloodTypeNotFound);
         }
 
         var bloodStored = new BloodStored

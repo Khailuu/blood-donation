@@ -1,9 +1,11 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Bloods.CheckBloodCompatibility;
 using BloodDonation.Application.Bloods.CreateBloodStored;
 using BloodDonation.Application.Bloods.GetBloodStored;
 using BloodDonation.Application.Bloods.GetBloodType;
 using BloodDonation.Application.Bloods.UpdateBloodStored;
+using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -57,6 +59,24 @@ public class BloodController
             PageSize = pageSize,
         }, cancellation);
         return result.MatchOk();
+    }
+    
+    [HttpGet("blood/check-compatibility")]
+    public async Task<IResult> CheckCompatibility(
+        [FromQuery] string from,
+        [FromQuery] string to,
+        [FromQuery] BloodComponentType componentType,
+        CancellationToken cancellationToken)
+    {
+        var query = new CheckBloodCompatibilityQuery
+        {
+            FromBloodType = from,
+            ToBloodType = to,
+            ComponentType = componentType
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk(); 
     }
     
     // [HttpPost("blood/create-blood-stored")]
