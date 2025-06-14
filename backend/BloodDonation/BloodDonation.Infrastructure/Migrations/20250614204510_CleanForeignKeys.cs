@@ -8,28 +8,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BloodDonation.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitClean : Migration
+    public partial class CleanForeignKeys : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "dbo");
-
-            migrationBuilder.CreateTable(
-                name: "BloodCompatibility",
-                schema: "dbo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FromBloodType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    ToBloodType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    ComponentType = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BloodCompatibility", x => x.Id);
-                });
 
             migrationBuilder.CreateTable(
                 name: "BloodTypes",
@@ -86,6 +71,35 @@ namespace BloodDonation.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BloodCompatibility",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FromBloodTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ToBloodTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ComponentType = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BloodCompatibility", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BloodCompatibility_BloodTypes_FromBloodTypeId",
+                        column: x => x.FromBloodTypeId,
+                        principalSchema: "dbo",
+                        principalTable: "BloodTypes",
+                        principalColumn: "BloodTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BloodCompatibility_BloodTypes_ToBloodTypeId",
+                        column: x => x.ToBloodTypeId,
+                        principalSchema: "dbo",
+                        principalTable: "BloodTypes",
+                        principalColumn: "BloodTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BloodStored",
                 schema: "dbo",
                 columns: table => new
@@ -116,8 +130,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PublishedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId2 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    PublishedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,12 +142,6 @@ namespace BloodDonation.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BlogPosts_Users_UserId2",
-                        column: x => x.UserId2,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -153,9 +160,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     EmergencyContactName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     EmergencyContactPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Pending"),
-                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    UserId2 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    BloodTypeId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -168,24 +173,12 @@ namespace BloodDonation.Infrastructure.Migrations
                         principalColumn: "BloodTypeId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DonationRequests_BloodTypes_BloodTypeId1",
-                        column: x => x.BloodTypeId1,
-                        principalSchema: "dbo",
-                        principalTable: "BloodTypes",
-                        principalColumn: "BloodTypeId");
-                    table.ForeignKey(
                         name: "FK_DonationRequests_Users_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DonationRequests_Users_UserId2",
-                        column: x => x.UserId2,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -198,8 +191,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     Weight = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Height = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     MedicalStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastChecked = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId2 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    LastChecked = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,12 +203,6 @@ namespace BloodDonation.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DonorInformation_Users_UserId2",
-                        column: x => x.UserId2,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -283,9 +269,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     DonorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MatchedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ConfirmedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Pending"),
-                    RequestId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DonorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Pending")
                 },
                 constraints: table =>
                 {
@@ -298,24 +282,12 @@ namespace BloodDonation.Infrastructure.Migrations
                         principalColumn: "RequestId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DonationMatches_DonationRequests_RequestId1",
-                        column: x => x.RequestId1,
-                        principalSchema: "dbo",
-                        principalTable: "DonationRequests",
-                        principalColumn: "RequestId");
-                    table.ForeignKey(
                         name: "FK_DonationMatches_Users_DonorId",
                         column: x => x.DonorId,
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DonationMatches_Users_DonorUserId",
-                        column: x => x.DonorUserId,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -328,10 +300,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     RequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Completed"),
-                    ConfirmedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DonorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    RequestId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ConfirmedByUserUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ConfirmedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -344,30 +313,12 @@ namespace BloodDonation.Infrastructure.Migrations
                         principalColumn: "RequestId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DonationsHistory_DonationRequests_RequestId1",
-                        column: x => x.RequestId1,
-                        principalSchema: "dbo",
-                        principalTable: "DonationRequests",
-                        principalColumn: "RequestId");
-                    table.ForeignKey(
                         name: "FK_DonationsHistory_Users_ConfirmedBy",
                         column: x => x.ConfirmedBy,
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DonationsHistory_Users_ConfirmedByUserUserId",
-                        column: x => x.ConfirmedByUserUserId,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                    table.ForeignKey(
-                        name: "FK_DonationsHistory_Users_DonorUserId",
-                        column: x => x.DonorUserId,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                     table.ForeignKey(
                         name: "FK_DonationsHistory_Users_UserId",
                         column: x => x.UserId,
@@ -428,14 +379,14 @@ namespace BloodDonation.Infrastructure.Migrations
                 columns: new[] { "StoredId", "BloodTypeId", "LastUpdated", "Quantity" },
                 values: new object[,]
                 {
-                    { new Guid("10000000-0000-0000-0000-000000000001"), new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7650), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000002"), new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7650), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000003"), new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000004"), new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000005"), new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000006"), new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000007"), new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 },
-                    { new Guid("10000000-0000-0000-0000-000000000008"), new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"), new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660), 0 }
+                    { new Guid("10000000-0000-0000-0000-000000000001"), new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4450), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000002"), new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4457), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000003"), new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4458), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000004"), new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4460), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000005"), new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4461), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000006"), new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4463), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000007"), new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4465), 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000008"), new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"), new DateTime(2025, 6, 14, 20, 45, 10, 546, DateTimeKind.Utc).AddTicks(4466), 0 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -445,10 +396,16 @@ namespace BloodDonation.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlogPosts_UserId2",
+                name: "IX_BloodCompatibility_FromBloodTypeId",
                 schema: "dbo",
-                table: "BlogPosts",
-                column: "UserId2");
+                table: "BloodCompatibility",
+                column: "FromBloodTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BloodCompatibility_ToBloodTypeId",
+                schema: "dbo",
+                table: "BloodCompatibility",
+                column: "ToBloodTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BloodStored_BloodTypeId",
@@ -470,22 +427,10 @@ namespace BloodDonation.Infrastructure.Migrations
                 column: "DonorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DonationMatches_DonorUserId",
-                schema: "dbo",
-                table: "DonationMatches",
-                column: "DonorUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DonationMatches_RequestId",
                 schema: "dbo",
                 table: "DonationMatches",
                 column: "RequestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonationMatches_RequestId1",
-                schema: "dbo",
-                table: "DonationMatches",
-                column: "RequestId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DonationRequests_BloodTypeId",
@@ -494,22 +439,10 @@ namespace BloodDonation.Infrastructure.Migrations
                 column: "BloodTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DonationRequests_BloodTypeId1",
-                schema: "dbo",
-                table: "DonationRequests",
-                column: "BloodTypeId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DonationRequests_UserId",
                 schema: "dbo",
                 table: "DonationRequests",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonationRequests_UserId2",
-                schema: "dbo",
-                table: "DonationRequests",
-                column: "UserId2");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DonationsHistory_ConfirmedBy",
@@ -518,28 +451,10 @@ namespace BloodDonation.Infrastructure.Migrations
                 column: "ConfirmedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DonationsHistory_ConfirmedByUserUserId",
-                schema: "dbo",
-                table: "DonationsHistory",
-                column: "ConfirmedByUserUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonationsHistory_DonorUserId",
-                schema: "dbo",
-                table: "DonationsHistory",
-                column: "DonorUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DonationsHistory_RequestId",
                 schema: "dbo",
                 table: "DonationsHistory",
                 column: "RequestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonationsHistory_RequestId1",
-                schema: "dbo",
-                table: "DonationsHistory",
-                column: "RequestId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DonationsHistory_UserId",
@@ -553,12 +468,6 @@ namespace BloodDonation.Infrastructure.Migrations
                 table: "DonorInformation",
                 column: "UserId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonorInformation_UserId2",
-                schema: "dbo",
-                table: "DonorInformation",
-                column: "UserId2");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HealthAnswers_FormId",

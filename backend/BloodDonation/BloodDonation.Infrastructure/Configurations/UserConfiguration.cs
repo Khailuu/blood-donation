@@ -12,30 +12,17 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(x => x.Email).IsUnique();
 
-        builder.Property(x => x.Name)
-            .IsRequired();
-
-
-        builder.Property(x => x.Email)
-            .IsRequired();
-
-
-        builder.Property(x => x.Password)
-            .IsRequired();
-            
-
-        builder.Property(x => x.BloodType)
-            .HasMaxLength(10);
+        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Email).IsRequired();
+        builder.Property(x => x.Password).IsRequired();
+        builder.Property(x => x.BloodType).HasMaxLength(10);
 
         builder.Property(x => x.Gender)
-            .HasConversion<string>() 
+            .HasConversion<string>()
             .IsRequired();
 
-        builder.Property(x => x.Address)
-            .HasMaxLength(500);
-
-        builder.Property(x => x.Phone)
-            .HasMaxLength(20);
+        builder.Property(x => x.Address).HasMaxLength(500);
+        builder.Property(x => x.Phone).HasMaxLength(20);
 
         builder.Property(x => x.Role)
             .HasConversion<string>()
@@ -46,43 +33,39 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasDefaultValue(UserStatus.Active);
 
-        builder.Property(x => x.IsDonor)
-            .HasDefaultValue(false);
+        builder.Property(x => x.IsDonor).HasDefaultValue(false);
+        builder.Property(x => x.LastDonationDate).IsRequired(false);
+        builder.Property(x => x.IsVerified).IsRequired().HasDefaultValue(false);
 
-        builder.Property(x => x.LastDonationDate)
-            .IsRequired(false);
-        
         builder.HasMany(x => x.DonationRequests)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
+            .WithOne(r => r.User)
+            .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.DonationMatches)
-            .WithOne()
-            .HasForeignKey(x => x.DonorId)
+            .WithOne(m => m.Donor)
+            .HasForeignKey(m => m.DonorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.DonationHistories)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
+            .WithOne(h => h.Donor)
+            .HasForeignKey(h => h.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.ConfirmedDonations)
-            .WithOne()
-            .HasForeignKey(x => x.ConfirmedBy)
+            .WithOne(h => h.ConfirmedByUser)
+            .HasForeignKey(h => h.ConfirmedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.BlogPosts)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
+            .WithOne(p => p.User)
+            .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.DonorInformation)
-            .WithOne()
-            .HasForeignKey<DonorInformation>(x => x.UserId)
+            .WithOne(u => u.User)
+            .HasForeignKey<DonorInformation>(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        builder.Property(x => x.IsVerified).IsRequired().HasDefaultValue(false);
-
     }
 }

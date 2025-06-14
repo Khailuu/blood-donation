@@ -11,21 +11,20 @@ public class DonationMatchConfiguration : IEntityTypeConfiguration<DonationMatch
     {
         builder.HasKey(x => x.MatchId);
 
-        builder.Property(x => x.MatchedTime)
-            .IsRequired();
+        builder.Property(x => x.MatchedTime).IsRequired();
 
         builder.Property(x => x.Status)
             .HasConversion<string>()
             .IsRequired()
             .HasDefaultValue(DonationMatchStatus.Pending);
-        
-        builder.HasOne<DonationRequest>()
+
+        builder.HasOne(x => x.Request)
             .WithMany()
             .HasForeignKey(x => x.RequestId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<User>()
-            .WithMany()
+        builder.HasOne(x => x.Donor)
+            .WithMany(u => u.DonationMatches)
             .HasForeignKey(x => x.DonorId)
             .OnDelete(DeleteBehavior.Restrict);
     }
