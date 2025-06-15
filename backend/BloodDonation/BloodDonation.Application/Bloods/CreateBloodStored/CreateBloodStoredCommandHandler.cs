@@ -20,7 +20,7 @@ public class CreateBloodStoredCommandHandler(IDbContext context) : ICommandHandl
             return Result.Failure<CreateBloodStoredResponse>(BloodErrors.NotFound);
         }
 
-        var bloodStored = new BloodStored
+        var bloodStored = new BloodStored()
         {
             StoredId = Guid.NewGuid(),
             BloodTypeId = bloodType.BloodTypeId,
