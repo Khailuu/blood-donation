@@ -39,18 +39,18 @@ export default function ForgotPassword({ open, handleClose }) {
           label="Email Address"
           name="email"
           rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' },
+            { required: true, message: 'Please input your email!'},
+            { type: 'email', message: 'Please enter a valid email!'},
           ]}
         >
           <Input placeholder="Email address" />
         </Form.Item>
 
         <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
-          <Button onClick={handleClose} style={{ marginRight: 8,  }}>
+          <Button onClick={handleClose} style={{ marginRight: 8,  fontWeight: "600"}}>
             Cancel 
           </Button>
-          <Button htmlType="submit" style={{backgroundColor: '#bd0026', color: 'white'}}>
+          <Button htmlType="submit" style={{backgroundColor: '#bd0026', color: 'white', fontWeight: "600"}}>
             Continue
           </Button>
         </Form.Item>
