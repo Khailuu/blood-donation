@@ -1,7 +1,6 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Bloods.CheckBloodCompatibility;
-using BloodDonation.Application.Bloods.CreateBloodStored;
 using BloodDonation.Application.Bloods.GetBloodStored;
 using BloodDonation.Application.Bloods.GetBloodType;
 using BloodDonation.Application.Bloods.UpdateBloodStored;
