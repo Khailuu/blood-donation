@@ -2,6 +2,7 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Users.CreateUser;
+using BloodDonation.Application.Users.GetCurrentUser;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Domain.Common;
@@ -23,6 +24,7 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
     
+    // [Authorize(Roles = "Staff")]
     [HttpPost("user/create-user")]
     public async Task<IResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
@@ -42,6 +44,7 @@ public class UserController : ControllerBase
         return result.MatchCreated(id => $"/user/{id}");
     }
     
+    // [Authorize(Roles = "Staff")]
     [HttpGet("user/get-users")]
     public async Task<IResult> GetUsers([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellation)
     {
@@ -53,7 +56,7 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     
-    // [Authorize]
+    [Authorize]
     [HttpPut("user/update-current-user")]
     public async Task<IResult> UpdateSelf([FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
     {
@@ -80,7 +83,7 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     
-    // [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Staff")]
     [HttpPut("user/update-user")]
     public async Task<IResult> UpdateByStaff( [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
     {
@@ -100,6 +103,15 @@ public class UserController : ControllerBase
         };
 
         var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
+    
+   [Authorize]
+    [HttpGet("user/get-current-users")]
+    public async Task<IResult> GetCurrentUsers( CancellationToken cancellation)
+    {
+        var query = new GetCurrentUserQuery();
+        var result = await _mediator.Send(query, cancellation);
         return result.MatchOk();
     }
 }

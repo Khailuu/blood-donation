@@ -18,6 +18,14 @@ namespace BloodDonation.Application.Users.GetCurrentUser
                 FullName = p.Name,
                 Email = p.Email,
                 Role = p.Role.ToString(),
+                BloodType = p.BloodType.ToString(),
+                DateOfBirth = p.DateOfBirth,
+                Phone = p.Phone,
+                Address = p.Address,
+                Gender = p.Gender,
+                IsDonor = p.IsDonor,
+                LastDonationDate = p.LastDonationDate,
+                Status = p.Status,
             }).FirstOrDefaultAsync();   
 
             return currentUser;
