@@ -26,6 +26,13 @@ namespace BloodDonation.Application.Users.GetCurrentUser
                 IsDonor = p.IsDonor,
                 LastDonationDate = p.LastDonationDate,
                 Status = p.Status,
+                DonorInformation = p.DonorInformation == null ? null : new DonorInformation
+                {
+                    Weight = p.DonorInformation.Weight,
+                    Height = p.DonorInformation.Height,
+                    MedicalStatus = p.DonorInformation.MedicalStatus.ToString(),
+                    LastChecked = p.DonorInformation.LastChecked
+                }
             }).FirstOrDefaultAsync();   
 
             return currentUser;

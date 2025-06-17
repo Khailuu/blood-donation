@@ -1,9 +1,12 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Users.CreateDonorInformation;
 using BloodDonation.Application.Users.CreateUser;
 using BloodDonation.Application.Users.GetCurrentUser;
+using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
+using BloodDonation.Application.Users.UpdateDonorInformation;
 using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Domain.Common;
 using MediatR;
@@ -112,6 +115,49 @@ public class UserController : ControllerBase
     {
         var query = new GetCurrentUserQuery();
         var result = await _mediator.Send(query, cancellation);
+        return result.MatchOk();
+    }
+    
+    [HttpPost("user/create-donor-infor")]
+    public async Task<IResult> CreateDonorInformation([FromBody] CreateDonorInformationRequest request, CancellationToken cancellationToken)
+    {
+        CreateDonorInformationCommand command = new CreateDonorInformationCommand
+        {
+           Weight = request.Weight,
+           Height = request.Height,
+           MedicalStatus = request.MedicalStatus,
+        };
+        
+        Result<CreateDonorInformationResponse> result = await _mediator.Send(command, cancellationToken);
+        return result.MatchCreated(id => $"/user/{id}");
+    }
+    
+    // [Authorize]
+    [HttpGet("user/get-donor-infor")]
+    public async Task<IResult> GetDonorInformation([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellation)
+    {
+        Result<Page<GetDonorInformationResponse>> result = await _mediator.Send(new GetDonorInformationQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+        }, cancellation);
+        return result.MatchOk();
+    }
+
+    [Authorize]
+    [HttpPut("user/update-donor-infor")]
+    public async Task<IResult> UpdateDonorInformation([FromBody] UpdateDonorInformationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateDonorInformationCommand
+        {
+            DonorInfoId = request.DonorInfoId,
+            Weight = request.Weight,
+            Height = request.Height,
+            MedicalStatus = request.MedicalStatus,
+        };
+        
+        var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
 }
