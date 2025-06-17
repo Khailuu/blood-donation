@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 const Plus = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -18,7 +17,7 @@ const BloodRequests = () => {
     patientName: '',
     bloodType: 'A+',
     hospital: '',
-    urgency: 'Khẩn cấp',
+    urgency: 'Urgent',
     notes: ''
   });
 
@@ -34,28 +33,28 @@ const BloodRequests = () => {
   return (
     <div className="space-y-6 p-20 bg-gray-50 min-h-screen ml-64">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Tạo yêu cầu hiến máu khẩn cấp</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Create Emergency Blood Request</h2>
         <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
           <Plus className="h-4 w-4" />
-          Tạo yêu cầu mới
+          New Request
         </button>
       </div>
-      
+
       <div className="bg-white rounded-lg p-6 shadow-sm border border-pink-100">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Họ tên bệnh nhân</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Patient Name</label>
               <input 
                 type="text" 
                 value={formData.patientName}
                 onChange={(e) => handleInputChange('patientName', e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
-                placeholder="Nhập họ tên bệnh nhân"
+                placeholder="Enter patient's full name"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nhóm máu</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Blood Type</label>
               <select 
                 value={formData.bloodType}
                 onChange={(e) => handleInputChange('bloodType', e.target.value)}
@@ -72,34 +71,34 @@ const BloodRequests = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bệnh viện</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Hospital</label>
               <input 
                 type="text" 
                 value={formData.hospital}
                 onChange={(e) => handleInputChange('hospital', e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
-                placeholder="Nhập tên bệnh viện"
+                placeholder="Enter hospital name"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mức độ khẩn cấp</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Urgency Level</label>
               <select 
                 value={formData.urgency}
                 onChange={(e) => handleInputChange('urgency', e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
               >
-                <option>Khẩn cấp</option>
-                <option>Thường</option>
+                <option>Urgent</option>
+                <option>Normal</option>
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ghi chú</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
             <textarea 
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 h-24 transition-colors" 
-              placeholder="Thông tin bệnh nhân, số lượng máu cần, thời gian cần..."
+              placeholder="Patient details, required blood amount, time needed..."
             ></textarea>
           </div>
           <div className="flex gap-4">
@@ -108,7 +107,7 @@ const BloodRequests = () => {
               className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
             >
               <Save className="h-4 w-4" />
-              Tạo yêu cầu
+              Submit Request
             </button>
             <button 
               type="button" 
@@ -116,12 +115,12 @@ const BloodRequests = () => {
                 patientName: '',
                 bloodType: 'A+',
                 hospital: '',
-                urgency: 'Khẩn cấp',
+                urgency: 'Urgent',
                 notes: ''
               })}
               className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
             >
-              Hủy
+              Cancel
             </button>
           </div>
         </div>

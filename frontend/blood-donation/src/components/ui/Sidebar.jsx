@@ -3,13 +3,13 @@ import { Heart, Calendar, FileText, Package, Bell, User, Plus, ChevronRight } fr
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
   const sidebarItems = [
-    { id: 'dashboard', label: 'Tổng quan', icon: Heart, color: 'text-pink-600' },
-    { id: 'blood-requests', label: 'Yêu cầu hiến máu khẩn cấp', icon: Plus, color: 'text-red-600', },
-    { id: 'donation-schedule', label: 'Quản lý lịch hiến máu', icon: Calendar, color: 'text-blue-600' },
-    { id: 'donation-requests', label: 'Quản lý yêu cầu máu', icon: FileText, color: 'text-purple-600', },
-    { id: 'inventory', label: 'Quản lý kho máu', icon: Package, color: 'text-green-600' },
-    { id: 'profile', label: 'Quản lý hồ sơ', icon: User, color: 'text-orange-600' },
-    { id: 'notifications', label: 'Thông báo', icon: Bell, color: 'text-yellow-600', }
+    { id: 'dashboard', label: 'Overview', icon: Heart, color: 'text-pink-600' },
+    { id: 'blood-requests', label: 'Urgent blood donation request', icon: Plus, color: 'text-red-600', },
+    { id: 'donation-schedule', label: 'Blood donation schedule management', icon: Calendar, color: 'text-blue-600' },
+    { id: 'donation-requests', label: 'Blood Request Management', icon: FileText, color: 'text-purple-600', },
+    { id: 'inventory', label: 'Blood warehouse management', icon: Package, color: 'text-green-600' },
+    { id: 'profile', label: 'Profile management', icon: User, color: 'text-orange-600' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, color: 'text-yellow-600', }
   ];
 
   return (
@@ -20,8 +20,8 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
             <Heart className="h-5 w-5 text-white" fill="currentColor" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">Bảng điều khiển</h3>
-            <p className="text-pink-100 text-xs">Quản lý hiến máu</p>
+            <h3 className="font-semibold text-sm">Dashboard</h3>
+            <p className="text-pink-100 text-xs">Blood donation management</p>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-50 to-transparent">
         <div className="bg-pink-500 rounded-lg p-3 text-white text-center">
           <Heart className="h-4 w-4 mx-auto mb-1" fill="currentColor" />
-          <p className="text-xs font-medium">Cứu sống là niềm vui</p>
+          <p className="text-xs font-medium">Saving lives is fun</p>
         </div>
       </div>
     </div>

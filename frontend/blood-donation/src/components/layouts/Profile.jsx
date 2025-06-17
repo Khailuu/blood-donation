@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, Edit, Save, X, Heart, Users, Activity, ArrowLeft, Search, Filter } from 'lucide-react';
 
 const UserManagement = () => {
-  const [currentView, setCurrentView] = useState('list'); 
+  const [currentView, setCurrentView] = useState('list');
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,60 +11,60 @@ const UserManagement = () => {
   const [users] = useState([
     {
       id: 1,
-      name: 'Nguyễn Văn Hoàng',
+      name: 'Nguyen Van Hoang',
       email: 'hotaru@bloodbank.vn',
       phone: '0123 456 789',
       bloodType: 'O+',
       birthDate: '15/03/1990',
-      address: 'Quận 1, TP. Hồ Chí Minh',
+      address: 'District 1, Ho Chi Minh City',
       donationCount: 12,
       lastDonation: '2024-05-15',
       status: 'active'
     },
     {
       id: 2,
-      name: 'Trần Thị Minh',
+      name: 'Tran Thi Minh',
       email: 'minh.tran@bloodbank.vn',
       phone: '0987 654 321',
       bloodType: 'A+',
       birthDate: '22/08/1985',
-      address: 'Quận 3, TP. Hồ Chí Minh',
+      address: 'District 3, Ho Chi Minh City',
       donationCount: 8,
       lastDonation: '2024-04-20',
       status: 'active'
     },
     {
       id: 3,
-      name: 'Lê Văn Dũng',
+      name: 'Le Van Dung',
       email: 'dung.le@bloodbank.vn',
       phone: '0369 258 147',
       bloodType: 'B+',
       birthDate: '10/12/1992',
-      address: 'Quận 7, TP. Hồ Chí Minh',
+      address: 'District 7, Ho Chi Minh City',
       donationCount: 15,
       lastDonation: '2024-06-01',
       status: 'active'
     },
     {
       id: 4,
-      name: 'Phạm Thị Lan',
+      name: 'Pham Thi Lan',
       email: 'lan.pham@bloodbank.vn',
       phone: '0456 789 123',
       bloodType: 'AB+',
       birthDate: '05/07/1988',
-      address: 'Quận 2, TP. Hồ Chí Minh',
+      address: 'District 2, Ho Chi Minh City',
       donationCount: 6,
       lastDonation: '2024-03-15',
       status: 'inactive'
     },
     {
       id: 5,
-      name: 'Hoàng Văn Nam',
+      name: 'Hoang Van Nam',
       email: 'nam.hoang@bloodbank.vn',
       phone: '0741 852 963',
       bloodType: 'O-',
       birthDate: '18/11/1991',
-      address: 'Quận 5, TP. Hồ Chí Minh',
+      address: 'District 5, Ho Chi Minh City',
       donationCount: 20,
       lastDonation: '2024-05-28',
       status: 'active'
@@ -75,7 +75,7 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesBloodType = filterBloodType === '' || user.bloodType === filterBloodType;
     return matchesSearch && matchesBloodType;
   });
@@ -128,7 +128,7 @@ const UserManagement = () => {
 
   if (currentView === 'profile' && selectedUser) {
     return (
-      <ProfileView 
+      <ProfileView
         user={selectedUser}
         tempData={tempProfileData}
         isEditing={isEditing}
@@ -145,9 +145,9 @@ const UserManagement = () => {
     <div className="min-h-screen bg-gray-50 p-20 ml-72">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Quản lý hồ sơ người dùng</h1>
+          <h1 className="text-2xl font-bold text-gray-800">User Profile Management</h1>
           <div className="text-sm text-gray-600">
-            Tổng số: {filteredUsers.length} người dùng
+            Total: {filteredUsers.length} users
           </div>
         </div>
 
@@ -158,7 +158,7 @@ const UserManagement = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tên hoặc email..."
+                placeholder="Search by name or email..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -171,7 +171,7 @@ const UserManagement = () => {
                 value={filterBloodType}
                 onChange={(e) => setFilterBloodType(e.target.value)}
               >
-                <option value="">Tất cả nhóm máu</option>
+                <option value="">All Blood Types</option>
                 <option value="O+">O+</option>
                 <option value="O-">O-</option>
                 <option value="A+">A+</option>
@@ -206,27 +206,27 @@ const UserManagement = () => {
                 <div className="flex justify-between items-center mb-4">
                   <div className="text-center">
                     <div className="text-lg font-bold text-pink-500">{user.donationCount}</div>
-                    <div className="text-xs text-gray-600">Lần hiến</div>
+                    <div className="text-xs text-gray-600">Donations</div>
                   </div>
                   <div className="text-center">
                     <div className="text-sm text-gray-800">{user.lastDonation}</div>
-                    <div className="text-xs text-gray-600">Lần cuối</div>
+                    <div className="text-xs text-gray-600">Last Donation</div>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    user.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
+                    user.status === 'active'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {user.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                    {user.status === 'active' ? 'Active' : 'Inactive'}
                   </span>
                   <button
                     onClick={() => handleViewProfile(user)}
                     className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded text-sm transition-colors"
                   >
-                    Xem chi tiết
+                    View Details
                   </button>
                 </div>
               </div>
@@ -239,7 +239,7 @@ const UserManagement = () => {
             <div className="text-gray-400 mb-2">
               <Users className="w-12 h-12 mx-auto mb-4" />
             </div>
-            <p className="text-gray-600">Không tìm thấy người dùng nào phù hợp với bộ lọc</p>
+            <p className="text-gray-600">No users found matching the filter.</p>
           </div>
         )}
       </div>
@@ -259,7 +259,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <h1 className="text-2xl font-bold text-gray-800">Hồ sơ cá nhân</h1>
+            <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
           </div>
           <div className="flex gap-2">
             {isEditing ? (
@@ -269,14 +269,14 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                   className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
                 >
                   <Save className="w-4 h-4" />
-                  Lưu
+                  Save
                 </button>
                 <button
                   onClick={onEditToggle}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
                 >
                   <X className="w-4 h-4" />
-                  Hủy
+                  Cancel
                 </button>
               </>
             ) : (
@@ -285,7 +285,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <Edit className="w-4 h-4" />
-                Chỉnh sửa
+                Edit
               </button>
             )}
           </div>
@@ -311,14 +311,14 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 )}
               </h2>
               <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getBloodTypeColor(user.bloodType)}`}>
-                Nhóm máu: {user.bloodType}
+                Blood Type: {user.bloodType}
               </div>
             </div>
           </div>
 
           {/* Personal Information */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Thông tin cá nhân</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
@@ -334,7 +334,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Số điện thoại</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
                 {isEditing ? (
                   <input
                     type="tel"
@@ -347,7 +347,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Ngày sinh</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -360,7 +360,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Nhóm máu</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Blood Type</label>
                 {isEditing ? (
                   <select
                     value={tempData.bloodType}
@@ -381,7 +381,7 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
                 )}
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-600 mb-1">Địa chỉ</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Address</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -399,49 +399,49 @@ const ProfileView = ({ user, tempData, isEditing, onBack, onEditToggle, onSave, 
           {/* Donation Statistics */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Thống kê hiến máu</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Donation Statistics</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Tổng số lần hiến:</span>
+                  <span className="text-gray-600">Total Donations:</span>
                   <span className="text-2xl font-bold text-pink-500">{user.donationCount}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Lần hiến cuối:</span>
+                  <span className="text-gray-600">Last Donation:</span>
                   <span className="text-gray-800">{user.lastDonation}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Tình trạng:</span>
+                  <span className="text-gray-600">Status:</span>
                   <span className={`px-2 py-1 rounded text-sm ${
-                    user.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
+                    user.status === 'active'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {user.status === 'active' ? 'Sẵn sàng hiến máu' : 'Không hoạt động'}
+                    {user.status === 'active' ? 'Ready to Donate' : 'Inactive'}
                   </span>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Thành tích</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Achievements</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                     <Heart className="w-4 h-4 text-yellow-600" />
                   </div>
-                  <span className="text-gray-700">Người hiến máu tích cực</span>
+                  <span className="text-gray-700">Active Blood Donor</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
                     <Users className="w-4 h-4 text-pink-600" />
                   </div>
-                  <span className="text-gray-700">Đã cứu sống {user.donationCount * 3} người</span>
+                  <span className="text-gray-700">Saved {user.donationCount * 3} lives</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <Activity className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="text-gray-700">5 năm hiến máu</span>
+                  <span className="text-gray-700">5 years of donating blood</span>
                 </div>
               </div>
             </div>
