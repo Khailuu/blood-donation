@@ -4,6 +4,7 @@ using BloodDonation.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BloodDonation.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250618131337_ChangeIsApprovedToFormStatus")]
+    partial class ChangeIsApprovedToFormStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,56 +105,56 @@ namespace BloodDonation.Infrastructure.Migrations
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000001"),
                             BloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7460),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7520),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000002"),
                             BloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7460),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7520),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000003"),
                             BloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7460),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000004"),
                             BloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7460),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000005"),
                             BloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7460),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000006"),
                             BloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7470),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000007"),
                             BloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7470),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000008"),
                             BloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
-                            LastUpdated = new DateTime(2025, 6, 18, 13, 39, 34, 998, DateTimeKind.Utc).AddTicks(7470),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         });
                 });
@@ -343,6 +346,10 @@ namespace BloodDonation.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("Pending");
+
+                    b.Property<string>("UrgencyLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

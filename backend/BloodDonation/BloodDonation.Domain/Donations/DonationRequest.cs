@@ -8,11 +8,11 @@ public class DonationRequest
     public Guid RequestId { get; set; }
     public Guid BloodTypeId { get; set; }
     public Guid UserId { get; set; }
-    public int AmountNeeded { get; set; }
+    public int AmountBlood { get; set; }
+    public BloodComponentType ComponentType { get; set; }
     public DateTime RequestTime { get; set; }
-    public DateTime Deadline { get; set; }
+    public DateTime? Deadline { get; set; }
     public bool IsEmergency { get; set; }
-    public UrgencyLevel UrgencyLevel { get; set; }
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public DonationRequestStatus Status { get; set; }

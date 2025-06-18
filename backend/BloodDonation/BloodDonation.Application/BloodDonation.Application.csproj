@@ -23,11 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="BloodDonation\CreateDonationHistory\" />
-      <Folder Include="BloodDonation\CreateDonationMatch\" />
       <Folder Include="BloodDonation\GetDonationHistory\" />
       <Folder Include="BloodDonation\GetDonationMatch\" />
-      <Folder Include="BloodDonation\GetDonationRequest\" />
       <Folder Include="BloodDonation\UpdateDonationRequest\" />
     </ItemGroup>
 

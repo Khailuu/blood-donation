@@ -12,15 +12,11 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
     {
         builder.HasKey(x => x.RequestId);
 
-        builder.Property(x => x.AmountNeeded).IsRequired();
+        builder.Property(x => x.AmountBlood).IsRequired();
         builder.Property(x => x.RequestTime).IsRequired();
         builder.Property(x => x.Deadline).IsRequired();
         builder.Property(x => x.IsEmergency).HasDefaultValue(false);
-
-        builder.Property(x => x.UrgencyLevel)
-            .HasConversion<string>()
-            .IsRequired();
-
+        
         builder.Property(x => x.Status)
             .HasConversion<string>()
             .IsRequired()
@@ -39,5 +35,10 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
             .WithMany()
             .HasForeignKey(x => x.BloodTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Property(x => x.ComponentType)
+            .HasConversion<string>() 
+            .IsRequired();
+
     }
 }
