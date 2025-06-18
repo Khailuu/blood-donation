@@ -42,4 +42,23 @@ public static class UserErrors
     public static readonly Error IsNotVerified = Error.Conflict(
         "NotVerified",
         "Account is not verified");
+    
+    public static readonly Error IsNotDonor = Error.Conflict(
+        "NotDonor", "User is not donor");
+    
+    public static readonly Error IsNotMember = Error.Conflict(
+        "NotMember", "User is not member");
+    
+    public static readonly Error MemberCannotUpdateOthers = Error.Problem(
+        "User.MemberCannotUpdateOthers",
+        "You are only allowed to update your own donor information.");
+
+    public static readonly Error TargetUserIsNotDonor = Error.Problem(
+        "User.TargetUserIsNotDonor",
+        "The target user is not a valid donor.");
+    
+    public static readonly Error DonorInforAlreadyExist = Error.Conflict(
+        "DonorInformation.Exist",
+        "User already has donor information");
+    
 }

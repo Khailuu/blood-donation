@@ -44,14 +44,9 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId2")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("PostId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId2");
 
                     b.ToTable("BlogPosts", "dbo");
                 });
@@ -66,17 +61,17 @@ namespace BloodDonation.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FromBloodType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<Guid>("FromBloodTypeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ToBloodType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<Guid>("ToBloodTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FromBloodTypeId");
+
+                    b.HasIndex("ToBloodTypeId");
 
                     b.ToTable("BloodCompatibility", "dbo");
                 });
@@ -107,56 +102,56 @@ namespace BloodDonation.Infrastructure.Migrations
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000001"),
                             BloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7650),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7520),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000002"),
                             BloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7650),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7520),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000003"),
                             BloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000004"),
                             BloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000005"),
                             BloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000006"),
                             BloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000007"),
                             BloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000008"),
                             BloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
-                            LastUpdated = new DateTime(2025, 6, 11, 17, 13, 11, 75, DateTimeKind.Utc).AddTicks(7660),
+                            LastUpdated = new DateTime(2025, 6, 18, 13, 13, 37, 553, DateTimeKind.Utc).AddTicks(7530),
                             Quantity = 0
                         });
                 });
@@ -244,19 +239,10 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.Property<Guid>("ConfirmedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ConfirmedByUserUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("DonorUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RequestId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -272,13 +258,7 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("ConfirmedBy");
 
-                    b.HasIndex("ConfirmedByUserUserId");
-
-                    b.HasIndex("DonorUserId");
-
                     b.HasIndex("RequestId");
-
-                    b.HasIndex("RequestId1");
 
                     b.HasIndex("UserId");
 
@@ -297,16 +277,10 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.Property<Guid>("DonorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DonorUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("MatchedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("RequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RequestId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -319,11 +293,7 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("DonorId");
 
-                    b.HasIndex("DonorUserId");
-
                     b.HasIndex("RequestId");
-
-                    b.HasIndex("RequestId1");
 
                     b.ToTable("DonationMatches", "dbo");
                 });
@@ -334,16 +304,18 @@ namespace BloodDonation.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AmountNeeded")
+                    b.Property<int>("AmountBlood")
                         .HasColumnType("int");
 
                     b.Property<Guid>("BloodTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("BloodTypeId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ComponentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Deadline")
+                    b.Property<DateTime?>("Deadline")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmergencyContactName")
@@ -379,18 +351,11 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId2")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("RequestId");
 
                     b.HasIndex("BloodTypeId");
 
-                    b.HasIndex("BloodTypeId1");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId2");
 
                     b.ToTable("DonationRequests", "dbo");
                 });
@@ -441,8 +406,11 @@ namespace BloodDonation.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<bool?>("IsApproved")
-                        .HasColumnType("bit");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Pending");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -497,9 +465,6 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId2")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("Weight")
                         .HasColumnType("decimal(18,2)");
 
@@ -507,8 +472,6 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("UserId")
                         .IsUnique();
-
-                    b.HasIndex("UserId2");
 
                     b.ToTable("DonorInformation", "dbo");
                 });
@@ -611,17 +574,32 @@ namespace BloodDonation.Infrastructure.Migrations
 
             modelBuilder.Entity("BloodDonation.Domain.BlogPost.BlogPost", b =>
                 {
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "User")
                         .WithMany("BlogPosts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BloodDonation.Domain.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId2");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodCompatibility", b =>
+                {
+                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", "FromBloodType")
+                        .WithMany("CompatibleFrom")
+                        .HasForeignKey("FromBloodTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", "ToBloodType")
+                        .WithMany("CompatibleTo")
+                        .HasForeignKey("ToBloodTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromBloodType");
+
+                    b.Navigation("ToBloodType");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodStored", b =>
@@ -637,31 +615,19 @@ namespace BloodDonation.Infrastructure.Migrations
 
             modelBuilder.Entity("BloodDonation.Domain.Donations.DonationHistory", b =>
                 {
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "ConfirmedByUser")
                         .WithMany("ConfirmedDonations")
                         .HasForeignKey("ConfirmedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BloodDonation.Domain.Users.User", "ConfirmedByUser")
-                        .WithMany()
-                        .HasForeignKey("ConfirmedByUserUserId");
-
-                    b.HasOne("BloodDonation.Domain.Users.User", "Donor")
-                        .WithMany()
-                        .HasForeignKey("DonorUserId");
-
-                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", null)
+                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", "Request")
                         .WithMany()
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", "Request")
-                        .WithMany()
-                        .HasForeignKey("RequestId1");
-
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "Donor")
                         .WithMany("DonationHistories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -676,25 +642,17 @@ namespace BloodDonation.Infrastructure.Migrations
 
             modelBuilder.Entity("BloodDonation.Domain.Donations.DonationMatch", b =>
                 {
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "Donor")
                         .WithMany("DonationMatches")
                         .HasForeignKey("DonorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BloodDonation.Domain.Users.User", "Donor")
-                        .WithMany()
-                        .HasForeignKey("DonorUserId");
-
-                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", null)
+                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", "Request")
                         .WithMany()
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("BloodDonation.Domain.Donations.DonationRequest", "Request")
-                        .WithMany()
-                        .HasForeignKey("RequestId1");
 
                     b.Navigation("Donor");
 
@@ -703,25 +661,17 @@ namespace BloodDonation.Infrastructure.Migrations
 
             modelBuilder.Entity("BloodDonation.Domain.Donations.DonationRequest", b =>
                 {
-                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", null)
+                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", "BloodType")
                         .WithMany()
                         .HasForeignKey("BloodTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", "BloodType")
-                        .WithMany()
-                        .HasForeignKey("BloodTypeId1");
-
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "User")
                         .WithMany("DonationRequests")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("BloodDonation.Domain.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId2");
 
                     b.Navigation("BloodType");
 
@@ -767,15 +717,11 @@ namespace BloodDonation.Infrastructure.Migrations
 
             modelBuilder.Entity("BloodDonation.Domain.Users.DonorInformation", b =>
                 {
-                    b.HasOne("BloodDonation.Domain.Users.User", null)
+                    b.HasOne("BloodDonation.Domain.Users.User", "User")
                         .WithOne("DonorInformation")
                         .HasForeignKey("BloodDonation.Domain.Users.DonorInformation", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("BloodDonation.Domain.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId2");
 
                     b.Navigation("User");
                 });
@@ -789,6 +735,13 @@ namespace BloodDonation.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodType", b =>
+                {
+                    b.Navigation("CompatibleFrom");
+
+                    b.Navigation("CompatibleTo");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.QuestionForm.HealthForm", b =>
