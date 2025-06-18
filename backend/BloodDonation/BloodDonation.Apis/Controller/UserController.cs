@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Users.CreateHealthForm;
+using BloodDonation.Application.Users.GetHealthForm;
 using BloodDonation.Application.Users.CreateUser;
+using BloodDonation.Application.Users.DeleteHealthForm;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Domain.Common;
@@ -79,6 +82,44 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
+    [Authorize]
+    [HttpPost("user/create-healthform")]
+    public async Task<IResult> CreateHealthForm([FromBody] CreateHealthFormRequest request, CancellationToken cancellationToken)
+    {
+        var command = new CreateHealthFormCommand()
+        {
+            // UserId is not set here because handler will get it from IUserContext
+            Answers = request.Answers.Select(a => new HealthAnswerCommand
+            {
+                QuestionId = a.QuestionId,
+                Answer = a.Answer
+            }).ToList()
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchCreated(id => $"/healthform/{id}");
+    }
+    [Authorize]
+    [HttpGet("user/get-current-user-healthform")]
+    public async Task<IResult> GetHealthForm([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetHealthFormQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize(Roles = "BloodDonor")]
+    [HttpDelete("user/delete-current-user-healthform")]
+    public async Task<IResult> DeleteHealthForm(CancellationToken cancellationToken)
+    {
+        var command = new DeleteHealthFormCommand();
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
+
     
     // [Authorize(Roles = "Staff")]
     [HttpPut("user/update-user")]
