@@ -8,7 +8,7 @@ namespace BloodDonation.Application.Users.GetHealthForm
         public List<QuestionAnswerDto> Questions { get; set; } = new List<QuestionAnswerDto>();
         
         public DateTime CreatedAt { get; set; }
-        public FormStatus Status { get; set; }
+        public string Status { get; set; }
         public Guid? ApprovedBy { get; set; }
         public DateTime? ApprovedAt { get; set; }
         public string? ApprovedByStaffName { get; set; }

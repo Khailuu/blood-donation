@@ -82,7 +82,7 @@ public class GetUserHealthFormDetailQueryHandler(IDbContext context) : IQueryHan
             UserId = healthForm.Form.UserId,
             Name = healthForm.UserName,
             CreatedAt = healthForm.Form.CreatedAt,
-            Status = healthForm.Form.Status,
+            Status = healthForm.Form.Status.ToString(),
             ApprovedBy = healthForm.Form.ApprovedBy,
             ApprovedAt = healthForm.Form.ApprovedAt,
             ApprovedByStaffName = healthForm.Form.ApprovedByStaffName,

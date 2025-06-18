@@ -39,6 +39,10 @@ public static class QuestionFormErrors
     public static readonly Error HealthFormNotFound = Error.Failure(
         "HealthForm.Notfound",
         "Health form not found for current user.");
+    public static Error InvalidStatus(string status) =>
+        Error.Failure(
+            "InvalidStatus",
+            $"Status '{status}' is not valid.");
 
     public static readonly Error ContentEmpty = Error.Failure(
         "HealthQuestion.ContentEmpty",

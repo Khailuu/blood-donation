@@ -41,7 +41,7 @@ public class CreateHealthQuestionCommandHandler(
             QuestionId = newQuestion.QuestionId,
             Content = newQuestion.Content,
             IsRequired = newQuestion.IsRequired,
-            QuestionType = newQuestion.QuestionType
+            QuestionType = newQuestion.QuestionType.ToString()
         };
 
         return response;

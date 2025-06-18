@@ -117,7 +117,7 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(query, cancellationToken);
         return result.MatchOk();
     }
-    [Authorize(Roles = "BloodDonor")]
+    [Authorize(Roles = "Member")]
     [HttpDelete("user/delete-current-user-healthform")]
     public async Task<IResult> DeleteHealthForm(CancellationToken cancellationToken)
     {
@@ -150,7 +150,7 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     
-   [Authorize]
+    [Authorize]
     [HttpGet("user/get-current-users")]
     public async Task<IResult> GetCurrentUsers( CancellationToken cancellation)
     {

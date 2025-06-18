@@ -32,7 +32,7 @@ public class UpdateHealthQuestionCommandHandler(
             QuestionId = question.QuestionId,
             Content = question.Content,
             IsRequired = question.IsRequired,
-            QuestionType = question.QuestionType
+            QuestionType = question.QuestionType.ToString()
         };
     }
 }

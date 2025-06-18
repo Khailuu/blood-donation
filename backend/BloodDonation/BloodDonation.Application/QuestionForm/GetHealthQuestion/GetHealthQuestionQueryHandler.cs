@@ -22,7 +22,7 @@ public class GetHealthQuestionQueryHandler(IDbContext context) : IQueryHandler<G
                 QuestionId = hq.QuestionId,
                 Content = hq.Content,
                 IsRequired = hq.IsRequired,
-                QuestionType = hq.QuestionType
+                QuestionType = hq.QuestionType.ToString()
             })
             .ToListAsync(cancellationToken);
 

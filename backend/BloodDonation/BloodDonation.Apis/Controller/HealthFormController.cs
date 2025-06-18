@@ -1,6 +1,8 @@
 ﻿using BloodDonation.Apis.Extensions;
+using BloodDonation.Apis.Requests;
 using BloodDonation.Application.QuestionForm.GetHealthFormForStaff;
 using BloodDonation.Application.QuestionForm.GetUserHealthFormDetail;
+using BloodDonation.Application.QuestionForm.UpdateHealthFormForStaff;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -21,20 +23,28 @@ public class HealthFormController : ControllerBase
 
     [Authorize(Roles = "Staff")]
     [HttpGet("healthform/get-healthforms-for-staff")]
-    public async Task<IResult> GetHealthFormsForStaff([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    public async Task<IResult> GetHealthFormsForStaff(
+        [FromQuery] int pageNumber,
+        [FromQuery] int pageSize,
+        [FromQuery] string? status,
+        CancellationToken cancellationToken)
     {
         var query = new GetHealthFormForStaffQuery()
         {
             PageNumber = pageNumber,
-            PageSize = pageSize
+            PageSize = pageSize,
+            Status = status
         };
 
         var result = await _mediator.Send(query, cancellationToken);
+
         return result.MatchOk();
     }
+
+
     
     [Authorize(Roles = "Staff")]
-    [HttpGet("healthform/{formId:guid}")]
+    [HttpGet("healthform/get-user-healthform/{formId:guid}")]
     public async Task<IResult> GetUserHealthFormDetail(Guid formId,[FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetUserHealthFormDetailQuery()
@@ -45,6 +55,20 @@ public class HealthFormController : ControllerBase
         };
 
         var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize(Roles = "Staff")]
+    [HttpPut("healthform/update-user-healthform/{formId:guid}")]
+    public async Task<IResult> UpdateHealthFormForStaff(Guid formId, [FromBody] UpdateHealthFormForStaffRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateHealthFormForStaffCommand()
+        {
+            FormId = formId,
+            Status = request.Status
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
         return result.MatchOk();
     }
 }
