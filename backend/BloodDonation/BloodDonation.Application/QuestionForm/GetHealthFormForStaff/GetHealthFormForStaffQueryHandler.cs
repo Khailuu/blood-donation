@@ -23,7 +23,7 @@ public class GetHealthFormForStaffQueryHandler(IDbContext context) : IQueryHandl
                 FormId = hf.FormId,
                 UserId = hf.UserId,
                 CreatedAt = hf.CreatedAt,
-                IsApproved = hf.IsApproved,
+                Status = hf.Status,
                 ApprovedByStaffName = hf.ApprovedByStaffName
             })
             .ToListAsync(cancellationToken);

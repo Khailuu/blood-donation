@@ -1,4 +1,6 @@
-﻿namespace BloodDonation.Application.QuestionForm.GetHealthFormForStaff;
+﻿using BloodDonation.Domain.QuestionForm;
+
+namespace BloodDonation.Application.QuestionForm.GetHealthFormForStaff;
 
 public class GetHealthFormForStaffResponse
 {
@@ -6,6 +8,6 @@ public class GetHealthFormForStaffResponse
     public Guid UserId { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public bool? IsApproved { get; set; }
+    public FormStatus Status { get; set; }
     public string? ApprovedByStaffName { get; set; }
 }

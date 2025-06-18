@@ -22,4 +22,11 @@
       <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="BloodDonation\GetDonationHistory\" />
+      <Folder Include="BloodDonation\GetDonationMatch\" />
+      <Folder Include="BloodDonation\GetDonationRequest\" />
+      <Folder Include="BloodDonation\UpdateDonationRequest\" />
+    </ItemGroup>
+
 </Project>

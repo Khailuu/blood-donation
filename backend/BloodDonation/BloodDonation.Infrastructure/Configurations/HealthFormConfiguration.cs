@@ -13,8 +13,10 @@ public class HealthFormConfiguration : IEntityTypeConfiguration<HealthForm>
         builder.Property(x => x.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        builder.Property(x => x.IsApproved)
-            .IsRequired(false);
+        builder.Property(x => x.Status)
+            .HasConversion<string>() 
+            .HasDefaultValue(FormStatus.Pending)
+            .IsRequired();
 
         builder.Property(x => x.ApprovedBy)
             .IsRequired(false);

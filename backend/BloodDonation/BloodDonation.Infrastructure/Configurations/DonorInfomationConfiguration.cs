@@ -10,23 +10,17 @@ public class DonorInformationConfiguration : IEntityTypeConfiguration<DonorInfor
     {
         builder.HasKey(x => x.DonorInfoId);
 
-        builder.Property(x => x.Weight)
-            .IsRequired();
-
-
-        builder.Property(x => x.Height)
-            .IsRequired();
-            
+        builder.Property(x => x.Weight).IsRequired();
+        builder.Property(x => x.Height).IsRequired();
 
         builder.Property(x => x.MedicalStatus)
             .HasConversion<string>()
             .IsRequired();
 
-        builder.Property(x => x.LastChecked)
-            .IsRequired();
-        
-        builder.HasOne<User>()
-            .WithOne()
+        builder.Property(x => x.LastChecked).IsRequired();
+
+        builder.HasOne(d => d.User)
+            .WithOne(u => u.DonorInformation)
             .HasForeignKey<DonorInformation>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

@@ -77,7 +77,7 @@ namespace BloodDonation.Application.Users.GetHealthForm
             {
                 FormId = healthForm.FormId,
                 CreatedAt = healthForm.CreatedAt,
-                IsApproved = healthForm.IsApproved,
+                Status = healthForm.Status,
                 ApprovedBy = healthForm.ApprovedBy,
                 ApprovedAt = healthForm.ApprovedAt,
                 ApprovedByStaffName = healthForm.ApprovedByStaffName,

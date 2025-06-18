@@ -1,9 +1,11 @@
-﻿using BloodDonation.Apis.Extensions;
+﻿using System.Text.Json.Serialization;
+using BloodDonation.Apis.Extensions;
 using BloodDonation.Application;
 using BloodDonation.Infrastructure;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace BloodDonation.Apis;
@@ -23,6 +25,14 @@ public class Program
             .AddApplication()
             .AddPresentation()
             .AddInfrastructure(builder.Configuration);
+        
+        builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
 
         var app = builder.Build();
 

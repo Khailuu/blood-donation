@@ -52,7 +52,8 @@ public sealed class LoginCommandHandler(
         return new TokenResponse
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken.Token
+            RefreshToken = refreshToken.Token,
+            Role = user.Role,
         };
     }
 }
