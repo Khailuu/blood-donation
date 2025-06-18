@@ -12,7 +12,6 @@ public class CreateDonationRequestCommand : ICommand<CreateDonationRequestRespon
     public BloodComponentType ComponentType { get; set; }
     public DateTime? Deadline { get; set; }
     public bool IsEmergency { get; set; }
-    public UrgencyLevel UrgencyLevel { get; set; }
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public string? Note { get; set; }

@@ -34,7 +34,6 @@ public class CreateDonationRequestCommandHandler(IDbContext context, IUserContex
             RequestTime = DateTime.UtcNow,
             Deadline = request.Deadline,
             IsEmergency = request.IsEmergency,
-            UrgencyLevel = request.UrgencyLevel,
             EmergencyContactName = request.EmergencyContactName,
             EmergencyContactPhone = request.EmergencyContactPhone,
             Note = request.Note,
@@ -43,64 +42,7 @@ public class CreateDonationRequestCommandHandler(IDbContext context, IUserContex
 
         context.DonationRequests.Add(donationRequest);
         await context.SaveChangesAsync(cancellationToken);
-
-        if (user.IsDonor == true)
-        {
-            var bloodStored = await context.BloodStored
-                .FirstOrDefaultAsync(b => b.BloodTypeId == request.BloodTypeId, cancellationToken);
-            
-            if (bloodStored == null)
-            {
-                return Result.Failure<CreateDonationRequestResponse>(BloodErrors.BloodTypeNotFound);
-            }
-            bloodStored.Quantity += request.AmountBlood;
-            bloodStored.LastUpdated = DateTime.UtcNow;
-            
-
-            context.DonationsHistory.Add(new DonationHistory
-            {
-                DonationId = Guid.NewGuid(),
-                UserId = userId,
-                RequestId = donationRequest.RequestId,
-                Date = DateTime.UtcNow,
-                Status = DonationHistoryStatus.Completed,
-                ConfirmedBy = userId
-            });
-
-            donationRequest.Status = DonationRequestStatus.Fulfilled;
-        }
-        else
-        {
-            var stored = await context.BloodStored
-                .FirstOrDefaultAsync(x => x.BloodTypeId == request.BloodTypeId, cancellationToken);
-
-            var available = stored?.Quantity ?? 0;
-
-            if (available >= request.AmountBlood)
-            {
-                stored!.Quantity -= request.AmountBlood;
-                stored.LastUpdated = DateTime.UtcNow;
-
-                context.DonationsHistory.Add(new DonationHistory
-                {
-                    DonationId = Guid.NewGuid(),
-                    UserId = userId,
-                    RequestId = donationRequest.RequestId,
-                    Date = DateTime.UtcNow,
-                    Status = DonationHistoryStatus.Completed,
-                    ConfirmedBy = userId
-                });
-
-                donationRequest.Status = DonationRequestStatus.Fulfilled;
-            }
-            else
-            {
-                var matcher = new AutoMatchDonorsForRequestHandler(context);
-                await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
-            }
-        }
-
-        await context.SaveChangesAsync(cancellationToken);
+        
         return Result.Success(new CreateDonationRequestResponse
         {
             RequestId = donationRequest.RequestId,
