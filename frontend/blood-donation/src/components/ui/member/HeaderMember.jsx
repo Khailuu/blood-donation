@@ -2,7 +2,9 @@ import { Button, Menu } from "antd";
 import Title from "antd/es/typography/Title";
 import { Link, useNavigate } from "react-router-dom";
 import "../../../css/guest/NavBarGuest.css";
-import { menuItems } from "../../../assets/menu";
+import { menuItems, menuItemsMember } from "../../../assets/menu";
+import { banner2 } from "../../../assets";
+import { UserOutlined } from "@ant-design/icons";
 
 export const HeaderMember = () => {
   const navigate = useNavigate();
@@ -15,31 +17,24 @@ export const HeaderMember = () => {
   return (
     <div className="navbar-wrapper" style={{ borderBottom: "1px solid red" }}>
       <div className="header">
-        <div className="logo-title">
-          <Title
-            level={2}
-            style={{
-              color: "#bd0026",
-              margin: 0,
-              fontFamily: "Oi",
-              fontWeight: "normal",
-            }}
-          >
-            HEMORA
-          </Title>
+        <div
+          className="logo-title"
+          style={{ display: "flex", alignItems: "center", gap: 8 }}
+        >
+          <img src={banner2} alt="" style={{ width: 55, height: 50 }} />
         </div>
 
         <Menu
           mode="horizontal"
           defaultSelectedKeys={["home"]}
           onClick={handleMenuClick}
-          items={menuItems.map(({ key, label }) => ({ key, label }))}
+          items={menuItemsMember.map(({ key, label }) => ({ key, label }))}
           style={{ fontFamily: "raleway", fontWeight: "bold" }}
         />
 
-        <div className="auth-section">
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Button shape="circle" icon={<UserOutlined />} />
           <Button
-            className="btn-login"
             type="primary"
             style={{
               backgroundColor: "#bd0026",
@@ -47,7 +42,7 @@ export const HeaderMember = () => {
               color: "white",
               marginRight: 12,
               borderRadius: "50px",
-              width: "100px",
+
               height: "40px",
               fontWeight: "bold",
               transition: "all 0.3s ease",
@@ -60,15 +55,8 @@ export const HeaderMember = () => {
               e.currentTarget.style.transform = "scale(1)";
             }}
           >
-            <Link
-              to="/signin"
-              style={{
-                color: "white",
-                fontSize: "15px",
-                textDecoration: "none",
-              }}
-            >
-              Login
+            <Link style={{ color: "white", textDecoration: "none" }}>
+              Health Survey
             </Link>
           </Button>
         </div>

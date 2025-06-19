@@ -16,7 +16,6 @@ import { SignInPage } from "../pages/SignInPage";
 import { SignUpPage } from "../pages/SignUpPage";
 
 const router = [
-  // Public routes with guest layout (accessible without login)
   {
     element: <MainLayoutGuest />,
     children: [
@@ -31,7 +30,7 @@ const router = [
     element: <AuthLayout />,
     children: [
       { path: "/signin", element: <SignInPage /> },
-      { path: "/signup", element: <SignUpPage/> },
+      { path: "/signup", element: <SignUpPage /> },
     ],
   },
 
@@ -43,27 +42,26 @@ const router = [
       </ProtectedRoute>
     ),
     children: [
-      // { index: true, element: <Navigate to="/app/dashboard" replace /> },
-
       { path: "member", element: <MemberPage /> },
       {
         path: "staff",
-        element: <RoleRoute allowedRoles={["staff", "admin"]} />,
-        children: [
-          { index: true, element: <StaffDashboard /> },
-        ],
+        element: (
+          <RoleRoute allowedRoles={["staff", "admin"]}>
+            <StaffDashboard />
+          </RoleRoute>
+        ),
       },
       {
         path: "admin",
-        element: <RoleRoute allowedRoles={["admin"]} />,
-        children: [
-          { index: true, element: <AdminDashboard /> },
-        ],
+        element: (
+          <RoleRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
+          </RoleRoute>
+        ),
       },
     ],
   },
 
-  // Fallback route
   { path: "*", element: <Navigate to="/" replace /> },
 ];
 
