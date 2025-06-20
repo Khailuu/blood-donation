@@ -223,7 +223,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="ml-72 space-y-6 p-24 bg-gray-50 min-h-screen relative">
+    <div className="ml-72 space-y-6 p-24 min-h-screen relative">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Blood Donation Management </h1>
         <p className="text-gray-600 mt-2">Blood donation system overview</p>

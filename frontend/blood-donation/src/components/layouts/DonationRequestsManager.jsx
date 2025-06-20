@@ -113,6 +113,16 @@ const DonationRequestsManager = () => {
     });
   };
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   // Export report functionality
   const handleExportReport = () => {
     const csvContent = [
@@ -163,22 +173,22 @@ const DonationRequestsManager = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Processed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'Rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     }
   };
 
   const getUrgencyColor = (urgency) => {
     switch (urgency) {
       case 'Critical':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       case 'Urgent':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-blue-100 text-blue-800 border-blue-200';
     }
   };
 
@@ -196,27 +206,24 @@ const DonationRequestsManager = () => {
     <div className="space-y-6 ml-72 p-20">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Blood Donation Requests Management</h2>
-        <div className="flex gap-2">
+        <h2 className="text-2xl font-bold text-gray-900">Blood Donation Requests Management</h2>
+        <div className="flex gap-3">
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center gap-2"
+            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <span>🔍</span>
-            Filter
+            Filters
           </button>
           <button 
             onClick={handleExportReport}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
           >
-            <span>📥</span>
             Export Report
           </button>
           <button 
             onClick={() => setShowAddForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
           >
-            <span>➕</span>
             Add Request
           </button>
         </div>
@@ -255,7 +262,7 @@ const DonationRequestsManager = () => {
               <select 
                 value={filters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
                 <option value="">All Status</option>
                 <option value="Pending">Pending</option>
@@ -268,7 +275,7 @@ const DonationRequestsManager = () => {
               <select 
                 value={filters.bloodType}
                 onChange={(e) => handleFilterChange('bloodType', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
                 <option value="">All Blood Types</option>
                 {bloodTypes.map(type => (
@@ -281,7 +288,7 @@ const DonationRequestsManager = () => {
               <select 
                 value={filters.urgency}
                 onChange={(e) => handleFilterChange('urgency', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
                 <option value="">All Urgency</option>
                 {urgencyLevels.map(level => (
@@ -296,18 +303,18 @@ const DonationRequestsManager = () => {
                 value={filters.hospital}
                 onChange={(e) => handleFilterChange('hospital', e.target.value)}
                 placeholder="Search hospital..."
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               />
             </div>
           </div>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex gap-2 items-center">
             <button 
               onClick={clearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
             >
               Clear Filters
             </button>
-            <span className="text-sm text-gray-600 flex items-center">
+            <span className="text-sm text-gray-600">
               Showing {filteredRequests.length} of {donationRequests.length} requests
             </span>
           </div>
@@ -326,58 +333,59 @@ const DonationRequestsManager = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{request.id}</td>
+                <tr key={request.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{request.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.patientName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
                       {request.bloodType}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.hospital}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getUrgencyColor(request.urgency)}`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(request.urgency)}`}>
                       {request.urgency}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.unitsNeeded}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(request.status)}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{request.unitsNeeded}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
                       {request.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.requestDate}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center">
+                    <div className="text-center">
+                      {formatDate(request.requestDate)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <div className="flex gap-2 justify-center">
                       <button 
                         onClick={() => handleViewDetails(request)}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="View Details"
+                        className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors border border-blue-200"
                       >
-                        👁️
+                        View
                       </button>
                       <button 
                         onClick={() => handleApprove(request.id)}
                         disabled={request.status === 'Processed'}
-                        className="text-green-600 hover:text-green-900 disabled:text-gray-400 disabled:cursor-not-allowed"
-                        title="Approve"
+                        className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-green-200 disabled:border-gray-200"
                       >
-                        ✅
+                        Approve
                       </button>
                       <button 
                         onClick={() => handleReject(request.id)}
                         disabled={request.status === 'Rejected'}
-                        className="text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed"
-                        title="Reject"
+                        className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-red-200 disabled:border-gray-200"
                       >
-                        ❌
+                        Reject
                       </button>
                     </div>
                   </td>
@@ -400,7 +408,7 @@ const DonationRequestsManager = () => {
                   type="text"
                   value={newRequest.patientName}
                   onChange={(e) => setNewRequest({...newRequest, patientName: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
               <div>
@@ -408,7 +416,7 @@ const DonationRequestsManager = () => {
                 <select 
                   value={newRequest.bloodType}
                   onChange={(e) => setNewRequest({...newRequest, bloodType: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">Select Blood Type</option>
                   {bloodTypes.map(type => (
@@ -421,7 +429,7 @@ const DonationRequestsManager = () => {
                 <select 
                   value={newRequest.hospital}
                   onChange={(e) => setNewRequest({...newRequest, hospital: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">Select Hospital</option>
                   {hospitals.map(hospital => (
@@ -434,7 +442,7 @@ const DonationRequestsManager = () => {
                 <select 
                   value={newRequest.urgency}
                   onChange={(e) => setNewRequest({...newRequest, urgency: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   {urgencyLevels.map(level => (
                     <option key={level} value={level}>{level}</option>
@@ -448,7 +456,7 @@ const DonationRequestsManager = () => {
                   min="1"
                   value={newRequest.unitsNeeded}
                   onChange={(e) => setNewRequest({...newRequest, unitsNeeded: parseInt(e.target.value)})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
               <div>
@@ -457,7 +465,7 @@ const DonationRequestsManager = () => {
                   type="tel"
                   value={newRequest.contactPhone}
                   onChange={(e) => setNewRequest({...newRequest, contactPhone: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
               <div>
@@ -465,20 +473,20 @@ const DonationRequestsManager = () => {
                 <textarea 
                   value={newRequest.notes}
                   onChange={(e) => setNewRequest({...newRequest, notes: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md h-20"
+                  className="w-full p-2 border border-gray-300 rounded-md h-20 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
             </div>
             <div className="flex gap-2 mt-6">
               <button 
                 onClick={handleAddRequest}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
               >
                 Add Request
               </button>
               <button 
                 onClick={() => setShowAddForm(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
@@ -487,7 +495,6 @@ const DonationRequestsManager = () => {
         </div>
       )}
 
-      {/* View Details Modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
@@ -495,53 +502,53 @@ const DonationRequestsManager = () => {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-medium">Patient:</span>
-                  <div>{selectedRequest.patientName}</div>
+                  <span className="font-medium text-gray-700">Patient:</span>
+                  <div className="text-gray-900">{selectedRequest.patientName}</div>
                 </div>
                 <div>
-                  <span className="font-medium">Blood Type:</span>
+                  <span className="font-medium text-gray-700">Blood Type:</span>
                   <div>
-                    <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
                       {selectedRequest.bloodType}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium">Hospital:</span>
-                  <div>{selectedRequest.hospital}</div>
+                  <span className="font-medium text-gray-700">Hospital:</span>
+                  <div className="text-gray-900">{selectedRequest.hospital}</div>
                 </div>
                 <div>
-                  <span className="font-medium">Urgency:</span>
+                  <span className="font-medium text-gray-700">Urgency:</span>
                   <div>
-                    <span className={`px-2 py-1 rounded-full text-xs ${getUrgencyColor(selectedRequest.urgency)}`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(selectedRequest.urgency)}`}>
                       {selectedRequest.urgency}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium">Units Needed:</span>
-                  <div>{selectedRequest.unitsNeeded}</div>
+                  <span className="font-medium text-gray-700">Units Needed:</span>
+                  <div className="text-gray-900 font-medium">{selectedRequest.unitsNeeded}</div>
                 </div>
                 <div>
-                  <span className="font-medium">Status:</span>
+                  <span className="font-medium text-gray-700">Status:</span>
                   <div>
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(selectedRequest.status)}`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedRequest.status)}`}>
                       {selectedRequest.status}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium">Request Date:</span>
-                  <div>{selectedRequest.requestDate}</div>
+                  <span className="font-medium text-gray-700">Request Date:</span>
+                  <div className="text-gray-900">{formatDate(selectedRequest.requestDate)}</div>
                 </div>
                 <div>
-                  <span className="font-medium">Contact:</span>
-                  <div>{selectedRequest.contactPhone}</div>
+                  <span className="font-medium text-gray-700">Contact:</span>
+                  <div className="text-gray-900">{selectedRequest.contactPhone}</div>
                 </div>
               </div>
               <div>
-                <span className="font-medium">Notes:</span>
-                <div className="mt-1 p-2 bg-gray-50 rounded text-sm">{selectedRequest.notes}</div>
+                <span className="font-medium text-gray-700">Notes:</span>
+                <div className="mt-1 p-3 bg-gray-50 rounded-md text-sm text-gray-900 border">{selectedRequest.notes}</div>
               </div>
             </div>
             <div className="flex gap-2 mt-6">
@@ -552,7 +559,7 @@ const DonationRequestsManager = () => {
                       handleApprove(selectedRequest.id);
                       setSelectedRequest(null);
                     }}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                   >
                     Approve
                   </button>
@@ -561,7 +568,7 @@ const DonationRequestsManager = () => {
                       handleReject(selectedRequest.id);
                       setSelectedRequest(null);
                     }}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
                   >
                     Reject
                   </button>
@@ -569,7 +576,7 @@ const DonationRequestsManager = () => {
               )}
               <button 
                 onClick={() => setSelectedRequest(null)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
               >
                 Close
               </button>

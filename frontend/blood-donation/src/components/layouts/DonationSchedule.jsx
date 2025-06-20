@@ -27,17 +27,16 @@ const DonationSchedule = () => {
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
   const statuses = ['Scheduled', 'Completed', 'Cancelled'];
 
-  // Filter and search functionality
   const filteredSchedules = useMemo(() => {
     return donationSchedule.filter(schedule => {
       const matchesSearch = 
         schedule.donor.toLowerCase().includes(searchTerm.toLowerCase()) ||
         schedule.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
         schedule.bloodType.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesStatus = filterStatus === 'All' || schedule.status === filterStatus;
       const matchesBloodType = filterBloodType === 'All' || schedule.bloodType === filterBloodType;
-      
+
       return matchesSearch && matchesStatus && matchesBloodType;
     });
   }, [donationSchedule, searchTerm, filterStatus, filterBloodType]);
@@ -76,23 +75,19 @@ const DonationSchedule = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
     if (editingSchedule) {
-      // Update existing schedule
       setDonationSchedule(donationSchedule.map(schedule => 
         schedule.id === editingSchedule.id 
           ? { ...schedule, ...formData }
           : schedule
       ));
     } else {
-      // Add new schedule
       const newSchedule = {
         id: Math.max(...donationSchedule.map(s => s.id)) + 1,
         ...formData
       };
       setDonationSchedule([...donationSchedule, newSchedule]);
     }
-    
     setShowModal(false);
     setEditingSchedule(null);
   };
@@ -136,46 +131,40 @@ const DonationSchedule = () => {
         <div className="flex gap-2">
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center gap-2"
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
           >
-            <span>🔍</span>
             Filter
           </button>
           <button 
             onClick={handleExport}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center gap-2"
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
           >
-            <span>📥</span>
             Export Report
           </button>
           <button 
             onClick={handleAdd}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
           >
-            <span>➕</span>
-            Add New Schedule
+            Add Schedule
           </button>
         </div>
       </div>
 
-      {/* Search and Filter Section */}
       <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-4">
         <div className="flex flex-col gap-4">
           <div className="flex gap-4 items-center">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search by donor name, location, or blood type..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Search by donor name, location, or blood type..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            />
             <div className="text-sm text-gray-600">
               {filteredSchedules.length} of {donationSchedule.length} schedules
             </div>
           </div>
-          
+
           {showFilters && (
             <div className="flex gap-4 pt-4 border-t border-gray-200">
               <div>
@@ -208,16 +197,14 @@ const DonationSchedule = () => {
           )}
         </div>
       </div>
-      
-      {/* Table */}
+
       <div className="bg-white rounded-lg shadow-sm border border-pink-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-pink-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
@@ -229,17 +216,19 @@ const DonationSchedule = () => {
               {filteredSchedules.map((schedule) => (
                 <tr key={schedule.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{schedule.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.time}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex flex-col">
+                      <span>{schedule.date}</span>
+                      <span className="text-xs text-gray-500">{schedule.time}</span>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.location}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.donor}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">
-                      {schedule.bloodType}
-                    </span>
+                    <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">{schedule.bloodType}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(schedule.status)}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(schedule.status)}`}>
                       {schedule.status}
                     </span>
                   </td>
@@ -247,17 +236,15 @@ const DonationSchedule = () => {
                     <div className="flex gap-2">
                       <button 
                         onClick={() => handleEdit(schedule)}
-                        className="text-pink-600 hover:text-pink-900"
-                        title="Edit"
+                        className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-300"
                       >
-                        ✏️
+                        Edit
                       </button>
                       <button 
                         onClick={() => handleDelete(schedule.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete"
+                        className="bg-red-200 text-red-800 px-3 py-1 rounded hover:bg-red-300"
                       >
-                        🗑️
+                        Delete
                       </button>
                     </div>
                   </td>
@@ -265,7 +252,7 @@ const DonationSchedule = () => {
               ))}
             </tbody>
           </table>
-          
+
           {filteredSchedules.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               No schedules found matching your criteria.
@@ -274,14 +261,12 @@ const DonationSchedule = () => {
         </div>
       </div>
 
-      {/* Modal for Add/Edit */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">
               {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
             </h3>
-            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -293,7 +278,6 @@ const DonationSchedule = () => {
                   required
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
                 <input
@@ -304,7 +288,6 @@ const DonationSchedule = () => {
                   required
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input
@@ -312,11 +295,9 @@ const DonationSchedule = () => {
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  placeholder="Enter location"
                   required
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Donor Name</label>
                 <input
@@ -324,11 +305,9 @@ const DonationSchedule = () => {
                   value={formData.donor}
                   onChange={(e) => setFormData({...formData, donor: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  placeholder="Enter donor name"
                   required
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
                 <select
@@ -341,7 +320,6 @@ const DonationSchedule = () => {
                   ))}
                 </select>
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
@@ -354,7 +332,6 @@ const DonationSchedule = () => {
                   ))}
                 </select>
               </div>
-              
               <div className="flex gap-2 pt-4">
                 <button
                   type="submit"

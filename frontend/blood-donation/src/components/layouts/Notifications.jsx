@@ -155,7 +155,6 @@ const Notifications = () => {
     );
   };
 
-  // Filter notifications by type
   const filteredNotifications = notifications.filter(notification => {
     if (activeFilter === 'all') return true;
     return notification.type === activeFilter;
@@ -163,7 +162,6 @@ const Notifications = () => {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  // Configuration for filter buttons
   const filterButtons = [
     { key: 'all', label: 'All', style: 'bg-white hover:bg-gray-50 text-gray-700 border' },
     { key: 'urgent', label: 'Urgent', style: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' },
@@ -173,7 +171,7 @@ const Notifications = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-24 ml-72">
+    <div className="min-h-screen p-24 ml-72">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
