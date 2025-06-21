@@ -8,7 +8,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
     { id: 'donation-schedule', label: 'Blood donation schedule management', icon: Calendar, color: 'text-blue-600' },
     { id: 'donation-requests', label: 'Blood Request Management', icon: FileText, color: 'text-purple-600', },
     { id: 'inventory', label: 'Blood warehouse management', icon: Package, color: 'text-green-600' },
-    { id: 'profile', label: 'Profile management', icon: User, color: 'text-orange-600' },
+    { id: 'profile', label: 'Profile Managements', icon: User, color: 'text-orange-600' },
     { id: 'notifications', label: 'Notifications', icon: Bell, color: 'text-yellow-600', }
   ];
 
@@ -26,7 +26,6 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="py-4 overflow-y-auto h-[calc(100vh-180px)]">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
@@ -47,7 +46,6 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
                   <span className="font-medium text-sm">{item.label}</span>
                 </div>
                 
-                {/* Badge */}
                 {item.badge && (
                   <div className={`${
                     item.id === 'blood-requests' 
@@ -58,7 +56,6 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
                   </div>
                 )}
                 
-                {/* Arrow for active item */}
                 {isActive && (
                   <ChevronRight className="h-4 w-4 text-pink-500 ml-2" />
                 )}
@@ -68,7 +65,6 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
         })}
       </div>
 
-      {/* Footer */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-50 to-transparent">
         <div className="bg-pink-500 rounded-lg p-3 text-white text-center">
           <Heart className="h-4 w-4 mx-auto mb-1" fill="currentColor" />
