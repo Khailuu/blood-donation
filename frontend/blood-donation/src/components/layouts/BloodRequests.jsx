@@ -34,10 +34,10 @@ const BloodRequests = () => {
     <div className="space-y-6 p-20 min-h-screen ml-64">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Create Emergency Blood Request</h2>
-        <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
+        {/* <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
           <Plus className="h-4 w-4" />
           New Request
-        </button>
+        </button> */}
       </div>
 
       <div className="bg-white rounded-lg p-6 shadow-sm border border-pink-100">
