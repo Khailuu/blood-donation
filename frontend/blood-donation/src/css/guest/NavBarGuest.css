@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  
+}
+
+.navbar-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.header {
+  background-color: #fff ;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 1px 2px 10px 10px rgba(10, 10, 10, 0.116);
+  border-radius: 50px;
+  width: 1200px;
+  height: 90px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  height: 36px;
+}
+
+.ant-menu {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  font-size: 20px;
+  flex-grow: 1;
+  justify-content: center;
+  display: flex;
+
+}
+
+.ant-menu-item {
+  margin: 0 16px;
+}
+
+.ant-menu-item:hover {
+  color: #bd0026 !important;
+}
+
+.ant-menu-item-selected {
+  color: #bd0026 !important;
+}
+
+.ant-menu-item::after,
+.ant-menu-item-selected::after {
+  border-bottom: none !important;
+}
+
+.ant-menu-item-selected::after {
+  border-bottom: 3px solid #bd0026 !important;
+  content: "";
+  display: block;
+  margin: 0 auto;
+  width: 24px;
+  border-radius: 3px;
+}
+
+.btn-login:hover {
+  background-color: #aa112f !important;
+  color: white !important;
+}
