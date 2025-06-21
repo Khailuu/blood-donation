@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Heart, User, Camera, Save, Edit3, Mail, Phone, MapPin, Calendar, Shield, Award, Clock, ArrowLeft, Bell } from 'lucide-react';
+import { Heart, User, Camera, Save, Edit3, Mail, Phone, MapPin, Calendar, Shield, Award, Clock } from 'lucide-react';
 
-const ProfilePage = ({ onBackClick }) => {
+const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: 'Nguyễn Thị Hotaru',
@@ -48,45 +48,8 @@ const ProfilePage = ({ onBackClick }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-    
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button 
-                onClick={onBackClick}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                  <Heart className="h-5 w-5 text-white" fill="currentColor" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Blood Bank</h1>
-                  <p className="text-sm text-gray-500">Quản lý hiến máu</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Bell className="h-5 w-5 text-gray-500" />
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">H</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Hotaru</p>
-                  <p className="text-xs text-gray-500">Nhân viên</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-12 py-24">
         
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
