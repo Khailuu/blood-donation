@@ -8,8 +8,7 @@ import Profile from '../layouts/Profile';
 import Notifications from '../layouts/Notifications';
 import Navbar from '../ui/Navbar';
 import Sidebar from '../ui/Sidebar';
-
-
+import ProfilePage from '../layouts/ProfilePage';
 
 const StaffDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -30,6 +29,8 @@ const StaffDashboard = () => {
         return <Profile />;
       case 'notifications':
         return <Notifications />;
+      case 'settings':
+        return <ProfilePage/>
       default:
         return <Dashboard />;
     }
@@ -37,9 +38,15 @@ const StaffDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
-      <Navbar/>
+      <Navbar 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection} 
+      />
       <div className="flex">
-        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <Sidebar 
+          activeSection={activeSection} 
+          setActiveSection={setActiveSection} 
+        />
         <div className="flex-1 p-6">
           {renderContent()}
         </div>
