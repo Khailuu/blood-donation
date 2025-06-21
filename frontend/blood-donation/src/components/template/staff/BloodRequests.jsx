@@ -31,10 +31,10 @@ const BloodRequests = () => {
   };
 
   return (
-    <div className="space-y-6 p-20 bg-gray-50 min-h-screen ml-64">
+    <div className="space-y-6 p-20 min-h-screen ml-64">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Create Emergency Blood Request</h2>
-        <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
+        <button className="bg-[#bd0026] text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
           <Plus className="h-4 w-4" />
           New Request
         </button>
@@ -101,14 +101,7 @@ const BloodRequests = () => {
               placeholder="Patient details, required blood amount, time needed..."
             ></textarea>
           </div>
-          <div className="flex gap-4">
-            <button 
-              onClick={handleSubmit}
-              className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
-            >
-              <Save className="h-4 w-4" />
-              Submit Request
-            </button>
+          <div className="flex justify-end gap-4">
             <button 
               type="button" 
               onClick={() => setFormData({
@@ -121,6 +114,13 @@ const BloodRequests = () => {
               className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
             >
               Cancel
+            </button>
+            <button 
+              onClick={handleSubmit}
+              className="bg-[#bd0026] text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
+            >
+              <Save className="h-4 w-4" />
+              Submit Request
             </button>
           </div>
         </div>

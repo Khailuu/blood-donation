@@ -10,12 +10,15 @@ import {
   Divider,
   message,
   Checkbox,
+  Spin,
+  Modal,
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import "../css/SignInPage.css";
 import { FacebookIcon, GoogleIcon } from "../assets/CutomIcons";
 import ForgotPassword from "./ForgotPassword";
 import { authService } from "../services/authService";
+import { HeartSpin } from "../components/ui/common/HeartSpin";
 
 const { Title, Text } = Typography;
 
@@ -25,6 +28,7 @@ export const SignInPage = () => {
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [form] = Form.useForm();
+  const [showSuccessLoading, setShowSuccessLoading] = useState(false);
 
   // Load saved email if "Remember me" was checked previously
   useEffect(() => {
@@ -43,8 +47,6 @@ export const SignInPage = () => {
     setLoading(true);
     try {
       const { email, password } = values;
-
-      // Save email if "Remember me" is checked
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", email);
       } else {
@@ -52,26 +54,28 @@ export const SignInPage = () => {
       }
 
       await authService.login(email, password, rememberMe);
+      setShowSuccessLoading(true);
 
       const user = authService.getCurrentUser();
-      console.log({ user });
 
       let role = user?.role;
       if (role === 1) role = "admin";
       else if (role === 2) role = "staff";
       else if (role === 3) role = "member";
 
-      if (role === "admin") {
-        navigate("/app/admin");
-      } else if (role === "staff") {
-        navigate("/app/staff");
-      } else {
-        navigate("/app/member");
-      }
-
-      message.success("Login successful!");
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/app/admin");
+        } else if (role === "staff") {
+          navigate("/app/staff");
+        } else {
+          navigate("/app/member");
+        }
+      }, 2000);
     } catch (error) {
-      message.error(error.message || "Login failed");
+      message.error(
+        error.message || "Login failed. Please check your email and password."
+      );
     } finally {
       setLoading(false);
     }
@@ -79,6 +83,46 @@ export const SignInPage = () => {
 
   return (
     <div className="signin-container">
+      <Modal
+        open={showSuccessLoading}
+        footer={null}
+        closable={false}
+        width="100%"
+        style={{
+          top: 0,
+          maxWidth: "100%",
+          padding: 0,
+          margin: 0,
+          height: "100vh",
+        }}
+        bodyStyle={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          padding: 0,
+          margin: 0,
+          backgroundColor: "#f8cfd3"
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <Spin indicator={<HeartSpin />} style={{ marginBottom: 24 }} />
+          <Title
+            level={2}
+            style={{
+              color: "#bd0026",
+              marginBottom: 8,
+              fontFamily: "Oi",
+              fontWeight: "normal",
+            }}
+          >
+            Welcome to Hemora
+          </Title>
+        </div>
+        ;
+      </Modal>
+
       <Form form={form} className="loginForm" onFinish={onFinish}>
         <img
           className="loginTitle"
@@ -133,7 +177,7 @@ export const SignInPage = () => {
           <Col xs={1}></Col>
           <Col xs={16}>
             <Form.Item
-              variant='outlined'
+              variant="outlined"
               name="password"
               rules={[
                 { required: true, message: "Please input your password!" },

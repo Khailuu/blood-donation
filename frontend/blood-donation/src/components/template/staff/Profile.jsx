@@ -142,16 +142,15 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-20 ml-72">
+    <div className="min-h-screen p-20 ml-72">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">User Profile Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Manager</h1>
           <div className="text-sm text-gray-600">
             Total: {filteredUsers.length} users
           </div>
         </div>
-
-        {/* Search and Filter */}
+        
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">

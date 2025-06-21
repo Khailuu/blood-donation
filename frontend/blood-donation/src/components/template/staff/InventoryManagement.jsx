@@ -119,7 +119,6 @@ const InventoryManagement = () => {
   const [selectedItem, setSelectedItem] = useState(null); 
   const [viewMode, setViewMode] = useState('grid'); 
 
-  // Form data for add/edit
   const [formData, setFormData] = useState({
     bloodType: '',
     quantity: '',

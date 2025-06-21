@@ -22,6 +22,7 @@ import ab_minus from "./img/AB-minus-type.png"
 import a_plus from "./img/A-plus-type.png"
 import type from "./img/types.png"
 import blood_used from "./img/blood-used.png"
+import loading_animation from "./img/loading.webm"
 
 export {
   banner1,
@@ -47,6 +48,6 @@ export {
   ab_minus,
   a_plus,
   type,
-  blood_used
+  blood_used,
+  loading_animation
 };
-// This file imports various assets used in the application, such as banners, images, and logos.

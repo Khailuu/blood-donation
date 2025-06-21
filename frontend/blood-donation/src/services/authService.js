@@ -8,7 +8,7 @@ export const authService = {
   async login(email, password) {
     try {
       const response = await api.post("/api/auth/login", { email, password });
-      const { accessToken, refreshToken, role } = response.data.data;
+      const { accessToken, refreshToken, role, name } = response.data.data;
 
       // Map role number to string
       let roleStr = "member";
@@ -18,7 +18,14 @@ export const authService = {
       // Lưu vào localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify({ role: roleStr }));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          role: roleStr,
+          email,
+          name: name || email.split("@")[0],
+        })
+      );
 
       return response.data;
     } catch (error) {

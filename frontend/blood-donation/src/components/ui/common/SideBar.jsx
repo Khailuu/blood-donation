@@ -1,4 +1,3 @@
-
 import {
   Heart,
   Calendar,
@@ -9,8 +8,12 @@ import {
   Plus,
   ChevronRight,
 } from "lucide-react";
+import { banner2 } from "../../../assets";
 
-export const SideBar = ({ activeSection, setActiveSection }) => {
+export const SideBar = ({
+  activeSection,
+  setActiveSection
+}) => {
   const sidebarItems = [
     {
       id: "dashboard",
@@ -57,21 +60,9 @@ export const SideBar = ({ activeSection, setActiveSection }) => {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-lg fixed top-20 left-0 bottom-0 border-r border-gray-200 z-40">
-      <div className="p-4 text-white" style={{backgroundColor: "#ed6d8b"}}>
-        <div className="flex items-center space-x-3">
-          <div className="bg-white/20 p-2 rounded-lg">
-            <Heart className="h-5 w-5 text-white" fill="currentColor" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-sm">Bảng điều khiển</h3>
-            <p className="text-pink-100 text-xs">Quản lý hiến máu</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="py-4 overflow-y-auto h-[calc(100vh-180px)] ">
+    <div className="w-64 bg-white shadow-lg fixed top-[85px] left-0 bottom-0 border-r border-gray-200 z-40">
+      
+      <div className="py-4 overflow-y-auto h-[calc(100vh-180px)] mt-3">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
@@ -120,10 +111,12 @@ export const SideBar = ({ activeSection, setActiveSection }) => {
 
       {/* Footer */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-50 to-transparent">
-        <div className=" rounded-lg p-3 text-white text-center" style={{backgroundColor: "#ed6d8b"}}>
-          <Heart className="h-4 w-4 mx-auto mb-1" fill="currentColor" />
-          <p className="text-xs font-medium">Cứu sống là niềm vui</p>
-        </div>
+          <img
+            className="loginTitle"
+            src={banner2}
+            alt="Blood Donation Logo"
+            style={{ marginBottom: 0 }}
+          />
       </div>
     </div>
   );
