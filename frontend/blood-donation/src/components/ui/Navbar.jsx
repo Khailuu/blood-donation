@@ -6,7 +6,6 @@ const Navbar = () => {
     <nav className="bg-gradient-to-r from-pink-50 to-rose-50 shadow-lg border-b-2 border-pink-200 fixed top-0 left-0 right-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
           <div className="flex items-center space-x-3">
             <div className="bg-pink-600 p-2 rounded-xl shadow-md">
               <Heart className="h-8 w-8 text-white" fill="currentColor" />

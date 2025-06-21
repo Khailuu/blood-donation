@@ -76,7 +76,6 @@ const DonationRequestsManager = () => {
   const urgencyLevels = ['Normal', 'Urgent', 'Critical'];
   const hospitals = ['Cho Ray Hospital', '115 Hospital', 'FV Hospital', 'Vinmec Hospital', 'Binh Dan Hospital'];
 
-  // Filter functionality
   const filteredRequests = useMemo(() => {
     return donationRequests.filter(request => {
       return (
@@ -296,7 +295,7 @@ const DonationRequestsManager = () => {
                 ))}
               </select>
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Hospital</label>
               <input 
                 type="text"
@@ -305,7 +304,7 @@ const DonationRequestsManager = () => {
                 placeholder="Search hospital..."
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               />
-            </div>
+            </div> */}
           </div>
           <div className="mt-4 flex gap-2 items-center">
             <button 
@@ -330,7 +329,7 @@ const DonationRequestsManager = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th> */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -348,7 +347,7 @@ const DonationRequestsManager = () => {
                       {request.bloodType}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.hospital}</td>
+                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.hospital}</td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(request.urgency)}`}>
                       {request.urgency}
