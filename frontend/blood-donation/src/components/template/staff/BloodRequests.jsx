@@ -34,7 +34,7 @@ const BloodRequests = () => {
     <div className="space-y-6 p-20 min-h-screen ml-64">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Create Emergency Blood Request</h2>
-        <button className="bg-[#bd0026] text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
+        <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
           <Plus className="h-4 w-4" />
           New Request
         </button>
@@ -117,7 +117,7 @@ const BloodRequests = () => {
             </button>
             <button 
               onClick={handleSubmit}
-              className="bg-[#bd0026] text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
+              className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
             >
               <Save className="h-4 w-4" />
               Submit Request
