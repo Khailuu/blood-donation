@@ -14,6 +14,13 @@ import RoleRoute from "../components/layouts/RoleRoute";
 import { AuthLayout } from "../components/layouts/AuthLayout";
 import { SignInPage } from "../pages/SignInPage";
 import { SignUpPage } from "../pages/SignUpPage";
+import Dashboard from "../components/template/staff/Dashboard";
+import BloodRequests from "../components/template/staff/BloodRequests";
+import DonationSchedule from "../components/template/staff/DonationSchedule";
+import DonationRequestsManager from "../components/template/staff/DonationRequestsManager";
+import InventoryManagement from "../components/template/staff/InventoryManagement";
+import Notifications from "../components/template/staff/Notifications";
+import Profile from "../components/template/staff/Profile";
 
 const router = [
   {
@@ -42,6 +49,7 @@ const router = [
       </ProtectedRoute>
     ),
     children: [
+      
       { path: "member", element: <MemberPage /> },
       {
         path: "staff",
@@ -50,6 +58,16 @@ const router = [
             <StaffDashboard />
           </RoleRoute>
         ),
+        children: [
+          { path: "dashboard", element: <Dashboard /> },
+          { path: "blood-requests", element: <BloodRequests /> },
+          { path: "donation-schedule", element: <DonationSchedule /> },
+          { path: "donation-requests", element: <DonationRequestsManager /> },
+          { path: "inventory", element: <InventoryManagement /> },
+          { path: "profile", element: <Profile /> },
+          { path: "notifications", element: <Notifications /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+        ]
       },
       {
         path: "admin",

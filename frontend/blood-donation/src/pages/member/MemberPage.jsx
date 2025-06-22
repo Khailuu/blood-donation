@@ -1,7 +1,14 @@
-import React from 'react'
+import React from "react";
+import { BannerMember } from "../../components/template/member/home/BannerMember";
+import {DoubtsSection} from '../../components/template/guest/home/DoubtsSection'
+import { DonateSpace } from "../../components/template/member/home/DonateSpace";
 
 export const MemberPage = () => {
   return (
-    <div>MemberPage</div>
-  )
-}
+    <>
+      <BannerMember />
+      <DonateSpace/>
+      <DoubtsSection />
+    </>
+  );
+};

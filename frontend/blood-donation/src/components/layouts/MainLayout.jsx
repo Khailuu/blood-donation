@@ -12,7 +12,7 @@ export const MainLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <HeaderComponent />
-      <div className="flex-1 sm:w-[90%] w-[90%] mx-auto md:w-[90%] iphone-6:mx-auto iphone-6-plus:mx-auto iphone-6:w-[90%] iphone-6-plus:w-[90%]">
+      <div className="flex-1">
         <Outlet />
       </div>
       {role !== "staff" && role !== "admin" && <FooterComponent />}

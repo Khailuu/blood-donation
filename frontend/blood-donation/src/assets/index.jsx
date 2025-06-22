@@ -23,6 +23,8 @@ import a_plus from "./img/A-plus-type.png"
 import type from "./img/types.png"
 import blood_used from "./img/blood-used.png"
 import loading_animation from "./img/loading.webm"
+import blood_bag from "./img/blood-bag.svg"
+import plasma_bag from "./img/plasma-bag.png"
 
 export {
   banner1,
@@ -49,5 +51,7 @@ export {
   a_plus,
   type,
   blood_used,
-  loading_animation
+  loading_animation,
+  blood_bag,
+  plasma_bag
 };

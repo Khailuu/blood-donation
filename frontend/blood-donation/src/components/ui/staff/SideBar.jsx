@@ -9,50 +9,57 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { banner2 } from "../../../assets";
+import { Link } from "react-router-dom";
 
 export const SideBar = ({
-  activeSection,
-  setActiveSection
+  activeSection
 }) => {
   const sidebarItems = [
     {
       id: "dashboard",
+      path: "/app/staff/dashboard",
       label: "Dashboard",
       icon: Heart,
       color: "text-pink-600",
     },
     {
       id: "blood-requests",
+      path: "/app/staff/blood-requests",
       label: "Urgent Request",
       icon: Plus,
       color: "text-red-600",
     },
     {
       id: "donation-schedule",
+      path: "/app/staff/donation-schedule",
       label: "Donation Schedule",
       icon: Calendar,
       color: "text-blue-600",
     },
     {
       id: "donation-requests",
+      path: "/app/staff/donation-requests",
       label: "Donation Request",
       icon: FileText,
       color: "text-purple-600",
     },
     {
       id: "inventory",
+      path: "/app/staff/inventory",
       label: "Blood Inventory",
       icon: Package,
       color: "text-green-600",
     },
     {
       id: "profile",
+      path: "/app/staff/profile",
       label: "Profile",
       icon: User,
       color: "text-orange-600",
     },
     {
       id: "notifications",
+      path: "/app/staff/notifications",
       label: "Notifications",
       icon: Bell,
       color: "text-yellow-600",
@@ -69,8 +76,8 @@ export const SideBar = ({
 
           return (
             <div key={item.id} className="px-4 mb-1">
-              <button
-                onClick={() => setActiveSection(item.id)}
+              <Link 
+                to={item.path} 
                 className={`w-full flex items-center px-3 py-3 rounded-lg text-left transition-all duration-200 group ${
                   isActive
                     ? "bg-pink-50 text-[#bd0026] border-r-4 border-[#bd0026]"
@@ -103,7 +110,7 @@ export const SideBar = ({
                 {isActive && (
                   <ChevronRight className="h-4 w-4 text-[#bd0026] ml-2" />
                 )}
-              </button>
+              </Link>
             </div>
           );
         })}

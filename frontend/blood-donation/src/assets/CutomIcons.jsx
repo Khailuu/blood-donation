@@ -115,6 +115,13 @@ export function GoogleIcon() {
         />
       </svg>
     </SvgIcon>
-
   );
 }
+
+export const BloodBagIcon = () => (
+  <SvgIcon>
+    <svg width="100" height="100" viewBox="0 0 100 100" xmlns="./img/blood-bag.svg">
+      <path d="..." fill="#f6d208" />
+    </svg>
+  </SvgIcon>
+);

@@ -19,6 +19,7 @@ const menuItemsMember = [
   { label: "Donate", key: "donate", path: "/donate" },
   { label: "Schedule", key: "schedule", path: "/schedule" },
   { label: "Blog", key: "blog", path: "/blog" },
+  { label: "FAQ", key: "faq", path: "/faq" },
 ];
 
 const menuItemsAdmin = [
