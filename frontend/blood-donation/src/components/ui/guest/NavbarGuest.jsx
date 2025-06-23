@@ -38,39 +38,33 @@ export const NavbarGuest = () => {
         />
 
         <div className="auth-section">
-          <Button
-            className="btn-login"
-            type="primary"
-            style={{
-              backgroundColor: "#bd0026",
-              borderColor: "#bd0026",
-              color: "white",
-              marginRight: 12,
-              borderRadius: "50px",
-              width: "100px",
-              height: "40px",
-              fontWeight: "bold",
-              transition: "all 0.3s ease",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "scale(0.95)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <Link
-              to="/signin"
+          <Link to="/signin" style={{ textDecoration: "none" }}>
+            <Button
+              className="btn-login"
+              type="primary"
               style={{
+                backgroundColor: "#bd0026",
+                borderColor: "#bd0026",
                 color: "white",
+                marginRight: 12,
+                borderRadius: "50px",
+                width: "100px",
+                height: "40px",
+                fontWeight: "bold",
+                transition: "all 0.3s ease",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 fontSize: "15px",
-                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = "scale(0.95)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
               }}
             >
               Login
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

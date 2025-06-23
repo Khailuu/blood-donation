@@ -21,6 +21,12 @@ import DonationRequestsManager from "../components/template/staff/DonationReques
 import InventoryManagement from "../components/template/staff/InventoryManagement";
 import Notifications from "../components/template/staff/Notifications";
 import Profile from "../components/template/staff/Profile";
+import UpdateProfile from "../components/template/staff/UpdateProfile";
+import { MemberDonate } from "../pages/member/MemberDonate";
+
+import { MemberHomePage } from "../pages/member/MemberHomePage";
+import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
+import { MemberSchedule } from "../pages/member/MemberSchedule";
 
 const router = [
   {
@@ -49,8 +55,22 @@ const router = [
       </ProtectedRoute>
     ),
     children: [
-      
-      { path: "member", element: <MemberPage /> },
+      {
+        path: "member",
+        element: (
+          <RoleRoute allowedRoles={["member"]}>
+            <MemberPage />,
+          </RoleRoute>
+        ),
+        children: [
+        { index: true, element: <Navigate to="home" replace /> },
+        { path: "home", element: <MemberHomePage /> },
+        { path: "donate", element: <MemberDonate /> },
+        { path: "schedule", element: <MemberSchedule /> },
+        { path: "faq", element: <DoubtsSection /> },
+      ]
+      },
+
       {
         path: "staff",
         element: (
@@ -66,8 +86,9 @@ const router = [
           { path: "inventory", element: <InventoryManagement /> },
           { path: "profile", element: <Profile /> },
           { path: "notifications", element: <Notifications /> },
+          { path: "update-profile", element: <UpdateProfile /> },
           { index: true, element: <Navigate to="dashboard" replace /> },
-        ]
+        ],
       },
       {
         path: "admin",

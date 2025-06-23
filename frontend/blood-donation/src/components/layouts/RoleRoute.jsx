@@ -7,7 +7,6 @@ const RoleRoute = ({ children, allowedRoles }) => {
   if (!allowedRoles.includes(user?.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
-  
   return children;
 };
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, User, Camera, Save, Edit3, Mail, Phone, MapPin, Calendar, Shield, Award, Clock } from 'lucide-react';
 
-const ProfilePage = () => {
+const UpdateProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: 'Nguyễn Thị Hotaru',
@@ -48,7 +48,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" >
       <div className="max-w-7xl mx-auto px-12 py-24">
         
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
@@ -379,4 +379,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default UpdateProfile;

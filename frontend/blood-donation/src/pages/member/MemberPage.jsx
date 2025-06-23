@@ -1,14 +1,11 @@
-import React from "react";
-import { BannerMember } from "../../components/template/member/home/BannerMember";
-import {DoubtsSection} from '../../components/template/guest/home/DoubtsSection'
-import { DonateSpace } from "../../components/template/member/home/DonateSpace";
+import { NavbarMember } from "../../components/ui/member/NavbarMember";
+import { Outlet } from "react-router-dom";
+import { FooterComponent } from "../../components/ui/common/FooterComponent";
 
 export const MemberPage = () => {
   return (
-    <>
-      <BannerMember />
-      <DonateSpace/>
-      <DoubtsSection />
-    </>
+    <div className="">
+      <Outlet />
+    </div>
   );
 };

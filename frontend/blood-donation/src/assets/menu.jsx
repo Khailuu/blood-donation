@@ -15,11 +15,11 @@ const menuItems = [
 ];
 
 const menuItemsMember = [
-  { label: "Home", key: "home", path: "/" },
-  { label: "Donate", key: "donate", path: "/donate" },
-  { label: "Schedule", key: "schedule", path: "/schedule" },
-  { label: "Blog", key: "blog", path: "/blog" },
-  { label: "FAQ", key: "faq", path: "/faq" },
+  { label: "Home", key: "home", path: "/app/member/home" },
+  { label: "Donate", key: "donate", path: "/app/member/donate" },
+  { label: "Schedule", key: "schedule", path: "/app/member/schedule" },
+  { label: "Blog", key: "blog", path: "app/member/blog" }, 
+  { label: "FAQ", key: "faq", path: "/app/member/faq" },
 ];
 
 const menuItemsAdmin = [

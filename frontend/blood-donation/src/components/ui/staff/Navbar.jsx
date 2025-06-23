@@ -2,15 +2,15 @@ import React from "react";
 import { Heart, User, LogOut, Settings } from "lucide-react";
 import { Typography } from "antd";
 import { authService } from "../../../services/authService";
+import { Navigate, useNavigate } from "react-router-dom";
 const {Title} = Typography;
 
-export const Navbar = ({ setActiveSection = () => {} }) => {
+export const Navbar = () => {
   const currentUser = authService.getCurrentUser();
+  const navigate = useNavigate();
 
-    const handleProfileClick = () => {
-    if (setActiveSection) {
-      setActiveSection('settings');
-    }
+const handleProfileClick = () => {
+    navigate('/app/staff/update-profile'); 
   };
   
   return (
@@ -41,7 +41,7 @@ export const Navbar = ({ setActiveSection = () => {} }) => {
                   <span className="text-sm font-semibold text-gray-800">
                     {currentUser.name}
                   </span>
-                  <span className="text-xs text-[#bd0026] ">Staff</span>
+                  <span className="text-xs text-[#bd0026]" style={{fontWeight: 600}}>{currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)}</span>
                 </div>
               </div>
 

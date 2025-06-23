@@ -68,7 +68,6 @@ export const SideBar = ({
 
   return (
     <div className="w-64 bg-white shadow-lg fixed top-[85px] left-0 bottom-0 border-r border-gray-200 z-40">
-      
       <div className="py-4 overflow-y-auto h-[calc(100vh-180px)] mt-3">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
@@ -93,7 +92,6 @@ export const SideBar = ({
                   <span className="font-bold text-sm">{item.label}</span>
                 </div>
 
-                {/* Badge */}
                 {item.badge && (
                   <div
                     className={`${
@@ -106,7 +104,6 @@ export const SideBar = ({
                   </div>
                 )}
 
-                {/* Arrow for active item */}
                 {isActive && (
                   <ChevronRight className="h-4 w-4 text-[#bd0026] ml-2" />
                 )}
@@ -116,7 +113,6 @@ export const SideBar = ({
         })}
       </div>
 
-      {/* Footer */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-50 to-transparent">
           <img
             className="loginTitle"
