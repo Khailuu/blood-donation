@@ -21,7 +21,6 @@ public class RegisterCommandHandler(
         }
 
         var hashedPassword = passwordHasher.Hash(command.Password);
-
         var user = new User
         {
             UserId = Guid.NewGuid(),
