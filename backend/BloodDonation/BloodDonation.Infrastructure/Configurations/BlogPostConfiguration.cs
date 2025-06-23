@@ -20,10 +20,10 @@ public class BlogPostConfiguration : IEntityTypeConfiguration<BlogPost>
 
         builder.Property(x => x.PublishedDate)
             .IsRequired();
-        
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
+
+        builder.HasOne(p => p.User)
+            .WithMany(u => u.BlogPosts)
+            .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

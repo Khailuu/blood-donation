@@ -21,7 +21,6 @@ public class RegisterCommandHandler(
         }
 
         var hashedPassword = passwordHasher.Hash(command.Password);
-
         var user = new User
         {
             UserId = Guid.NewGuid(),
@@ -32,7 +31,7 @@ public class RegisterCommandHandler(
             Gender = command.Gender,
             Address = command.Address,
             Phone = command.Phone,
-            Role = UserRole.BloodDonor,
+            Role = UserRole.Member,
             Status = UserStatus.Active,
             IsDonor = true,
             IsVerified = false

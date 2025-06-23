@@ -20,6 +20,16 @@ public class BloodTypeConfiguration : IEntityTypeConfiguration<BloodType>
         builder.Property(x => x.Description)
             .HasMaxLength(500);
         
+        builder.HasMany(x => x.CompatibleFrom)
+            .WithOne(x => x.FromBloodType)
+            .HasForeignKey(x => x.FromBloodTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.CompatibleTo)
+            .WithOne(x => x.ToBloodType)
+            .HasForeignKey(x => x.ToBloodTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
         builder.HasData(
             new BloodType
             {
