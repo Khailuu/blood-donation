@@ -25,7 +25,7 @@ public class BloodDonationController : ControllerBase
         _mediator = mediator;
     }
     
-    [Authorize]
+    // [Authorize]
     [HttpPost("blood-donation/create-request")]
     public async Task<IResult> CreateDonationRequest([FromBody] CreateDonationRequestCommand command, CancellationToken cancellationToken)
     {

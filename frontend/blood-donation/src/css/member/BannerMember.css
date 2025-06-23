@@ -1,0 +1,212 @@
+  .background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f7cbd3 0%, #f8d7df 100%);
+    overflow: hidden;
+    z-index: 0;
+    list-style: none;
+  }
+
+  .background li {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    filter: blur(5px);
+    opacity: 0.85;
+    animation-name: cloud-move;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  }
+
+  .background li::before,
+  .background li::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    filter: blur(5px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  }
+
+  @keyframes cloud-move {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(100vw + 500px));
+    }
+  }
+
+  /* Cloud variations */
+  .background li:nth-child(1) {
+    width: 180px;
+    height: 120px;
+    left: -200px;
+    top: 10%;
+    animation-duration: 80s;
+  }
+  .background li:nth-child(1)::before {
+    width: 100px;
+    height: 100px;
+    top: -40px;
+    left: 20px;
+  }
+  .background li:nth-child(1)::after {
+    width: 120px;
+    height: 120px;
+    top: -30px;
+    left: 80px;
+  }
+
+  .background li:nth-child(2) {
+    width: 250px;
+    height: 60px;
+    left: -300px;
+    top: 25%;
+    animation-duration: 120s;
+    opacity: 0.7;
+  }
+  .background li:nth-child(2)::before {
+    width: 80px;
+    height: 80px;
+    top: -20px;
+    left: 40px;
+  }
+
+  .background li:nth-child(3) {
+    width: 220px;
+    height: 100px;
+    left: -250px;
+    top: 40%;
+    animation-duration: 90s;
+  }
+  .background li:nth-child(3)::before {
+    width: 90px;
+    height: 90px;
+    top: -30px;
+    left: 30px;
+  }
+  .background li:nth-child(3)::after {
+    width: 110px;
+    height: 110px;
+    top: -40px;
+    left: 100px;
+  }
+
+  .background li:nth-child(4) {
+    width: 150px;
+    height: 80px;
+    left: -180px;
+    top: 60%;
+    animation-duration: 70s;
+  }
+  .background li:nth-child(4)::before {
+    width: 70px;
+    height: 70px;
+    top: -25px;
+    left: 20px;
+  }
+
+  .background li:nth-child(5) {
+    width: 300px;
+    height: 150px;
+    left: -350px;
+    top: 15%;
+    animation-duration: 150s;
+  }
+  .background li:nth-child(5)::before {
+    width: 120px;
+    height: 120px;
+    top: -50px;
+    left: 40px;
+  }
+  .background li:nth-child(5)::after {
+    width: 150px;
+    height: 150px;
+    top: -60px;
+    left: 120px;
+  }
+
+  .background li:nth-child(6) {
+    width: 200px;
+    height: 120px;
+    left: -220px;
+    top: 75%;
+    animation-duration: 100s;
+  }
+  .background li:nth-child(6)::before {
+    width: 100px;
+    height: 100px;
+    top: -40px;
+    left: 30px;
+  }
+
+  .background li:nth-child(7) {
+    width: 120px;
+    height: 180px;
+    left: -150px;
+    top: 30%;
+    animation-duration: 110s;
+  }
+  .background li:nth-child(7)::before {
+    width: 80px;
+    height: 80px;
+    top: 20px;
+    left: -20px;
+  }
+
+  .background li:nth-child(8) {
+    width: 120px;
+    height: 120px;
+    left: -150px;
+    top: 50%;
+    animation-duration: 60s;
+  }
+
+  .background li:nth-child(9) {
+    width: 180px;
+    height: 80px;
+    left: -200px;
+    top: 20%;
+    animation-duration: 50s;
+    opacity: 0.7;
+  }
+
+  .background li:nth-child(10) {
+    width: 240px;
+    height: 100px;
+    left: -260px;
+    top: 65%;
+    animation-duration: 130s;
+  }
+  .background li:nth-child(10)::before {
+    width: 100px;
+    height: 100px;
+    top: -30px;
+    left: 20px;
+  }
+
+  .background li:nth-child(11) {
+    width: 200px;
+    height: 100px;
+    left: -220px;
+    top: 35%;
+    animation-duration: 95s;
+    opacity: 0.9;
+    filter: blur(10px);
+  }
+
+  .background li:nth-child(12) {
+    width: 100px;
+    height: 60px;
+    left: -120px;
+    top: 85%;
+    animation-duration: 140s;
+    opacity: 0.6;
+  }

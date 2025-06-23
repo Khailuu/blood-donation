@@ -1,0 +1,94 @@
+.doubts-container {
+  width: 100%;
+  /* margin: 40px auto; */
+  padding: 30px;
+  background-color: #ffd8df;
+  /* border-radius: 12px; */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e53935;
+}
+
+.doubts-title {
+  text-align: center;
+  color: #bd0026;
+  margin-bottom: 30px;
+  font-size: 50px;
+  font-weight: 700;
+}
+
+.custom-accordion {
+  background: none;
+}
+
+.custom-accordion > .ant-collapse-item {
+  border-bottom: none;
+  margin-bottom: 16px;
+}
+
+.custom-accordion .ant-collapse-item {
+  background: #ffffff;
+  border-radius: 15px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+.custom-accordion .ant-collapse-header {
+  padding: 20px 25px !important;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.custom-accordion .ant-collapse-header:hover {
+  color: #e53935;
+}
+
+.custom-accordion .ant-collapse-content {
+  background: #ffffff;
+  border-radius: 0 0 15px 15px !important;
+  border-top: 1px solid #f0f0f0;
+}
+
+.custom-accordion .ant-collapse-content-box {
+  padding: 20px 25px !important;
+}
+
+.answer-content {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #555;
+  padding: 10px 0;
+}
+
+/* Hiệu ứng khi mở accordion */
+.custom-accordion .ant-collapse-item-active .ant-collapse-header {
+  color: #e53935;
+  background-color: #fff5f5;
+  border-radius: 15px 15px 0 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .doubts-container {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .doubts-title {
+    font-size: 26px;
+  }
+
+  .custom-accordion .ant-collapse-header {
+    font-size: 16px;
+    padding: 15px 20px !important;
+  }
+
+  .custom-accordion .ant-collapse-content-box {
+    padding: 15px 20px !important;
+  }
+}
