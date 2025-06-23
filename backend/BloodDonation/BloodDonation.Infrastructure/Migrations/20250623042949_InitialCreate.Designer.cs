@@ -3,72 +3,72 @@ using System;
 using BloodDonation.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace BloodDonation.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250618111022_RenameAmountAndAddComponentType")]
-    partial class RenameAmountAndAddComponentType
+    [Migration("20250623042949_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("dbo")
+                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "8.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("BloodDonation.Domain.BlogPost.BlogPost", b =>
                 {
                     b.Property<Guid>("PostId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("PublishedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("PostId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BlogPosts", "dbo");
+                    b.ToTable("BlogPosts", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodCompatibility", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ComponentType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("FromBloodTypeId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ToBloodTypeId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -76,85 +76,85 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("ToBloodTypeId");
 
-                    b.ToTable("BloodCompatibility", "dbo");
+                    b.ToTable("BloodCompatibility", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodStored", b =>
                 {
                     b.Property<Guid>("StoredId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("BloodTypeId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("StoredId");
 
                     b.HasIndex("BloodTypeId");
 
-                    b.ToTable("BloodStored", "dbo");
+                    b.ToTable("BloodStored", "public");
 
                     b.HasData(
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000001"),
                             BloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7040),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5060),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000002"),
                             BloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7040),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5060),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000003"),
                             BloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7040),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5060),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000004"),
                             BloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7050),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5060),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000005"),
                             BloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7050),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5060),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000006"),
                             BloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7050),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5070),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000007"),
                             BloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7050),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5070),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000008"),
                             BloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
-                            LastUpdated = new DateTime(2025, 6, 18, 11, 10, 22, 19, DateTimeKind.Utc).AddTicks(7050),
+                            LastUpdated = new DateTime(2025, 6, 23, 4, 29, 49, 88, DateTimeKind.Utc).AddTicks(5070),
                             Quantity = 0
                         });
                 });
@@ -163,24 +163,24 @@ namespace BloodDonation.Infrastructure.Migrations
                 {
                     b.Property<Guid>("BloodTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.HasKey("BloodTypeId");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BloodTypes", "dbo");
+                    b.ToTable("BloodTypes", "public");
 
                     b.HasData(
                         new
@@ -237,25 +237,25 @@ namespace BloodDonation.Infrastructure.Migrations
                 {
                     b.Property<Guid>("DonationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ConfirmedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("RequestId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("Completed");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("DonationId");
 
@@ -265,31 +265,31 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DonationsHistory", "dbo");
+                    b.ToTable("DonationsHistory", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Donations.DonationMatch", b =>
                 {
                     b.Property<Guid>("MatchId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ConfirmedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DonorId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("MatchedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("RequestId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("Pending");
 
                     b.HasKey("MatchId");
@@ -298,60 +298,57 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("RequestId");
 
-                    b.ToTable("DonationMatches", "dbo");
+                    b.ToTable("DonationMatches", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Donations.DonationRequest", b =>
                 {
                     b.Property<Guid>("RequestId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AmountBlood")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("BloodTypeId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ComponentType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("Deadline")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime?>("Deadline")
+                        .IsRequired()
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EmergencyContactName")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("EmergencyContactPhone")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<bool>("IsEmergency")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<string>("Note")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("RequestTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("Pending");
 
-                    b.Property<string>("UrgencyLevel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("RequestId");
 
@@ -359,24 +356,24 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DonationRequests", "dbo");
+                    b.ToTable("DonationRequests", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.QuestionForm.HealthAnswer", b =>
                 {
                     b.Property<Guid>("AnswerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Answer")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("FormId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("AnswerId");
 
@@ -384,35 +381,38 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("HealthAnswers", "dbo");
+                    b.ToTable("HealthAnswers", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.QuestionForm.HealthForm", b =>
                 {
                     b.Property<Guid>("FormId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("ApprovedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ApprovedByStaffName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<bool?>("IsApproved")
-                        .HasColumnType("bit");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Pending");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("FormId");
 
@@ -420,76 +420,76 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("HealthForms", "dbo");
+                    b.ToTable("HealthForms", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.QuestionForm.HealthQuestion", b =>
                 {
                     b.Property<Guid>("QuestionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsRequired")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("QuestionType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("QuestionId");
 
-                    b.ToTable("HealthQuestions", "dbo");
+                    b.ToTable("HealthQuestions", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Users.DonorInformation", b =>
                 {
                     b.Property<Guid>("DonorInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Height")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("LastChecked")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("MedicalStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
 
                     b.HasKey("DonorInfoId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("DonorInformation", "dbo");
+                    b.ToTable("DonorInformation", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Users.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -498,69 +498,69 @@ namespace BloodDonation.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", "dbo");
+                    b.ToTable("RefreshTokens", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("BloodType")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Gender")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool?>("IsDonor")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsVerified")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastDonationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("Active");
 
                     b.HasKey("UserId");
@@ -568,7 +568,7 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", "dbo");
+                    b.ToTable("Users", "public");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.BlogPost.BlogPost", b =>
