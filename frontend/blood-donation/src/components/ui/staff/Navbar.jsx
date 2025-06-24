@@ -42,7 +42,7 @@ export const Navbar = ({ setActiveSection = () => {} }) => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-gray-800">
-                    {currentUser.name}
+                    {currentUser?.name}
                   </span>
                   <span className="text-xs text-[#bd0026] ">Staff</span>
                 </div>

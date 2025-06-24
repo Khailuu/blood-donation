@@ -6,7 +6,6 @@ import DonatePage from "../pages/guest/DonatePage";
 import BlogPage from "../pages/guest/BlogPage";
 import ContactsPage from "../pages/guest/ContactsPage";
 
-import { AdminDashboard } from "../pages/admin/AdminDashboard";
 import { MemberPage } from "../pages/member/MemberPage";
 import { StaffDashboard } from "../pages/staff/StaffDashboard";
 import ProtectedRoute from "../components/layouts/ProtectedRoute";
@@ -27,6 +26,11 @@ import { MemberDonate } from "../pages/member/MemberDonate";
 import { MemberHomePage } from "../pages/member/MemberHomePage";
 import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
 import { MemberSchedule } from "../pages/member/MemberSchedule";
+import { AdminLayout } from "../components/layouts/AdminLayout";
+import { element } from "prop-types";
+import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
+import ManageUser from "../components/ui/admin/ManageUser";
+import { AdminDashboard } from "../components/ui/admin/AdminDashboard";
 
 const router = [
   {
@@ -63,18 +67,18 @@ const router = [
           </RoleRoute>
         ),
         children: [
-        { index: true, element: <Navigate to="home" replace /> },
-        { path: "home", element: <MemberHomePage /> },
-        { path: "donate", element: <MemberDonate /> },
-        { path: "schedule", element: <MemberSchedule /> },
-        { path: "faq", element: <DoubtsSection /> },
-      ]
+          { index: true, element: <Navigate to="home" replace /> },
+          { path: "home", element: <MemberHomePage /> },
+          { path: "donate", element: <MemberDonate /> },
+          { path: "schedule", element: <MemberSchedule /> },
+          { path: "faq", element: <DoubtsSection /> },
+        ],
       },
 
       {
         path: "staff",
         element: (
-          <RoleRoute allowedRoles={["staff", "admin"]}>
+          <RoleRoute allowedRoles={["staff"]}>
             <StaffDashboard />
           </RoleRoute>
         ),
@@ -90,17 +94,31 @@ const router = [
           { index: true, element: <Navigate to="dashboard" replace /> },
         ],
       },
-      {
-        path: "admin",
-        element: (
-          <RoleRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
-          </RoleRoute>
-        ),
-      },
     ],
   },
 
+  {
+    path: "admin",
+    element: (
+      <RoleRoute allowedRoles={["admin"]}>
+        <AdminLayout />
+      </RoleRoute>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "manage-blog",
+        element: <ManageBlogPage />,
+      },
+      {
+        path: "manage-user",
+        element: <ManageUser />,
+      },
+    ],
+  },
   { path: "*", element: <Navigate to="/" replace /> },
 ];
 
