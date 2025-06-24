@@ -34,13 +34,13 @@ const BloodRequests = () => {
     <div className="space-y-6 p-20 min-h-screen ml-64">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Create Emergency Blood Request</h2>
-        <button className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors">
+        <button className="bg-[#bd0026] text-white px-4 py-2 rounded-[50px] hover:bg-pink-700 flex items-center gap-2 transition-colors">
           <Plus className="h-4 w-4" />
           New Request
         </button>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-pink-100">
+      <div className="bg-white rounded-[50px] p-6 shadow-sm border border-pink-100">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -49,7 +49,7 @@ const BloodRequests = () => {
                 type="text" 
                 value={formData.patientName}
                 onChange={(e) => handleInputChange('patientName', e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
+                className="w-full p-3 border border-gray-300 rounded-[50px] focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
                 placeholder="Enter patient's full name"
               />
             </div>
@@ -58,7 +58,7 @@ const BloodRequests = () => {
               <select 
                 value={formData.bloodType}
                 onChange={(e) => handleInputChange('bloodType', e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                className="w-full p-3 border border-gray-300 rounded-[50px] focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
               >
                 <option>A+</option>
                 <option>A-</option>
@@ -76,7 +76,7 @@ const BloodRequests = () => {
                 type="text" 
                 value={formData.hospital}
                 onChange={(e) => handleInputChange('hospital', e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
+                className="w-full p-3 border border-gray-300 rounded-[50px] focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" 
                 placeholder="Enter hospital name"
               />
             </div>
@@ -85,7 +85,7 @@ const BloodRequests = () => {
               <select 
                 value={formData.urgency}
                 onChange={(e) => handleInputChange('urgency', e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                className="w-full p-3 border border-gray-300 rounded-[50px] focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
               >
                 <option>Urgent</option>
                 <option>Normal</option>
@@ -97,7 +97,7 @@ const BloodRequests = () => {
             <textarea 
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 h-24 transition-colors" 
+              className="w-full p-3 border border-gray-300 rounded-[50px] focus:ring-2 focus:ring-pink-500 focus:border-pink-500 h-24 transition-colors" 
               placeholder="Patient details, required blood amount, time needed..."
             ></textarea>
           </div>
@@ -111,13 +111,13 @@ const BloodRequests = () => {
                 urgency: 'Urgent',
                 notes: ''
               })}
-              className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+              className="bg-gray-200 text-gray-700 px-6 py-2 rounded-[50px] hover:bg-gray-300 transition-colors"
             >
               Cancel
             </button>
             <button 
               onClick={handleSubmit}
-              className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2 transition-colors"
+              className="bg-[#bd0026] text-white px-6 py-2 rounded-[50px] hover:bg-pink-700 flex items-center gap-2 transition-colors"
             >
               <Save className="h-4 w-4" />
               Submit Request

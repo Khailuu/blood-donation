@@ -7,7 +7,8 @@ import { BloodBagIcon } from "../../../../assets/CutomIcons";
 
 export const DonateSpace = () => {
   return (
-    <div className="" style={{ margin: "50px" }}>
+    <div className="" style={{ margin: "50px"}}>
+
       <Card
         style={{
           backgroundColor: "#f5f5f5",

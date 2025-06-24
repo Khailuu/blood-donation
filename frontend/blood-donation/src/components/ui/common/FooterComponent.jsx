@@ -27,7 +27,7 @@ export const FooterComponent = () => {
 
 
   return (
-    <Row style={{ backgroundColor: "#f5f5f5", padding: "40px 20px" }}>
+    <Row style={{ backgroundColor: "#fff", padding: "40px 20px" }}>
       <Col xs={24} md={12} style={{ padding: "0 30px" }}>
         <img src={hemora_logo} style={{width: '10%'}}/>
         <Paragraph style={{ color: "black", paddingTop: "20px" }}>

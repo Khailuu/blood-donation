@@ -29,7 +29,7 @@ export const NavbarMember = () => {
   return (
     <div
       className="navbar-wrapper"
-      style={{ borderBottom: "1px solid #ffebee" }}
+      style={{ borderBottom: "1px solid #ffebee", zIndex: 1 }}
     >
       <div
         className="header"

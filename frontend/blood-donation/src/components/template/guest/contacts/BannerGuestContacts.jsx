@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export const BannerGuestContacts = () => {
   return (
-    <Row style={{ height: "80vh", marginTop: "20px", border: "1px solid green"}}>
+    <Row style={{ height: "80vh", marginTop: "20px" }}>
       {/* Hình bên trái */}
       <Col xs={0} md={12} style={{ height: "100%" }}>
         <div
@@ -43,7 +43,7 @@ export const BannerGuestContacts = () => {
               fontFamily: "Oi",
             }}
           >
-            CONTACT 
+            CONTACT
           </h1>
           <h1
             style={{
@@ -61,42 +61,6 @@ export const BannerGuestContacts = () => {
             <br />
             <span style={{ fontWeight: "bold" }}>Book Now!</span>
           </p>
-        </div>
-
-        <div
-          className=""
-          style={{
-            display: "flex",
-            marginTop: "40px",
-          }}
-        >
-          <Button
-            className=""
-            style={{
-              height: "50px",
-              // backgroundColor: "#ffd8df",
-              color: "black",
-              borderRadius: "50px",
-              padding: "10px 20px",
-              fontWeight: "bold",
-              border: "1px solid black",
-              transition: "all 0.1s ease",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "scale(0.95)";
-              e.currentTarget.style.backgroundColor = "#a80022";
-              e.currentTarget.style.borderColor = "#a80022";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.backgroundColor = "white";
-              e.currentTarget.style.borderColor = "black";
-              e.currentTarget.style.color = "black";
-            }}
-          >
-            <Link>Register to donate blood</Link>
-          </Button>
         </div>
       </Col>
     </Row>

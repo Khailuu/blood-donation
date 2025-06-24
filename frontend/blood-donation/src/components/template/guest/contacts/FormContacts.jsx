@@ -13,10 +13,11 @@ export const FormContacts = () => {
         display: "flex",
         flexDirection: "column",
         margin: "0 auto",
-        padding: "24px",
-        backgroundColor: "#ffd8df",
-        borderRadius: "8px",
+        padding: "60px",
+        backgroundColor: "#fff",
+        borderRadius: "50px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        marginBottom: "40px",
       }}
     >
       <Title
@@ -53,13 +54,11 @@ export const FormContacts = () => {
       </Paragraph>
 
       <Row>
-        <Col md={14} style={{display: 'flex', alignItems: 'center'}}>
-          <Form form={form} layout="vertical" style={{width: '80%'}}>
+        <Col md={14} style={{ display: "flex", alignItems: "center" }}>
+          <Form form={form} layout="vertical" style={{ width: "80%" }}>
             <Title
-              level={4}
+              level={5}
               style={{
-                color: "#bd0026",
-                marginBottom: "24px",
                 fontFamily: "Raleway",
                 fontWeight: "bold",
               }}
@@ -70,9 +69,20 @@ export const FormContacts = () => {
             <Form.Item
               name="name"
               rules={[{ required: true, message: "Please input your name!" }]}
+              style={{borderRadius: "40px"}}
             >
               <Input placeholder="Your full name" size="large" />
             </Form.Item>
+
+            <Title
+              level={5}
+              style={{
+                fontFamily: "Raleway",
+                fontWeight: "bold",
+              }}
+            >
+              Email
+            </Title>
 
             <Form.Item
               name="email"
@@ -80,32 +90,27 @@ export const FormContacts = () => {
                 { required: true, message: "Please input your email!" },
                 { type: "email", message: "Please enter a valid email!" },
               ]}
+              
             >
               <Input placeholder="E-mail" size="large" />
             </Form.Item>
 
-            <Form.Item
-              name="interest"
-              rules={[{ required: true, message: "Please select an option!" }]}
+            <Title
+              level={5}
+              style={{
+                fontFamily: "Raleway",
+                fontWeight: "bold",
+              }}
             >
-              <Checkbox.Group style={{ width: "100%" }}>
-                <Checkbox
-                  value="donation"
-                  style={{ display: "block", marginBottom: "8px" }}
-                >
-                  What interests you most?
-                </Checkbox>
-                <Checkbox value="partner" style={{ display: "block" }}>
-                  Become a Partner with COMPANY
-                </Checkbox>
-              </Checkbox.Group>
-            </Form.Item>
+              Your Question for Hemora
+            </Title>
 
             <Form.Item
               name="message"
               rules={[
                 { required: true, message: "Please input your message!" },
               ]}
+              style={{borderRadius: "40px"}}
             >
               <Input.TextArea
                 placeholder="Message"
@@ -126,6 +131,12 @@ export const FormContacts = () => {
                   width: "100%",
                   fontWeight: "bold",
                 }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "scale(0.95)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
               >
                 Submit
               </Button>
@@ -133,7 +144,7 @@ export const FormContacts = () => {
           </Form>
         </Col>
         <Col md={10}>
-          <img src={requirement_donation} alt="" style={{width: '80%'}}/>
+          <img src={requirement_donation} alt="" style={{ width: "80%" }} />
         </Col>
       </Row>
     </div>

@@ -9,9 +9,9 @@ export const Process = () => {
     <>
       <div
         style={{
-          border: "1px solid purple",
           backgroundColor: "#a80022",
           padding: "40px",
+          borderRadius: "50px"
         }}
       >
         <div
@@ -76,8 +76,8 @@ export const Process = () => {
       <div
         style={{
           marginTop: "40px",
-          border: "1px solid green",
           padding: "20px",
+          backgroundColor: "#fff"
         }}
       >
         <Col style={{ padding: 20 }}>
@@ -112,7 +112,7 @@ export const Process = () => {
                   borderRadius: "50px",
                   height: "80%",
                   marginTop: 20,
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
                 }}
               >
                 <Title
@@ -160,7 +160,7 @@ export const Process = () => {
                 style={{
                   margin: 20,
                   textAlign: "center",
-                  backgroundColor: "#ffd8df",
+                  backgroundColor: "#e99bad",
                   borderRadius: "50px",
                   height: "80%",
                   marginTop: 20,
@@ -169,7 +169,7 @@ export const Process = () => {
               >
                 <Title
                   style={{
-                    color: "#bd0026",
+                    color: "#3a3a3a",
                     fontFamily: "Raleway",
                     fontWeight: "bold",
                   }}
@@ -224,7 +224,7 @@ export const Process = () => {
                   borderRadius: "50px",
                   height: "80%",
                   marginTop: 20,
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
                 }}
               >
                 <Title

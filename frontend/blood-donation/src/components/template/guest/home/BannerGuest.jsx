@@ -6,9 +6,7 @@ import { Link } from "react-router-dom";
 
 export const BannerGuest = () => {
   return (
-    <Row
-      style={{ height: "80vh", marginTop: "20px", border: "1px solid green" }}
-    >
+    <Row style={{ height: "80vh", marginTop: "20px" }}>
       <Col xs={0} md={12} style={{ height: "100%" }}>
         <div
           style={{ height: "100%", display: "flex", justifyContent: "center" }}
@@ -55,7 +53,7 @@ export const BannerGuest = () => {
           >
             HEMORA
           </h1>
-          <p style={{ fontSize: "20px"}}>
+          <p style={{ fontSize: "20px" }}>
             Every second, someone, somewhere, is fighting for their life waiting
             for a miracle. That miracle could be you. Blood cannot be
             manufactured; it can only be given by heroes like you. One donation
@@ -70,33 +68,35 @@ export const BannerGuest = () => {
             marginTop: "40px",
           }}
         >
-          <Button
-            style={{
-              height: "50px",
-              // backgroundColor: "#ffd8df",
-              color: "black",
-              borderRadius: "50px",
-              padding: "10px 20px",
-              fontWeight: "bold",
-              fontSize: "15px",
-              border: "1px solid black",
-              transition: "all 0.1s ease",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "scale(0.95)";
-              e.currentTarget.style.backgroundColor = "#a80022";
-              e.currentTarget.style.borderColor = "#a80022";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.backgroundColor = "white";
-              e.currentTarget.style.borderColor = "black";
-              e.currentTarget.style.color = "black";
-            }}
-          >
-            <Link>Register to donate blood</Link>
-          </Button>
+          <Link to="/signin">
+            <Button
+              style={{
+                height: "50px",
+                // backgroundColor: "#ffd8df",
+                color: "black",
+                borderRadius: "50px",
+                padding: "10px 20px",
+                fontWeight: "bold",
+                fontSize: "15px",
+                border: "1px solid black",
+                transition: "all 0.1s ease",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = "scale(0.95)";
+                e.currentTarget.style.backgroundColor = "#a80022";
+                e.currentTarget.style.borderColor = "#a80022";
+                e.currentTarget.style.color = "white";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.backgroundColor = "white";
+                e.currentTarget.style.borderColor = "black";
+                e.currentTarget.style.color = "black";
+              }}
+            >
+              Login or Register
+            </Button>
+          </Link>
         </div>
       </Col>
     </Row>

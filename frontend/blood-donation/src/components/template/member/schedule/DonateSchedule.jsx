@@ -170,7 +170,7 @@ export const DonateSchedule = () => {
                         e.currentTarget.style.transform = "scale(0.95)";
                       }}
                       onMouseOut={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.transform = "scale(1)"; 
                       }}
                     >
                       {item.status === "cancelled"

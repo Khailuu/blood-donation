@@ -15,8 +15,8 @@ import { types } from "../../../../assets/text";
 
 export const BloodInformation = () => {
   return (
-    <>
-      <Row style={{ border: "1px solid red", padding: 40 }}>
+    <div style={{backgroundColor: "#fff", borderRadius: "50px", marginBottom: "40px"}}>
+      <Row style={{padding: 40}}>
         <Col md={12}>
           <Title
             style={{
@@ -96,7 +96,6 @@ export const BloodInformation = () => {
       <Row
         style={{
           display: "flex",
-          border: "1px solid red",
           justifyContent: "center",
         }}
       >
@@ -126,7 +125,7 @@ export const BloodInformation = () => {
           of settings.
         </Text>
 
-        <div className="container">
+        <div style={{ margin: "40px 60px", backgroundColor: "#ffd8df", borderRadius: 50 }}>
           <Row
             style={{
               display: "flex",
@@ -178,8 +177,8 @@ export const BloodInformation = () => {
         </div>
       </Row>
 
-      <Row style={{ border: "1px solid red", padding: 40 }}>
-        <Col md={12}>
+      <Row style={{padding: 40}}>
+        <Col md={12} >
           <Title
             style={{
               color: "#bd0026",
@@ -228,6 +227,6 @@ export const BloodInformation = () => {
           <img src={blood_used} alt="" style={{ width: "100%" }} />
         </Col>
       </Row>
-    </>
+    </div>
   );
 };

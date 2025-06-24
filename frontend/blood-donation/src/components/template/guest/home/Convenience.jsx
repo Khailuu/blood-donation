@@ -5,19 +5,18 @@ const { Title, Paragraph } = Typography;
 
 export const Convenience = () => {
   return (
-    <>
+    <div style={{ backgroundColor: "#fff", borderTopLeftRadius: "50px", borderTopRightRadius: "50px"}}>
       <div
         className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12"
         style={{
-          backgroundColor: "#ffd8df",
           padding: "20px",
+
           // borderTopLeftRadius: "50px",
           // borderTopRightRadius: "50px",
-          border: "1px solid blue",
         }}
       >
         {features.map((item, index) => (
-          <div key={index} className="flex items-start gap-2">
+          <div key={index} className="flex items-start gap-2 mt-8">
             <CheckOutlined style={{ color: "#bd0026", fontSize: "40px" }} />
             <p className="text-4xl leading-snug">
               <strong>
@@ -31,7 +30,7 @@ export const Convenience = () => {
         ))}
       </div>
 
-      <div style={{ border: "1px solid purple", padding: "60px 40px" }}>
+      <div style={{ padding: "60px 40px" }}>
         <div
           style={{
             display: "flex",
@@ -204,6 +203,6 @@ export const Convenience = () => {
           </Col>
         </Row>
       </div>
-    </>
+    </div>
   );
 };

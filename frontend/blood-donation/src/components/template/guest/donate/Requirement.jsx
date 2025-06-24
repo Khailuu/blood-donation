@@ -12,7 +12,6 @@ export const Requirement = () => {
         height: "90vh",
         display: "flex",
         alignItems: "center",
-        border: "1px solid green",
         padding: "20px",
         
       }}

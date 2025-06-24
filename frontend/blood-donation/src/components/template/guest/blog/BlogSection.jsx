@@ -15,7 +15,8 @@ export const BlogSection = () => {
       style={{
         padding: "40px 60px",
         background: "#fff",
-        border: "1px solid red",
+        borderRadius: "50px",
+        marginBottom: "40px"
       }}
     >
       <Title level={2} style={{ fontFamily: "raleway", fontWeight: "bold" }}>
@@ -81,13 +82,13 @@ export const BlogSection = () => {
                 </div>
               }
               style={{
-                borderRadius: 8,
+                borderRadius: 12,
                 overflow: "hidden",
                 border: "none",
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                backgroundColor: "#fffafa"
+                backgroundColor: "#fffafa",
               }}
               bodyStyle={{
                 padding: 16,

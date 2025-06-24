@@ -19,7 +19,7 @@ export const About = () => {
   ];
 
   return (
-    <div className="testimonials-section" style={{border: "1px solid brown"}}>
+    <div className="testimonials-section" >
       <Title level={2} className="section-title" style={{ textAlign: "center", marginBottom: "20px", color: "#bd0026", fontFamily: 'Oi', fontWeight: 'normal', fontSize: '50px' }}>
         About Us
       </Title>
