@@ -4,9 +4,14 @@ import { Typography } from "antd";
 import { authService } from "../../../services/authService";
 const {Title} = Typography;
 
-export const Navbar = () => {
+export const Navbar = ({ setActiveSection = () => {} }) => {
   const currentUser = authService.getCurrentUser();
   console.log({currentUser});
+  const handleProfileClick = () => {
+    if (setActiveSection) {
+      setActiveSection('settings');
+    }
+  };
   
   return (
     <nav className="bg-gradient-to-r from-pink-50 to-rose-50 shadow-lg border-b-2 border-pink-200 fixed top-0 left-0 right-0 z-20">
@@ -43,13 +48,13 @@ export const Navbar = () => {
               <div className="absolute mt-2 w-44 bg-white rounded-lg shadow-lg border border-pink-100 opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-200 origin-top-right z-30 invisible group-hover:visible">
                 <ul className="py-2 text-sm text-gray-700">
                   <li>
-                    <a
-                      href="#"
-                      className="flex items-center px-4 py-2 hover:bg-pink-50 hover:text-[#bd0026]"
+                    <button 
+                      onClick={handleProfileClick}
+                      className="flex items-center w-full px-4 py-2 hover:bg-pink-50 hover:text-pink-600 text-left"
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      Edit Profile
-                    </a>
+                      Chỉnh sửa hồ sơ
+                    </button>
                   </li>
                   <li>
                     <a

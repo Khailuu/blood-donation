@@ -8,6 +8,7 @@ import Notifications from "../../components/template/staff/Notifications";
 import Profile from "../../components/template/staff/Profile";
 import { Navbar } from "../../components/ui/common/Navbar";
 import { SideBar } from "../../components/ui/common/SideBar";
+import ProfilePage from "../../components/template/staff/ProfilePage";
 
 export const StaffDashboard = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -26,6 +27,8 @@ export const StaffDashboard = () => {
         return <InventoryManagement />;
       case "profile":
         return <Profile />;
+      case "settings":
+        return <ProfilePage/>
       case "notifications":
         return <Notifications />;
       default:
@@ -35,7 +38,10 @@ export const StaffDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
-      <Navbar />
+      <Navbar 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection} 
+      />
       <div className="flex">
         <SideBar
           activeSection={activeSection}

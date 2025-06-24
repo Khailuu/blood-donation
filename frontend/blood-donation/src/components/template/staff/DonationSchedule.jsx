@@ -143,7 +143,7 @@ const DonationSchedule = () => {
           </button>
           <button 
             onClick={handleAdd}
-            className="bg-[#bd0026] text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
           >
             Add Schedule
           </button>
