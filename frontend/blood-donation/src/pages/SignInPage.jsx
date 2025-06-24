@@ -270,7 +270,7 @@ export const SignInPage = () => {
         </Form.Item>
       </Form>
 
-      <ul className="background">
+      <ul className="background-login">
         {[...Array(12)].map((_, i) => (
           <li key={i}></li>
         ))}

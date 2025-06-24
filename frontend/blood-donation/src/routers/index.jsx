@@ -14,6 +14,19 @@ import RoleRoute from "../components/layouts/RoleRoute";
 import { AuthLayout } from "../components/layouts/AuthLayout";
 import { SignInPage } from "../pages/SignInPage";
 import { SignUpPage } from "../pages/SignUpPage";
+import Dashboard from "../components/template/staff/Dashboard";
+import BloodRequests from "../components/template/staff/BloodRequests";
+import DonationSchedule from "../components/template/staff/DonationSchedule";
+import DonationRequestsManager from "../components/template/staff/DonationRequestsManager";
+import InventoryManagement from "../components/template/staff/InventoryManagement";
+import Notifications from "../components/template/staff/Notifications";
+import Profile from "../components/template/staff/Profile";
+import UpdateProfile from "../components/template/staff/UpdateProfile";
+import { MemberDonate } from "../pages/member/MemberDonate";
+
+import { MemberHomePage } from "../pages/member/MemberHomePage";
+import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
+import { MemberSchedule } from "../pages/member/MemberSchedule";
 
 const router = [
   {
@@ -42,7 +55,22 @@ const router = [
       </ProtectedRoute>
     ),
     children: [
-      { path: "member", element: <MemberPage /> },
+      {
+        path: "member",
+        element: (
+          <RoleRoute allowedRoles={["member"]}>
+            <MemberPage />,
+          </RoleRoute>
+        ),
+        children: [
+        { index: true, element: <Navigate to="home" replace /> },
+        { path: "home", element: <MemberHomePage /> },
+        { path: "donate", element: <MemberDonate /> },
+        { path: "schedule", element: <MemberSchedule /> },
+        { path: "faq", element: <DoubtsSection /> },
+      ]
+      },
+
       {
         path: "staff",
         element: (
@@ -50,6 +78,17 @@ const router = [
             <StaffDashboard />
           </RoleRoute>
         ),
+        children: [
+          { path: "dashboard", element: <Dashboard /> },
+          { path: "blood-requests", element: <BloodRequests /> },
+          { path: "donation-schedule", element: <DonationSchedule /> },
+          { path: "donation-requests", element: <DonationRequestsManager /> },
+          { path: "inventory", element: <InventoryManagement /> },
+          { path: "profile", element: <Profile /> },
+          { path: "notifications", element: <Notifications /> },
+          { path: "update-profile", element: <UpdateProfile /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+        ],
       },
       {
         path: "admin",

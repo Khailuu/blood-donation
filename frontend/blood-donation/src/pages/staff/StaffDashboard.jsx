@@ -9,9 +9,12 @@ import Profile from "../../components/template/staff/Profile";
 import { Navbar } from "../../components/ui/common/Navbar";
 import { SideBar } from "../../components/ui/common/SideBar";
 import ProfilePage from "../../components/template/staff/ProfilePage";
+import { Navbar } from "../../components/ui/staff/Navbar";
+import { SideBar } from "../../components/ui/staff/SideBar";
+import { Outlet, useLocation } from "react-router-dom";
 
 export const StaffDashboard = () => {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const location = useLocation();
 
   const renderContent = () => {
     switch (activeSection) {
@@ -43,12 +46,9 @@ export const StaffDashboard = () => {
         setActiveSection={setActiveSection} 
       />
       <div className="flex">
-        <SideBar
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <div className="flex p-6 " style={{ border: "1px solid red" }}>
-          {renderContent()}
+        <SideBar activeSection={activeSection} />
+        <div className="p-6" style={{width: 2000, border: "1px solid red" }}>
+          <Outlet />
         </div>
       </div>
     </div>

@@ -63,6 +63,7 @@ export const authService = {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    window.location.href = "/";
   },
 
   // Lấy thông tin user hiện tại

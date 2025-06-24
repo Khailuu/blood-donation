@@ -1,7 +1,11 @@
-import React from 'react'
+import { NavbarMember } from "../../components/ui/member/NavbarMember";
+import { Outlet } from "react-router-dom";
+import { FooterComponent } from "../../components/ui/common/FooterComponent";
 
 export const MemberPage = () => {
   return (
-    <div>MemberPage</div>
-  )
-}
+    <div className="">
+      <Outlet />
+    </div>
+  );
+};

@@ -1,11 +1,12 @@
 import React from 'react';
 import { authService } from '../../../services/authService';
 
-import { HeaderMember } from '../member/HeaderMember';
-import { StaffDashboard } from '../../../pages/staff/StaffDashboard';
-import { AdminDashboard } from '../../../pages/admin/AdminDashboard';
-import { Navbar } from './Navbar';
-import { Staff } from './Staff';
+import { NavbarMember } from '../member/NavbarMember';
+
+
+
+import { NavbarGuest } from '../guest/NavbarGuest';
+import { Staff } from '../staff/Staff';
 
 export const HeaderComponent = () => {
   const user = authService.getCurrentUser();
@@ -13,8 +14,13 @@ export const HeaderComponent = () => {
 
   return (
     <div>
-      {role === "member" && <HeaderMember />}
-      {role === "staff" && <Staff />}
+      {role === "member" ? (
+        <NavbarMember />
+      ) : role === "staff" ? (
+        <Staff />
+      ) : (
+        <NavbarGuest />
+      )}
     </div>
   );
 };

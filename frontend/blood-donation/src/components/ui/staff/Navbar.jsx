@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Heart, User, LogOut, Settings } from "lucide-react";
 import { Typography } from "antd";
@@ -7,6 +8,7 @@ const {Title} = Typography;
 export const Navbar = ({ setActiveSection = () => {} }) => {
   const currentUser = authService.getCurrentUser();
   console.log({currentUser});
+
   const handleProfileClick = () => {
     if (setActiveSection) {
       setActiveSection('settings');
@@ -53,7 +55,7 @@ export const Navbar = ({ setActiveSection = () => {} }) => {
                       className="flex items-center w-full px-4 py-2 hover:bg-pink-50 hover:text-pink-600 text-left"
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      Chỉnh sửa hồ sơ
+                      Edit Profile
                     </button>
                   </li>
                   <li>
