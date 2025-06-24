@@ -4,8 +4,8 @@ import { manageUserService } from "../../services/manageUserService"
 export const useGetUser = () => {
     const q = useQuery( {
         queryKey: ['get-user'],
-        queryFn: () => {
-            return manageUserService.getUser()
+        queryFn: async () => {
+            return await manageUserService.getUser()
         }
     })
     return {

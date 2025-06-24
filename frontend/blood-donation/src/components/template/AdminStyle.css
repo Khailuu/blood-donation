@@ -1,0 +1,46 @@
+.admin-template .ant-menu-title-content,
+.admin-template .anticon 
+ {
+    color: black !important;
+}
+
+.admin-template .ant-menu.ant-menu-sub.ant-menu-inline,
+.admin-template .ant-layout-sider,
+.admin-template .ant-menu.ant-menu-root,
+.admin-template .ant-layout-header
+{
+    background-color: #FFD8DF !important;
+}
+
+.admin-template .ant-menu-item.ant-menu-item-selected,
+.admin-template .ant-layout-sider-trigger {
+    background-color: #eb1641 !important;
+}
+
+.admin-template .ant-layout-sider,
+.admin-template aside {
+    width: 250px !important;
+}
+
+.admin-template .logo img {
+  display: block;
+  margin: 0 auto;
+}
+
+.admin-template .ant-menu-item a {
+  font-weight: 500;
+}
+
+.admin-template .ant-menu-item-selected {
+  background-color: #fde2e2 !important;
+  color: #e11d48 !important;
+}
+
+.admin-template ul {
+  flex-direction: column;
+}
+
+.admin-template .ant-pagination {
+  flex-direction: row;
+  justify-content: flex-end;
+}

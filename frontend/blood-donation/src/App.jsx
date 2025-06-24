@@ -1,10 +1,12 @@
-import './App.css'
-import { Router } from './routers/index.jsx'
+import "./App.css";
+import { Router } from "./routers/index.jsx";
 
 function App() {
   return (
-    <Router />
-  )
+    <>
+      <Router />
+    </>
+  );
 }
 
-export default App
+export default App;
