@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import {Eye} from 'lucide-react';
 
 const DonationRequestsManager = () => {
   const [donationRequests, setDonationRequests] = useState([
@@ -112,7 +113,6 @@ const DonationRequestsManager = () => {
     });
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('vi-VN', {
@@ -122,7 +122,6 @@ const DonationRequestsManager = () => {
     });
   };
 
-  // Export report functionality
   const handleExportReport = () => {
     const csvContent = [
       'ID,Patient Name,Blood Type,Hospital,Urgency,Status,Request Date,Contact Phone,Units Needed,Notes',
@@ -203,7 +202,6 @@ const DonationRequestsManager = () => {
 
   return (
     <div className="space-y-6 ml-72 p-20">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Blood Donation Requests Management</h2>
         <div className="flex gap-3">
@@ -228,7 +226,6 @@ const DonationRequestsManager = () => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
@@ -252,7 +249,6 @@ const DonationRequestsManager = () => {
         </div>
       </div>
 
-      {/* Filter Panel */}
       {showFilters && (
         <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -367,12 +363,6 @@ const DonationRequestsManager = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex gap-2 justify-center">
                       <button 
-                        onClick={() => handleViewDetails(request)}
-                        className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors border border-blue-200"
-                      >
-                        View
-                      </button>
-                      <button 
                         onClick={() => handleApprove(request.id)}
                         disabled={request.status === 'Processed'}
                         className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-green-200 disabled:border-gray-200"
@@ -385,6 +375,12 @@ const DonationRequestsManager = () => {
                         className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-red-200 disabled:border-gray-200"
                       >
                         Reject
+                      </button>
+                      <button 
+                        onClick={() => handleViewDetails(request)}
+                        className="px-3 py-1"
+                      >
+                        <Eye/>
                       </button>
                     </div>
                   </td>
