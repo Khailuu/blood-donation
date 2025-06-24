@@ -143,7 +143,7 @@ const DonationSchedule = () => {
           </button>
           <button 
             onClick={handleAdd}
-            className="bg-[#bd0026] text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
           >
             Add Schedule
           </button>
@@ -205,7 +205,7 @@ const DonationSchedule = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th> */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -222,7 +222,7 @@ const DonationSchedule = () => {
                       <span className="text-xs text-gray-500">{schedule.time}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.location}</td>
+                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.location}</td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.donor}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">{schedule.bloodType}</span>
@@ -236,13 +236,13 @@ const DonationSchedule = () => {
                     <div className="flex gap-2">
                       <button 
                         onClick={() => handleEdit(schedule)}
-                        className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-300"
+                        className="bg-white-200 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-300"
                       >
                         Edit
                       </button>
                       <button 
                         onClick={() => handleDelete(schedule.id)}
-                        className="bg-red-200 text-red-800 px-3 py-1 rounded hover:bg-red-300"
+                        className="bg-white-200 text-red-800 px-3 py-1 rounded hover:bg-red-300"
                       >
                         Delete
                       </button>
