@@ -554,7 +554,7 @@ const DonationRequestsManager = () => {
                       handleApprove(selectedRequest.id);
                       setSelectedRequest(null);
                     }}
-                    className="bg-white-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                   >
                     Approve
                   </button>
@@ -563,7 +563,7 @@ const DonationRequestsManager = () => {
                       handleReject(selectedRequest.id);
                       setSelectedRequest(null);
                     }}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-white-700 transition-colors"
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
                   >
                     Reject
                   </button>

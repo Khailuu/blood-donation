@@ -1,17 +1,18 @@
-
 import React from "react";
 import { Heart, User, LogOut, Settings } from "lucide-react";
 import { Typography } from "antd";
+import { useNavigate } from "react-router-dom";
 import { authService } from "../../../services/authService";
 const {Title} = Typography;
 
 export const Navbar = ({ setActiveSection = () => {} }) => {
   const currentUser = authService.getCurrentUser();
+  const navigate = useNavigate();
   console.log({currentUser});
 
   const handleProfileClick = () => {
     if (setActiveSection) {
-      setActiveSection('settings');
+      setActiveSection('profile');
     }
   };
   
@@ -59,14 +60,16 @@ export const Navbar = ({ setActiveSection = () => {} }) => {
                     </button>
                   </li>
                   <li>
-                    <a
-                      href="#"
-                      className="flex items-center px-4 py-2 hover:bg-pink-50 hover:text-[#bd0026]"
-                      onClick={()=>authService.logout()}
+                    <button
+                      className="flex items-center w-full px-4 py-2 hover:bg-pink-50 hover:text-[#bd0026] text-left"
+                      onClick={() => {
+                        authService.logout();
+                        navigate('/login'); 
+                      }}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
