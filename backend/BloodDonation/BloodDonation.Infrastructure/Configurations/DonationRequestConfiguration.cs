@@ -16,11 +16,7 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
         builder.Property(x => x.RequestTime).IsRequired();
         builder.Property(x => x.Deadline).IsRequired();
         builder.Property(x => x.IsEmergency).HasDefaultValue(false);
-
-        builder.Property(x => x.UrgencyLevel)
-            .HasConversion<string>()
-            .IsRequired();
-
+        
         builder.Property(x => x.Status)
             .HasConversion<string>()
             .IsRequired()

@@ -11,7 +11,7 @@ export const MainLayout = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="flex flex-col"
       style={{ position: "relative" }}
     >
       <BackgroundCloud />

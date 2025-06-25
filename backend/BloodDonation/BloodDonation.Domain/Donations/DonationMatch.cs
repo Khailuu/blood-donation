@@ -10,7 +10,6 @@ public class DonationMatch
     public DateTime MatchedTime { get; set; }
     public DateTime? ConfirmedTime { get; set; }
     public DonationMatchStatus Status { get; set; }
-    
     public DonationRequest? Request { get; set; }
     public User? Donor { get; set; }
 }

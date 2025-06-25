@@ -9,12 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\BloodDonation.Application\BloodDonation.Application.csproj" />
       <ProjectReference Include="..\BloodDonation.Domain\BloodDonation.Domain.csproj" />
       <ProjectReference Include="..\BloodDonation.Infrastructure\BloodDonation.Infrastructure.csproj" />
@@ -40,6 +34,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="appsettings.Production.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
