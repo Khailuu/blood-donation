@@ -27,6 +27,7 @@ import { MemberDonate } from "../pages/member/MemberDonate";
 import { MemberHomePage } from "../pages/member/MemberHomePage";
 import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
 import { MemberSchedule } from "../pages/member/MemberSchedule";
+import { HealthSurvey } from "../components/template/member/HealthSurvey";
 
 const router = [
   {
@@ -63,12 +64,13 @@ const router = [
           </RoleRoute>
         ),
         children: [
-        { index: true, element: <Navigate to="home" replace /> },
-        { path: "home", element: <MemberHomePage /> },
-        { path: "donate", element: <MemberDonate /> },
-        { path: "schedule", element: <MemberSchedule /> },
-        { path: "faq", element: <DoubtsSection /> },
-      ]
+          { index: true, element: <Navigate to="home" replace /> },
+          { path: "home", element: <MemberHomePage /> },
+          { path: "donate", element: <MemberDonate /> },
+          { path: "schedule", element: <MemberSchedule /> },
+          { path: "faq", element: <DoubtsSection /> },
+          { path: "health-survey", element: <HealthSurvey /> },
+        ],
       },
 
       {

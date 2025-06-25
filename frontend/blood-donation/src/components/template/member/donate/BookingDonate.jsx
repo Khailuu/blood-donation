@@ -24,7 +24,6 @@ export const BookingDonate = () => {
   return (
     <div
       style={{
-        backgroundColor: "#fff2f2",
         minHeight: "100vh",
         padding: "48px 16px",
       }}
@@ -84,7 +83,6 @@ export const BookingDonate = () => {
           <Col xs={24} md={12}>
             <div
               style={{
-                borderRadius: 16,
                 overflow: "hidden",
                 marginBottom: 24,
                 boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
@@ -95,12 +93,10 @@ export const BookingDonate = () => {
                 value={selectedDate}
                 onSelect={(value) => setSelectedDate(value)}
                 style={{
-                  borderRadius: 16,
                   fontFamily: "Raleway",
                   backgroundColor: "#c41c33",
-                  border: "1px solid #c41c33"
+                  border: "1px solid #c41c33",
                 }}
-
               />
             </div>
 
