@@ -25,7 +25,7 @@ public static class DependencyInjection
         string? connectionString = configuration.GetConnectionString("Database");
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString, npgsqlOptions =>
+            options.UseNpgsql(connectionString, npgsqlOptions =>
                 npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default)));
 
         services.AddScoped<IDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
@@ -35,7 +35,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHealthChecks().AddSqlServer(configuration.GetConnectionString("Database")!);
+        services.AddHealthChecks().AddNpgSql(configuration.GetConnectionString("Database")!);
         return services;
     }
 

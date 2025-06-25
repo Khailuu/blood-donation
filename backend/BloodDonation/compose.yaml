@@ -10,17 +10,17 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
   
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    platform: linux/amd64
-    container_name: sqlserver
+  postgres:
+    image: postgres:15
+    container_name: postgres
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=Passw0rd@
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: blood_donation
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sql_data:/var/opt/mssql
+      - pgdata:/var/lib/postgresql/data
     restart: always
       
     
@@ -33,5 +33,5 @@
       - "8081:80"
   
 volumes:
-  sql_data:
+  pgdata:
     

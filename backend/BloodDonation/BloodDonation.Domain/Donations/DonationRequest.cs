@@ -13,7 +13,6 @@ public class DonationRequest
     public DateTime RequestTime { get; set; }
     public DateTime? Deadline { get; set; }
     public bool IsEmergency { get; set; }
-    public UrgencyLevel UrgencyLevel { get; set; }
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public DonationRequestStatus Status { get; set; }
