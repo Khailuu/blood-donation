@@ -2,32 +2,27 @@ using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Application.BloodDonation.CreateDonationMatch;
-using BloodDonation.Application.Users.UpdateUser;
-using BloodDonation.Domain.Bloods;
-using BloodDonation.Domain.Bloods.Errors;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.Users.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace BloodDonation.Application.BloodDonation.CreateDonationRequest;
+namespace BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
 
-public class CreateDonationRequestCommandHandler(IDbContext context, IUserContext userContext) : ICommandHandler<CreateDonationRequestCommand,CreateDonationRequestResponse>
+public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUserContext userContext)
+    : ICommandHandler<CreateDonationRequestForStaffCommand, CreateDonationRequestForStaffResponse>
 {
-    public async Task<Result<CreateDonationRequestResponse>> Handle(CreateDonationRequestCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<CreateDonationRequestForStaffResponse>> Handle(CreateDonationRequestForStaffCommand request, CancellationToken cancellationToken)
     {
-        var userId = userContext.UserId;
         var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+
         if (user == null)
-        {
-            return Result.Failure<CreateDonationRequestResponse>(UserErrors.NotFound(request.UserId));
-        }
+            return Result.Failure<CreateDonationRequestForStaffResponse>(UserErrors.NotFound(request.UserId));
 
         var donationRequest = new DonationRequest
         {
             RequestId = Guid.NewGuid(),
-            UserId = userId,
+            UserId = request.UserId,
             BloodTypeId = request.BloodTypeId,
             AmountBlood = request.AmountBlood,
             ComponentType = request.ComponentType,
@@ -42,11 +37,20 @@ public class CreateDonationRequestCommandHandler(IDbContext context, IUserContex
 
         context.DonationRequests.Add(donationRequest);
         await context.SaveChangesAsync(cancellationToken);
-        
-        return Result.Success(new CreateDonationRequestResponse
+
+        var bloodStored = await context.BloodStored
+            .FirstOrDefaultAsync(b => b.BloodTypeId == request.BloodTypeId, cancellationToken);
+
+        if (bloodStored == null || bloodStored.Quantity < request.AmountBlood)
+        {
+            var matcher = new AutoMatchDonorsForRequestHandler(context);
+            await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
+        }
+
+        return Result.Success(new CreateDonationRequestForStaffResponse
         {
             RequestId = donationRequest.RequestId,
-            Message = "Donation request created successfully."
+            Message = "Donation request (from staff) created successfully."
         });
     }
 }

@@ -14,7 +14,7 @@ public class GetDonationRequestToCancelQueryHandler(IDbContext context)
         var query = context.DonationRequests
             .Include(r => r.User)
             .Include(r => r.BloodType)
-            .Where(r => r.Status == DonationRequestStatus.Pending)
+            .Where(r => r.Status == DonationRequestStatus.Pending || r.Status == DonationRequestStatus.WaitingForDonorToConfirm)
             .OrderBy(r => r.Deadline);
 
         var totalCount = await query.CountAsync(cancellationToken);

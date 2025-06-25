@@ -1,10 +1,9 @@
 using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Domain.Bloods;
-using BloodDonation.Domain.Donations;
 
-namespace BloodDonation.Application.BloodDonation.CreateDonationRequest;
+namespace BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
 
-public class CreateDonationRequestCommand : ICommand<CreateDonationRequestResponse>
+public class CreateDonationRequestForStaffCommand : ICommand<CreateDonationRequestForStaffResponse>
 {
     public Guid UserId { get; set; }
     public Guid BloodTypeId { get; set; }

@@ -13,13 +13,17 @@ public class CancelDonationRequestCommandHandler(IDbContext context, IUserContex
     public async Task<Result> Handle(CancelDonationRequestCommand request, CancellationToken cancellationToken)
     {
         var donationRequest = await context.DonationRequests
-            .FirstOrDefaultAsync(x => x.RequestId == request.RequestId, cancellationToken);
+            .FirstOrDefaultAsync(r => r.RequestId == request.RequestId, cancellationToken);
 
         if (donationRequest == null)
             return Result.Failure(DonationRequestErrors.RequestNotFound);
 
-        if (donationRequest.Status != DonationRequestStatus.Pending)
-            return Result.Failure(DonationRequestErrors.RequestConfrimed);
+        if (donationRequest.UserId != userContext.UserId)
+            return Result.Failure(DonationRequestErrors.NotDonor);
+
+        if (donationRequest.Status != DonationRequestStatus.Pending && 
+            donationRequest.Status != DonationRequestStatus.WaitingForDonorToConfirm)
+            return Result.Failure(DonationRequestErrors.CannotCancel);
 
         donationRequest.Status = DonationRequestStatus.Cancelled;
         await context.SaveChangesAsync(cancellationToken);

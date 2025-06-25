@@ -1,9 +1,9 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Application.BloodDonation.CancelDonationRequest;
 using BloodDonation.Application.BloodDonation.ConfirmDonationMatch;
-using BloodDonation.Application.BloodDonation.ConfirmDonationRequest;
+using BloodDonation.Application.BloodDonation.ConfirmDonationRequestForStaff;
 using BloodDonation.Application.BloodDonation.CreateDonationMatch;
-using BloodDonation.Application.BloodDonation.CreateDonationRequest;
+using BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToCancel;
 using BloodDonation.Domain.Common;
@@ -26,20 +26,20 @@ public class BloodDonationController : ControllerBase
     }
     
     // [Authorize]
-    [HttpPost("blood-donation/create-request")]
-    public async Task<IResult> CreateDonationRequest([FromBody] CreateDonationRequestCommand command, CancellationToken cancellationToken)
+    [HttpPost("blood-donation/create-requestForStaff")]
+    public async Task<IResult> CreateDonationRequest([FromBody] CreateDonationRequestForStaffCommand forStaffCommand, CancellationToken cancellationToken)
     {
-        Result<CreateDonationRequestResponse> result = await _mediator.Send(command, cancellationToken);
-        return result.MatchCreated(id => $"/blood-donation/request/{id}");
+        Result<CreateDonationRequestForStaffResponse> result = await _mediator.Send(forStaffCommand, cancellationToken);
+        return result.MatchCreated(id => $"/blood-donation/requestForStaff/{id}");
     }
 
-    [Authorize(Roles = "Staff")]
-    [HttpPost("blood-donation/create-match")]
-    public async Task<IResult> CreateDonationMatch([FromBody] CreateDonationMatchCommand command, CancellationToken cancellationToken)
-    {
-        Result<CreateDonationMatchResponse> result = await _mediator.Send(command, cancellationToken);
-        return result.MatchCreated(id => $"/blood-donation/match/{id}");
-    }
+    // [Authorize(Roles = "Staff")]
+    // [HttpPost("blood-donation/create-match")]
+    // public async Task<IResult> CreateDonationMatch([FromBody] CreateDonationMatchCommand command, CancellationToken cancellationToken)
+    // {
+    //     Result<CreateDonationMatchResponse> result = await _mediator.Send(command, cancellationToken);
+    //     return result.MatchCreated(id => $"/blood-donation/match/{id}");
+    // }
 
     [Authorize]
     [HttpPut("blood-donation/confirm-match")]
@@ -68,10 +68,10 @@ public class BloodDonationController : ControllerBase
     }
 
     [Authorize(Roles = "Staff")]
-    [HttpPut("blood-donation/confirm-request")]
-    public async Task<IResult> ConfirmDonationRequest([FromBody] ConfirmDonationRequestCommand command, CancellationToken cancellationToken)
+    [HttpPut("blood-donation/confirm-requestForStaff")]
+    public async Task<IResult> ConfirmDonationRequest([FromBody] ConfirmDonationRequestForStaffCommand forStaffCommand, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(forStaffCommand, cancellationToken);
         return result.MatchOk();
     }
 
