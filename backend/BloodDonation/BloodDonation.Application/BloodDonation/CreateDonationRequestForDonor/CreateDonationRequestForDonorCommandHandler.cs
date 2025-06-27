@@ -19,7 +19,7 @@ public class CreateDonationRequestForDonorCommandHandler(IDbContext context, IUs
         if (user == null || user.IsDonor == false || user.BloodType == null)
             return Result.Failure<CreateDonationRequestForDonorResponse>(UserErrors.NotFound(userContext.UserId));
 
-        var bloodType = await context.BloodTypes.FirstOrDefaultAsync(b => b.Name == user.BloodType, cancellationToken);
+        var bloodType = await context.BloodTypes.FirstOrDefaultAsync(b => b.Name == user.BloodType.Name, cancellationToken);
         if (bloodType == null)
             return Result.Failure<CreateDonationRequestForDonorResponse>(BloodErrors.BloodTypeNotFound);
 

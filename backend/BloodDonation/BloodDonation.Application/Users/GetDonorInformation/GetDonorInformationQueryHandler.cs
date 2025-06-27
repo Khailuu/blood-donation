@@ -19,6 +19,7 @@ public class GetDonorInformationQueryHandler(IDbContext context) : IQueryHandler
 
         var donorInfo = await context.DonorInformation
             .Include(d => d.User)
+            .ThenInclude(d => d.BloodType)
             .Select(d => new GetDonorInformationResponse
             {
                 DonorInfoId = d.DonorInfoId,
@@ -34,7 +35,7 @@ public class GetDonorInformationQueryHandler(IDbContext context) : IQueryHandler
                     Phone = d.User.Phone,
                     Address = d.User.Address,
                     DateOfBirth = d.User.DateOfBirth,
-                    BloodType = d.User.BloodType,
+                    BloodType = d.User.BloodType.Name,
                     Gender = d.User.Gender,
                     Status = d.User.Status,
                     Role = d.User.Role

@@ -18,6 +18,7 @@ public sealed class GetUsersQueryHandler(IDbContext context)
         var totalCount = await query.CountAsync(cancellationToken);
 
         var result = await query
+            .Include(u => u.BloodType)
             .ApplyPagination(request.PageNumber, request.PageSize)
             .Select(u => new GetUsersResponse
             {
@@ -27,7 +28,7 @@ public sealed class GetUsersQueryHandler(IDbContext context)
                 Role = u.Role,
                 Gender = u.Gender,
                 Status = u.Status,
-                BloodType = u.BloodType,
+                BloodType = u.BloodType.Name,
                 DateOfBirth = u.DateOfBirth,
                 Address = u.Address,
                 Phone = u.Phone,

@@ -3,6 +3,7 @@ using System;
 using BloodDonation.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BloodDonation.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250626042639_UpdateMedicalStatusNullable")]
+    partial class UpdateMedicalStatusNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,756 +81,756 @@ namespace BloodDonation.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6a78b97e-8507-41c8-931d-d6db10b85763"),
+                            Id = new Guid("13683521-1c0c-499f-9562-cfeab825e72a"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("212a8ba1-4c30-468c-a9f6-5cb9eff1149c"),
+                            Id = new Guid("2caed6af-1643-4ad4-93a6-6288bb050577"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("c44d0fa7-98ca-45fe-991b-47c95a307d3a"),
+                            Id = new Guid("14aa0653-7a06-44d7-9125-0f0819806df4"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("4fd197a9-161e-47a1-8734-716d9c423d40"),
+                            Id = new Guid("e5699fb6-b87a-4d0f-b8eb-05bc1521fb03"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("a6d055f8-e5fc-445f-bda6-9f89ee9c6c07"),
+                            Id = new Guid("235e8c24-42e9-49e7-a4c1-ddfe814164f0"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("012d1bf2-b941-4f8f-9526-a5d17312333c"),
+                            Id = new Guid("6ecddae8-6972-49e9-8815-9eb6ccd47960"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("39f11b52-e76a-4eea-b8b3-7149d4b0824c"),
+                            Id = new Guid("ead15dee-ac9d-4b13-aec2-8e34ea131261"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("3a8c7e9c-3fc6-4a74-881f-a936aa1f185f"),
+                            Id = new Guid("f31e6946-ca62-4420-9e28-088b9510c25e"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("24df6450-74a8-463a-a674-9c65035b60e8"),
+                            Id = new Guid("bdbd98f7-ef5b-45c2-bf2e-0be78b220e20"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("6599942a-5d52-4b1a-bbc5-63067e1da3d8"),
+                            Id = new Guid("0915be20-2267-41af-a44a-aad0abfbfc05"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("a0ff4d40-c503-4c91-b7fe-e7bcf822a014"),
+                            Id = new Guid("b1315ee3-038d-4ed5-bf0e-74d5ad5c2c74"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("b0925306-5782-4f2b-bb2c-a27279fb1803"),
+                            Id = new Guid("3ff6b9bf-fd97-408a-acdb-29cfdd1ffb3a"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("9bbbccd5-23c6-40df-89ae-7f8927734cfb"),
+                            Id = new Guid("19a43971-3ce4-44ac-b39f-5e91cb70e6e9"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("591e2ea3-55e9-44b6-a8b9-f4ea7a7a9722"),
+                            Id = new Guid("54212559-379e-477f-b2c9-4eabf98164a1"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("9c2b2a40-bab2-4fa6-9882-2db584c6ca96"),
+                            Id = new Guid("e9cff5e4-472f-4a7e-81e9-93ac0f56ee5f"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("186d4611-235b-4857-9a71-7c678c0fd25f"),
+                            Id = new Guid("b4b65bfb-f040-4e21-af9a-fb80b69fa732"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("579243cb-64a5-416e-8d15-79fce75a2113"),
+                            Id = new Guid("339d9ba0-1fb0-4c54-8b0b-8525d35a9ef7"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("60b11ba3-dc90-4fea-8e2e-849e39e72ae0"),
+                            Id = new Guid("4c3fb499-7314-43e7-b5ba-8bbc1a535496"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("23867149-6332-4dec-ae68-afa747a5cbc5"),
+                            Id = new Guid("157cd25a-5d20-4bfc-825f-f7cf89a792c5"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("7c2be4ef-c68a-4d9d-bbb5-cfb8105692cf"),
+                            Id = new Guid("30863e44-e546-45de-8685-c22b473d48f7"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("ecbdcc29-1357-4f16-9288-0831b73a83ce"),
+                            Id = new Guid("e5f300c0-cfa9-4075-b1ce-2fa09e3e382e"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("94119586-ad0f-479f-9b13-b164cf434677"),
+                            Id = new Guid("7862a015-07cf-4bcb-bae9-c5f9c46042d0"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("b4b5366a-4085-412f-b71b-8de54ea6de90"),
+                            Id = new Guid("41274621-bba6-4d15-b254-96f92101d2d8"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("28e9146e-f92a-4849-9892-5a36c452e247"),
+                            Id = new Guid("75aff592-addd-4c08-af17-df46ead2b457"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("e0e9b686-7546-401d-b9c2-70956c95a67b"),
+                            Id = new Guid("12004c1d-4899-41e9-9013-cf33b07a8849"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("d0d9ffec-ebe2-4c39-bfd8-9c01d08bbe31"),
+                            Id = new Guid("20b6c720-e34c-4778-aa77-ce240b1ddf20"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("acf0488d-4f3e-4a64-bdc7-d4184e3f8b4a"),
+                            Id = new Guid("b57d7b45-8a50-4de6-9bc5-dbdb58467618"),
                             ComponentType = "RBC",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("5949abf3-5617-45fb-aa67-52e462462140"),
+                            Id = new Guid("ec1b0604-6320-4c92-b9f2-b06f7b52fe03"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("de0f2a50-ff35-44f2-905d-237e97198d20"),
+                            Id = new Guid("f48ceb3a-00d6-4d07-a0a7-b4ecd8e3cd3a"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("628890c1-ce2d-4be0-9342-f87474f7f010"),
+                            Id = new Guid("4fab583b-beac-4e1b-9f91-c0f9d96f0dcc"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("f9e3385b-5f4b-4dbc-a891-bec45c96ff16"),
+                            Id = new Guid("5a98661f-f109-4a3b-9bcf-882a29dac825"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("1a9f0526-a622-4c10-8c52-a45fe9159393"),
+                            Id = new Guid("ffa6c6be-3fe8-4647-b8f7-55b9d4812722"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("9d0306c7-738a-4098-a2df-42de99453a86"),
+                            Id = new Guid("cf6a8193-178b-49d7-8275-332d98134951"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("c5dae946-167a-427f-b633-177978f4c1af"),
+                            Id = new Guid("4ecc91ac-c270-4622-a72c-4640ae9ececb"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("b324d7a2-d7c6-4870-99b4-d2074c633cbb"),
+                            Id = new Guid("d02a8778-71b1-4643-94c4-8717e444ef2b"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("ca5bce93-4f4d-4893-b74a-62e3c060c09a"),
+                            Id = new Guid("e41f914f-351c-45f4-9462-b2061bbbca03"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("4cc2de46-c29e-47b5-8c1b-5deba693f2ed"),
+                            Id = new Guid("217867b4-878e-4b2f-9483-7ac09d87eb46"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("3eea6f35-b278-4c2c-b1d1-1c2b7e928ca8"),
+                            Id = new Guid("8d1ccb74-003d-4b45-8afd-72eff8b6a3eb"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("686744ab-90db-4ad0-b0bc-ba8adb84cd8e"),
+                            Id = new Guid("f9f45331-c15d-4fb3-ac01-f40a6ab96346"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("8435ae12-259b-467e-888b-99f8c0230bfb"),
+                            Id = new Guid("eef96d1b-0ff0-4f9a-8c9e-5193bbf839e1"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("e72dbb1d-1e88-4122-b4c0-f383bb197513"),
+                            Id = new Guid("372bc50e-1ba9-408b-8c0e-2462f37b6aeb"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("6781daf7-a528-4106-82a2-f666ff75732e"),
+                            Id = new Guid("eedddb2c-076f-4cb1-ad5f-e6553b36a4ea"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("f923c882-ee7a-47fc-8fa0-4d52e4fb94a2"),
+                            Id = new Guid("8359bdeb-005b-4125-8507-4016946a98b0"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("a1e34f38-35ba-4402-80ad-e47fb0b8365f"),
+                            Id = new Guid("088c0ebe-dc19-4e80-9471-919727920a06"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("13c54d95-1110-4f43-a4c2-7e888fc253f5"),
+                            Id = new Guid("8f797d37-ba66-4857-a3af-a27f15bda3d0"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("2ee10ead-1d13-4c73-9d09-2b1048025a02"),
+                            Id = new Guid("194a2b88-e182-4911-a061-96452e03c977"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("6813319c-18fc-4181-8723-d34c56336e3c"),
+                            Id = new Guid("5da2aba6-2128-4888-8636-aaee48ca3307"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("e2e01887-1b08-4f67-87db-7bf88d665c72"),
+                            Id = new Guid("024eba31-be9a-4b35-b9ca-e1780005156c"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("fb176fb6-ead3-4d66-a207-6653262c8aa5"),
+                            Id = new Guid("c20956f0-4fc8-4580-bf49-4eca17a8ba08"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("cb6153eb-b66f-4735-a397-abcb704b6819"),
+                            Id = new Guid("baaed409-cb82-4847-aeb2-e74376635f4a"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("fbcc8aaf-6cff-471f-8a54-66a9432d0ba8"),
+                            Id = new Guid("08735e14-448e-46cd-968d-f0bb1b3e052d"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("211b8614-62e3-4e08-b2f3-57bd037fface"),
+                            Id = new Guid("12023fcc-eb84-4a5a-b95f-4851ce95ab05"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("bee4356e-aba1-4a2f-b096-afc37feaf02c"),
+                            Id = new Guid("058adcb2-8b02-48e9-a8e0-75eff8d8e3c4"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("bad93869-2d55-4988-8159-b611ff6ea5ac"),
+                            Id = new Guid("f2be75c2-ac94-4f98-ba1b-1cbc5502a0e3"),
                             ComponentType = "Whole",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("a82438e0-93f5-472a-8892-b2d1f9929709"),
+                            Id = new Guid("e1533b4e-6f87-4d55-bf6d-4b5f987c8bfe"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("592cd25a-426f-4d4d-b7fb-3811b7d05f86"),
+                            Id = new Guid("766b0a34-a9b1-4bff-89c9-6b2cd3860231"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("a0d03dfc-b8c2-474c-90ea-b4009fa1471b"),
+                            Id = new Guid("58ee56d4-d4e8-4805-ab87-76e74ac70c2c"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("f6d38aeb-6ac1-490d-86da-5a90531bc1e2"),
+                            Id = new Guid("d3e402ba-2398-4a3d-a1e9-bdf1b13c897d"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("8aa1d1f0-642b-45bb-b678-8ff57b4de614"),
+                            Id = new Guid("270aac14-fb9a-41fe-bf67-babae9a9560b"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("1e4528b5-f5ca-4dce-96d2-d3e9a6fc2b72"),
+                            Id = new Guid("e5dc9461-b5cc-4f80-992a-a1a97ff4fea8"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("791ba529-fe06-428b-8459-3ad3ffdac63e"),
+                            Id = new Guid("9237ebad-87fb-4e7e-8539-8671153c7fe4"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("72d43e10-be0f-4125-8182-2f75845b0623"),
+                            Id = new Guid("7284184c-041d-4af2-ab48-ea7ec9a76f02"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("3c2948ab-89ab-47dc-accd-9bb52ffa1204"),
+                            Id = new Guid("d8dee8e2-c2b3-4639-ae43-5e45f96cfef3"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("fe455fdf-84ab-4391-a26c-8cd326c26f13"),
+                            Id = new Guid("fe3ca33b-1d0d-4943-87c0-b47eedda8772"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("e24dba5c-307d-4798-9514-5b64c3ac05cb"),
+                            Id = new Guid("bb62a946-b23a-4cda-926e-ff98dfe88c17"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("6d2d1460-0d03-4233-a358-3369d769fe6e"),
+                            Id = new Guid("0f6c0548-eb81-497d-9759-00659c3e2d49"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("687c6d51-6b40-48c6-bd24-f0862d89454a"),
+                            Id = new Guid("2691b4f1-d2aa-464f-8bf0-9add46eede6f"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("581d930e-76e2-437d-9d2e-360dddcbb752"),
+                            Id = new Guid("9a0a60bc-74ef-48ca-b266-123e7cf7cec8"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("db9ce220-57f7-4003-93cf-6e5bd35c4339"),
+                            Id = new Guid("f7e5e144-18fc-4ed8-9dcc-79f8f73486fe"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("0a6014f2-ad07-487c-b0b1-3d48f5d09dbf"),
+                            Id = new Guid("dddb2712-604a-4eff-ab14-f1711ebdcb5e"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("ea413834-9ed1-43df-aefe-01c39a60cfa6"),
+                            Id = new Guid("2fd3d262-6802-4495-ab21-06391d55336e"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("157d80ef-0518-4ba2-aaed-73b85e9b17c2"),
+                            Id = new Guid("330ba44f-bdcc-4267-9f3d-a2dbc5326388"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("58019045-c74c-453c-a2e1-ab355395f709"),
+                            Id = new Guid("8c20fdfe-6668-404e-b836-b1e8bc77c03d"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("274618b4-2cef-4910-bb1f-1ad3358c6bf6"),
+                            Id = new Guid("a8b2af1a-92bf-4699-adf1-7737668fcda5"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("73d651a6-4e5c-4815-85a4-ccd3267cce34"),
+                            Id = new Guid("6ce0f109-66b1-4cb2-93ff-5d7f7e9b72e7"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("d2491c8b-42ba-45f3-aab6-ae9de523d028"),
+                            Id = new Guid("8d9e7718-6ec1-4c06-b830-eddd714c20aa"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("3799dbca-e018-48fe-b707-3331b656c9b9"),
+                            Id = new Guid("addeabef-7324-4935-9308-969cec6de5c7"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("7028754e-cff3-4e02-ae95-c9cc171dc5ff"),
+                            Id = new Guid("0f6ebe14-17a8-4826-b3b8-a76e241730f3"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("7aa8b86e-e2c0-4b88-983e-e198f66d33de"),
+                            Id = new Guid("a5e9926e-71a0-4548-8821-5f8bfb8593c0"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("186c5068-64f0-4549-afa7-07e1fe41ed7c"),
+                            Id = new Guid("80d493f2-f97d-4f9c-a9fe-f82c64152a11"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("52fa26a0-ea5b-4549-9949-9fcb5ed13953"),
+                            Id = new Guid("e3737056-1ac2-4c32-9f75-794bf7c9cf5e"),
                             ComponentType = "Plasma",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("6dc1d1a2-42d9-48d0-a18b-6a924ee4c945"),
+                            Id = new Guid("bedcb5bd-2eaa-4a67-b512-c1e689f44675"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79")
                         },
                         new
                         {
-                            Id = new Guid("b5fe9038-04b9-498a-b378-0f8f42e562e3"),
+                            Id = new Guid("c0e83c07-0d9a-4669-a2d5-3c0045fa9e9f"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("f3d9da60-ef85-4f02-a4f7-5aa544f32b29"),
+                            Id = new Guid("3c120979-8d1d-41ca-9ab8-8ddd05402e3a"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("9345cf2e-b3e5-4294-ad7a-9a9e3fb6ee08"),
+                            Id = new Guid("c9211f4c-a85c-4a7c-b0d8-21b84c107f51"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("48fb19b1-da59-4461-923f-529bf0cd7aa1"),
+                            Id = new Guid("85e2f7fc-8d11-485b-84f6-04fbe2313c8e"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("a301916e-a502-4dc1-b27a-333667ee6492"),
+                            Id = new Guid("24aa72d2-ffc4-4163-80d1-179aa922a7df"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("97d134f7-ba82-40ee-af17-0de741f61502"),
+                            Id = new Guid("be0b7d71-2023-41c2-af54-d1536024d92d"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("1adf916c-8179-436a-ad5c-1095b8d62f58"),
+                            Id = new Guid("cddecfac-9eec-489c-bb04-7140c4be7d96"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("fb091ee4-692a-41fd-87be-a1a09ca6d028"),
+                            Id = new Guid("bc40817a-c59b-461b-8427-2bb86b0f1a6c"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c")
                         },
                         new
                         {
-                            Id = new Guid("eabb90b1-20f9-4e54-8bd3-29fdae1c03bc"),
+                            Id = new Guid("348383c4-57f1-4f9c-9938-ca7a19b46425"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("b5021343-653b-4b3d-846c-a90cc02a0958"),
+                            Id = new Guid("7fd0a8b5-b461-4fb2-b733-f2612ee29c2f"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("20f7ef90-e65e-475a-a2b8-c162dc179660"),
+                            Id = new Guid("76c6206a-be40-4c07-818e-204eabe5c9d5"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("855d7c7c-76d3-4379-a8b7-3fb047bea08e"),
+                            Id = new Guid("312da412-669e-4312-aaba-601dadfd9b57"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845")
                         },
                         new
                         {
-                            Id = new Guid("589b11f8-b77c-438d-9ff6-bad573b4b4a0"),
+                            Id = new Guid("b9d7feb2-2e81-4029-9eae-3c323b99100d"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("75d4695b-f759-4888-a1d8-b08e5c48d267"),
+                            Id = new Guid("315d4eb0-075b-4c4a-8a47-72f1e4362245"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("bd0313af-a7a0-4b75-989e-1cf60801576f"),
+                            Id = new Guid("5b2ff17a-57e4-4a77-9ac2-4130dfb50d55"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("1c8f7dfb-eda6-4cef-a557-4448c2f755bd"),
+                            Id = new Guid("7ddf244e-dc42-4a53-9205-669f6b6e161a"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1")
                         },
                         new
                         {
-                            Id = new Guid("32cfb212-3b1c-4d8e-95b8-305f4a1909e0"),
+                            Id = new Guid("22955969-a4b2-41a8-b5fe-97030b22e3ed"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("52002dc8-5ba4-40a7-b57e-0f24ff270b04"),
+                            Id = new Guid("a7f1a2f1-0cd1-4aea-9293-8266c8b72051"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7")
                         },
                         new
                         {
-                            Id = new Guid("0f2bef12-3762-4d93-86e0-0886ae65aae8"),
+                            Id = new Guid("8fa4fbc9-2f6b-499b-b628-be7e719b6c74"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("7fe3b14e-f9bc-46dc-aa76-77d244e98c0f"),
+                            Id = new Guid("61774b5a-c967-4bc5-ae33-2270f1fe65c8"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("cc4505e2-5809-4b3f-a9f5-91d6ff81abd1"),
+                            Id = new Guid("10ae0d6e-6b2d-42a1-bab7-71da1aca07eb"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("4c61bb9e-8a11-4c95-ad81-120e66fd0e96"),
+                            Id = new Guid("4c820abf-02d4-4ae4-b5b5-2faa5ea8b7c9"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7")
                         },
                         new
                         {
-                            Id = new Guid("3c7909ed-3d8a-48e3-831d-08d2e69cf2cd"),
+                            Id = new Guid("673165cb-271b-410e-af2e-a01358665562"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("4dcfabf3-f84d-4269-9342-f02bfb96d3d3"),
+                            Id = new Guid("7198f311-f389-4edd-ba42-1aa46a3ea009"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1")
                         },
                         new
                         {
-                            Id = new Guid("f625671b-f4b9-476a-b92f-ab6c73fcaa7e"),
+                            Id = new Guid("4033a84a-ccde-43c7-96c6-941802310d30"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
                         },
                         new
                         {
-                            Id = new Guid("6fa73056-71d1-4722-be0f-75c153b3da6f"),
+                            Id = new Guid("0d8a020d-cf5a-4d00-a8ef-1c60f458242a"),
                             ComponentType = "Platelet",
                             FromBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
                             ToBloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f")
@@ -860,56 +863,56 @@ namespace BloodDonation.Infrastructure.Migrations
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000001"),
                             BloodTypeId = new Guid("2b0f96e4-9052-4d68-a937-9adfc9d231d1"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9750),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6850),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000002"),
                             BloodTypeId = new Guid("0f5f77fb-2bd4-4aeb-9bd4-bb56745c8845"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6850),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000003"),
                             BloodTypeId = new Guid("91baf3d9-759f-4bb8-82a4-3d9d645d91b7"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6850),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000004"),
                             BloodTypeId = new Guid("82f33bfb-7fa4-432e-8735-1c0e5c2f99f7"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6850),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000005"),
                             BloodTypeId = new Guid("edc95a1c-0c3f-4a61-a104-f949109e7c0f"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6860),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000006"),
                             BloodTypeId = new Guid("1479d6c3-0c85-4cb7-a2c4-894c35e21eb1"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6860),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000007"),
                             BloodTypeId = new Guid("b160fa12-dfa5-44c7-a179-6ef0f3c7c28c"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6860),
                             Quantity = 0
                         },
                         new
                         {
                             StoredId = new Guid("10000000-0000-0000-0000-000000000008"),
                             BloodTypeId = new Guid("62ef305e-755a-4651-9ed7-6fc4b4061e79"),
-                            LastUpdated = new DateTime(2025, 6, 27, 3, 41, 44, 555, DateTimeKind.Utc).AddTicks(9760),
+                            LastUpdated = new DateTime(2025, 6, 26, 4, 26, 39, 571, DateTimeKind.Utc).AddTicks(6860),
                             Quantity = 0
                         });
                 });
@@ -1267,8 +1270,9 @@ namespace BloodDonation.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid?>("BloodTypeId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("BloodType")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
@@ -1318,8 +1322,6 @@ namespace BloodDonation.Infrastructure.Migrations
                         .HasDefaultValue("Active");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("BloodTypeId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -1490,15 +1492,6 @@ namespace BloodDonation.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BloodDonation.Domain.Users.User", b =>
-                {
-                    b.HasOne("BloodDonation.Domain.Bloods.BloodType", "BloodType")
-                        .WithMany()
-                        .HasForeignKey("BloodTypeId");
-
-                    b.Navigation("BloodType");
                 });
 
             modelBuilder.Entity("BloodDonation.Domain.Bloods.BloodType", b =>

@@ -11,6 +11,7 @@ using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateDonorInformation;
 using BloodDonation.Application.Users.UpdateUser;
+using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -138,7 +139,7 @@ public class UserController : ControllerBase
             Email = request.Email,
             Role = request.Role,
             Status = request.Status,
-            BloodType = request.BloodType,
+            BloodType= request.BloodType.Name,
             IsDonor = request.IsDonor,
             DateOfBirth = request.DateOfBirth,
             Gender = request.Gender,
