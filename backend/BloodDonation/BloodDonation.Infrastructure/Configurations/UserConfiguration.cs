@@ -15,8 +15,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.Email).IsRequired();
         builder.Property(x => x.Password).IsRequired();
-        builder.Property(x => x.BloodType).HasMaxLength(10);
-
         builder.Property(x => x.Gender)
             .HasConversion<string>()
             .IsRequired();
@@ -67,5 +65,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey<DonorInformation>(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        builder.HasOne(u => u.BloodType)
+            .WithMany()
+            .HasForeignKey(u => u.BloodTypeId)
+            .IsRequired(false);
+
     }
 }

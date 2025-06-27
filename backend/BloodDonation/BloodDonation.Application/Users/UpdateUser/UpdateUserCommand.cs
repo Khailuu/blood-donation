@@ -1,6 +1,7 @@
 ﻿using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Domain.Users;
 using BloodDonation.Application.Users.UpdateUser;
+using BloodDonation.Domain.Bloods;
 
 namespace BloodDonation.Application.Users.UpdateUser;
 

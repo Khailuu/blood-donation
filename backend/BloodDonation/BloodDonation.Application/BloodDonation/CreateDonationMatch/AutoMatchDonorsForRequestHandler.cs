@@ -8,25 +8,24 @@ public class AutoMatchDonorsForRequestHandler(IDbContext context)
 {
     public async Task<List<DonationMatch>> MatchDonorsAsync(DonationRequest request, CancellationToken cancellationToken)
     {
+        var componentType = request.ComponentType;
+        var bloodTypeId = request.BloodTypeId;
+
         var compatibleDonors = await context.Users
-            .Where(u => u.IsDonor == true && u.BloodType != null)
-            .Join(context.BloodTypes, 
-                user => user.BloodType,
-                type => type.Name,
-                (user, bloodType) => new { user, bloodType })
+            .Where(u => u.IsDonor == true && u.BloodTypeId != null)
             .Join(context.BloodCompatibility,
-                donor => new { From = donor.bloodType.BloodTypeId, request.ComponentType },
+                user => new { From = user.BloodTypeId!.Value, ComponentType = componentType },
                 comp => new { From = comp.FromBloodTypeId, comp.ComponentType },
-                (donor, comp) => new { donor, comp })
-            .Where(x => x.comp.ToBloodTypeId == request.BloodTypeId)
-            .Select(x => x.donor)
+                (user, comp) => new { user, comp })
+            .Where(x => x.comp.ToBloodTypeId == bloodTypeId)
+            .Select(x => x.user)
             .ToListAsync(cancellationToken);
 
         var matches = compatibleDonors.Select(donor => new DonationMatch
         {
             MatchId = Guid.NewGuid(),
             RequestId = request.RequestId,
-            DonorId = donor.user.UserId,
+            DonorId = donor.UserId,
             MatchedTime = DateTime.UtcNow,
             Status = DonationMatchStatus.Pending
         }).ToList();

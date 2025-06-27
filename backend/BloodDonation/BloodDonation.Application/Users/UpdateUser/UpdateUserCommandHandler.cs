@@ -15,7 +15,9 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
 {
     public async Task<Result<UpdateUserResponse>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+        var user = await context.Users
+            .Include(u => u.BloodType)
+            .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
         if (user == null)
         {
             return Result.Failure<UpdateUserResponse>(UserErrors.NotFound(request.UserId));
@@ -38,7 +40,7 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
             user.Role = request.Role ?? user.Role;
             user.Status = request.Status ?? user.Status;
             user.IsDonor = request.IsDonor ?? user.IsDonor;
-            user.BloodType = request.BloodType ?? user.BloodType;
+            user.BloodType.Name = request.BloodType ?? user.BloodType.Name;
         // }
 
         await context.SaveChangesAsync(cancellationToken);

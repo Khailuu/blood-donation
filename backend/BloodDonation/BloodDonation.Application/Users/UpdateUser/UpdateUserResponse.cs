@@ -23,7 +23,7 @@ public class UpdateUserResponse
         Email = user.Email;
         Role = user.Role;
         Status = user.Status;
-        BloodType = user.BloodType;
+        BloodType = user.BloodType.Name;
         DateOfBirth = user.DateOfBirth;
         Gender = user.Gender;
         Address = user.Address;

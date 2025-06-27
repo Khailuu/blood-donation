@@ -1,4 +1,5 @@
-﻿using BloodDonation.Domain.Donations;
+﻿using BloodDonation.Domain.Bloods;
+using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.QuestionForm;
 
 namespace BloodDonation.Domain.Users;
@@ -9,7 +10,7 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-    public string? BloodType { get; set; }
+    public Guid? BloodTypeId { get; set; }             
     public DateOnly DateOfBirth { get; set; }
     public UserGender Gender { get; set; }
     public string Address { get; set; }
@@ -21,6 +22,8 @@ public class User
     public bool IsVerified { get; set; }
     
     // Các navigation property
+    public BloodType? BloodType { get; set; }         
+
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<DonationRequest> DonationRequests { get; set; } = new List<DonationRequest>();
 
