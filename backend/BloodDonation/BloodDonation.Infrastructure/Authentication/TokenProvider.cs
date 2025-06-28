@@ -39,4 +39,9 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     }
+
+    public string GeneratePasswordResetToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
 }
