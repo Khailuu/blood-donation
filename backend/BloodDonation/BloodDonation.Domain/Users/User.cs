@@ -1,10 +1,11 @@
 ﻿using BloodDonation.Domain.Bloods;
+using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.QuestionForm;
 
 namespace BloodDonation.Domain.Users;
 
-public class User
+public class User : Entity
 {
     public Guid UserId { get; set; }
     public string Name { get; set; }

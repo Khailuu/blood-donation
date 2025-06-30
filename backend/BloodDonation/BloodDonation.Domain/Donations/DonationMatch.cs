@@ -1,8 +1,9 @@
-﻿using BloodDonation.Domain.Users;
+﻿using BloodDonation.Domain.Common;
+using BloodDonation.Domain.Users;
 
 namespace BloodDonation.Domain.Donations;
 
-public class DonationMatch
+public class DonationMatch : Entity
 {
     public Guid MatchId { get; set; }
     public Guid RequestId { get; set; }

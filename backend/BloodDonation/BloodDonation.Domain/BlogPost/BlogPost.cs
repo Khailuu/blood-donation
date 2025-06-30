@@ -1,8 +1,9 @@
-﻿using BloodDonation.Domain.Users;
+﻿using BloodDonation.Domain.Common;
+using BloodDonation.Domain.Users;
 
 namespace BloodDonation.Domain.BlogPost;
 
-public class BlogPost
+public class BlogPost : Entity
 {
     public Guid PostId { get; set; }
     public Guid UserId { get; set; }

@@ -3,7 +3,7 @@ using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Users.ForgetPassword;
 using BloodDonation.Application.Users.Login;
 using BloodDonation.Application.Users.Register;
-using BloodDonation.Application.Users.ResetPassword;
+// using BloodDonation.Application.Users.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,17 +76,17 @@ public class AuthenticateController : ControllerBase
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
-    [HttpPost("auth/reset-password")]
-    public async Task<IResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
-    {
-        var command = new ResetPasswordCommand()
-        {
-            Token = request.Token,
-            NewPassword = request.NewPassword
-        };
-
-        var result = await _mediator.Send(command, cancellationToken);
-        return result.MatchOk();
-    }
+    // [HttpPost("auth/reset-password")]
+    // public async Task<IResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+    // {
+    //     var command = new ResetPasswordCommand()
+    //     {
+    //         Token = request.Token,
+    //         NewPassword = request.NewPassword
+    //     };
+    //
+    //     var result = await _mediator.Send(command, cancellationToken);
+    //     return result.MatchOk();
+    // }
 
 }
