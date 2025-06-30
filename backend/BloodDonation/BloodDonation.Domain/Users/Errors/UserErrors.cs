@@ -38,6 +38,9 @@ public static class UserErrors
     public static readonly Error SamePassword = Error.Conflict(
         "SamePassword",
         "New password cannot be the same as the current password.");
+    public static readonly Error InvalidGoogleToken = Error.Failure(
+        "Users.InvalidGoogleToken",
+        "Google token is invalid");
 
     public static readonly Error IsNotVerified = Error.Conflict(
         "NotVerified",
