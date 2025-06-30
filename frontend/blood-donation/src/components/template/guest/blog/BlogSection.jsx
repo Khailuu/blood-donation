@@ -1,27 +1,31 @@
 import React, { useState } from "react";
 import { Card, Col, Row, Tag, Typography } from "antd";
+import { useNavigate } from "react-router-dom";
 import { articles, categories } from "../../../../assets/blog";
 const { Title, Paragraph } = Typography;
 
 export const BlogSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const navigate = useNavigate(); // 👉 dùng để chuyển trang
 
   const filteredArticles =
     selectedCategory === "ALL"
       ? articles
       : articles.filter((item) => item.label === selectedCategory);
+
   return (
     <div
       style={{
         padding: "40px 60px",
         background: "#fff",
         borderRadius: "50px",
-        marginBottom: "40px"
+        marginBottom: "40px",
       }}
     >
       <Title level={2} style={{ fontFamily: "raleway", fontWeight: "bold" }}>
         CATEGORIES
       </Title>
+
       <div
         style={{ marginBottom: 40, display: "flex", gap: 12, flexWrap: "wrap" }}
       >
@@ -51,6 +55,7 @@ export const BlogSection = () => {
           <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
+              onClick={() => navigate(`/blog/${item.key}`)} // 👉 chuyển sang trang chi tiết
               cover={
                 <div style={{ position: "relative" }}>
                   <img
