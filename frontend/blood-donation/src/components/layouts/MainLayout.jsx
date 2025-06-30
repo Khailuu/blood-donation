@@ -22,7 +22,7 @@ export const MainLayout = () => {
       <BackgroundCloud />
       <div className="" style={{ zIndex: 2 }}>
         {!hideLayout && <HeaderComponent />}
-        <div className="flex-1">
+        <div className="flex-1" style={{margin: "0 100px"}}>
           <Outlet />
         </div>
         {!hideLayout && role !== "staff" && role !== "admin" && <FooterComponent />}

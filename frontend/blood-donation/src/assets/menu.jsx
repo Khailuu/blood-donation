@@ -18,7 +18,7 @@ const menuItemsMember = [
   { label: "Home", key: "home", path: "/app/member/home" },
   { label: "Donate", key: "donate", path: "/app/member/donate" },
   { label: "Schedule", key: "schedule", path: "/app/member/schedule" },
-  { label: "Blog", key: "blog", path: "app/member/blog" }, 
+  { label: "Blog", key: "blogs", path: "app/member/blogs" }, 
   { label: "FAQ", key: "faq", path: "/app/member/faq" },
 ];
 

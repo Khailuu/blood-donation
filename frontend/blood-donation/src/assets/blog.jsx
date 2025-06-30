@@ -4,6 +4,7 @@ const categories = ["ALL", "BLOG", "THEY TALK ABOUT US", "SUCCESS STORIES"];
 
 const articles = [
   {
+
     key: 1,
     title:
       "Il Mattino: “Verso Sud Youth” the Rosso startup: «Fast blood donations with a click»",
@@ -14,6 +15,7 @@ const articles = [
     image: blog1
   },
   {
+
     key: 2,
     title:
       "“Donating is an act that enriches those who do it and saves those who receive it”: Dialogue with Dr. Sandro Macchi",
@@ -24,6 +26,7 @@ const articles = [
     image: blog2
   },
   {
+ 
     key: 3,
     title:
       "Blood Donation and Hashimoto's Thyroiditis: Can You Donate?",
@@ -34,6 +37,7 @@ const articles = [
     image: blog3
   },
   {
+
     key: 4,
     title: "Donating Blood After a Trip Abroad",
     description:
