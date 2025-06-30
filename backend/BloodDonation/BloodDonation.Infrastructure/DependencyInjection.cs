@@ -64,6 +64,7 @@ public static class DependencyInjection
         services.AddSingleton<ITokenProvider, TokenProvider>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IEmailSender, EmailSender>();
+        services.AddSingleton<IPayload, Payload>();
 
 
     
