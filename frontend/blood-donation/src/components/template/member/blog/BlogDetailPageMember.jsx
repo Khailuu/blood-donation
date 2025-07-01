@@ -1,13 +1,24 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Tag, Button, Row, Col, Divider, List, Avatar, Input } from "antd";
+import {
+  Typography,
+  Tag,
+  Button,
+  Row,
+  Col,
+  Divider,
+  List,
+  Input,
+} from "antd";
+import Avatar from "antd/es/avatar";
+import { Comment } from '@ant-design/compatible';
+import { UserOutlined, MessageOutlined } from "@ant-design/icons";
 import { articles } from "../../../../assets/blog";
 import { banner2 } from "../../../../assets";
-import { UserOutlined, MessageOutlined } from "@ant-design/icons";
+
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
 
-// Mock comments data
 const mockComments = [
   {
     author: "Nguyễn Văn A",
@@ -37,14 +48,14 @@ export const BlogDetailPageMember = () => {
 
   const handleCommentSubmit = () => {
     if (newComment.trim() === "") return;
-    
+
     const comment = {
-      author: "Người dùng",
-      avatar: <Avatar icon={<UserOutlined />} />,
+      author: "User",
+      avatar: "https://joeschmoe.io/api/v1/random",
       content: newComment,
       datetime: new Date().toLocaleString(),
     };
-    
+
     setComments([...comments, comment]);
     setNewComment("");
   };
@@ -56,6 +67,7 @@ export const BlogDetailPageMember = () => {
         background: "#fff",
         borderRadius: 30,
         margin: "40px",
+        fontFamily: "Raleway",
       }}
     >
       <Col gutter={[32, 32]}>
@@ -72,18 +84,27 @@ export const BlogDetailPageMember = () => {
             }}
           />
         </Row>
-        <Row xs={24} md={10} style={{display: "flex", justifyContent: "space-between"}}>
+        <Row
+          xs={24}
+          md={10}
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Col md={4}>
-            <img src={banner2} alt="" style={{width: "40%"}}/>
+            <img src={banner2} alt="" style={{ width: "40%" }} />
             <Divider style={{ backgroundColor: "black" }}></Divider>
-            <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Title style={{ fontFamily: "Raleway", fontSize: "20px"}}>Date</Title>
-              <Paragraph type="secondary" >
-                <Text type="secondary" style={{fontFamily: "Raleway"}}> {blog.date}</Text>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Title style={{ fontFamily: "Raleway", fontSize: "20px" }}>
+                Date
+              </Title>
+              <Paragraph type="secondary">
+                <Text type="secondary" style={{ fontFamily: "Raleway" }}>
+                  {" "}
+                  {blog.date}
+                </Text>
               </Paragraph>
             </div>
           </Col>
-          <Col md={17} >
+          <Col md={17}>
             <Title
               level={1}
               style={{ marginTop: 16, fontFamily: "Raleway", fontWeight: 600 }}
@@ -91,7 +112,9 @@ export const BlogDetailPageMember = () => {
               {blog.title}
             </Title>
 
-            <Paragraph style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}>
+            <Paragraph
+              style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}
+            >
               {blog.description}
             </Paragraph>
 
@@ -100,15 +123,15 @@ export const BlogDetailPageMember = () => {
               onClick={() => navigate(-1)}
               style={{
                 textDecoration: "none",
-                color:"#fff",
-                fontSize:"15px",
+                color: "#fff",
+                fontSize: "15px",
                 backgroundColor: "#bd0026",
                 borderRadius: 50,
                 height: 40,
                 fontWeight: 600,
                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 transition: "all 0.3s",
-                marginTop: "40px"
+                marginTop: "40px",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.transform = "scale(0.95)")
@@ -124,7 +147,10 @@ export const BlogDetailPageMember = () => {
       </Col>
 
       {/* Comments Section */}
-      <Divider orientation="left" style={{ fontSize: 24, fontWeight: 600, marginTop: 60 }}>
+      <Divider
+        orientation="left"
+        style={{ fontSize: 24, fontWeight: 600, marginTop: 60 }}
+      >
         <MessageOutlined style={{ marginRight: 10 }} />
         Comments ({comments.length})
       </Divider>
@@ -135,19 +161,21 @@ export const BlogDetailPageMember = () => {
         dataSource={comments}
         renderItem={(item) => (
           <li>
-            <div
+            <Comment
               author={<a>{item.author}</a>}
               avatar={<Avatar src={item.avatar} icon={<UserOutlined />} />}
               content={<p>{item.content}</p>}
               datetime={<span>{item.datetime}</span>}
-            ></div>
+            />
           </li>
         )}
         style={{ marginTop: 30 }}
       />
 
       <div style={{ marginTop: 40 }}>
-        <Title level={4} style={{ fontFamily: "Raleway" }}>Leave a comment</Title>
+        <Title level={4} style={{ fontFamily: "Raleway" }}>
+          Leave a comment
+        </Title>
         <TextArea
           rows={4}
           value={newComment}

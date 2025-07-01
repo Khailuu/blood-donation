@@ -41,7 +41,63 @@ const articles = [
     label: "BLOG",
     image: blog4,
   },
+  {
+    key: 5,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+  {
+    key: 6,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+  {
+    key: 7,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+  {
+    key: 8,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+  {
+    key: 9,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+  {
+    key: 10,
+    title: "Donating Blood After a Trip Abroad",
+    description:
+      "Have you been abroad recently or are you planning to go? On this page you will find all the information you need",
+    date: "29/05/2024",
+    label: "BLOG",
+    image: blog4,
+  },
+ 
 ];
+
 
 const labelColors = {
   BLOG: "black",

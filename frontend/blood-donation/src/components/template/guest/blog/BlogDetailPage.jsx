@@ -1,11 +1,19 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Tag, Button, Row, Col, Divider, List, Avatar, Input } from "antd";
+import {
+  Typography,
+  Button,
+  Row,
+  Col,
+  Divider,
+  List,
+  Avatar,
+} from "antd";
 import { articles } from "../../../../assets/blog";
 import { banner2 } from "../../../../assets";
 import { UserOutlined, MessageOutlined } from "@ant-design/icons";
+
 const { Title, Paragraph, Text } = Typography;
-const { TextArea } = Input;
 
 // Mock comments data
 const mockComments = [
@@ -26,28 +34,11 @@ const mockComments = [
 export const BlogDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [comments, setComments] = React.useState(mockComments);
-  const [newComment, setNewComment] = React.useState("");
-
   const blog = articles.find((item) => item.key === parseInt(id));
 
   if (!blog) {
     return <div>Blog not found!</div>;
   }
-
-  const handleCommentSubmit = () => {
-    if (newComment.trim() === "") return;
-    
-    const comment = {
-      author: "Người dùng",
-      avatar: <Avatar icon={<UserOutlined />} />,
-      content: newComment,
-      datetime: new Date().toLocaleString(),
-    };
-    
-    setComments([...comments, comment]);
-    setNewComment("");
-  };
 
   return (
     <div
@@ -72,26 +63,42 @@ export const BlogDetailPage = () => {
             }}
           />
         </Row>
-        <Row xs={24} md={10} style={{display: "flex", justifyContent: "space-between"}}>
+
+        <Row
+          xs={24}
+          md={10}
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Col md={4}>
-            <img src={banner2} alt="" style={{width: "40%"}}/>
-            <Divider style={{ backgroundColor: "black" }}></Divider>
-            <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Title style={{ fontFamily: "Raleway", fontSize: "20px"}}>Date</Title>
-              <Paragraph type="secondary" >
-                <Text type="secondary" style={{fontFamily: "Raleway"}}> {blog.date}</Text>
+            <img src={banner2} alt="" style={{ width: "40%" }} />
+            <Divider style={{ backgroundColor: "black" }} />
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Title style={{ fontFamily: "Raleway", fontSize: "20px" }}>
+                Date
+              </Title>
+              <Paragraph type="secondary">
+                <Text type="secondary" style={{ fontFamily: "Raleway" }}>
+                  {blog.date}
+                </Text>
               </Paragraph>
             </div>
           </Col>
-          <Col md={17} >
+
+          <Col md={17}>
             <Title
               level={1}
-              style={{ marginTop: 16, fontFamily: "Raleway", fontWeight: 600 }}
+              style={{
+                marginTop: 16,
+                fontFamily: "Raleway",
+                fontWeight: 600,
+              }}
             >
               {blog.title}
             </Title>
 
-            <Paragraph style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}>
+            <Paragraph
+              style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}
+            >
               {blog.description}
             </Paragraph>
 
@@ -100,15 +107,15 @@ export const BlogDetailPage = () => {
               onClick={() => navigate(-1)}
               style={{
                 textDecoration: "none",
-                color:"#fff",
-                fontSize:"15px",
+                color: "#fff",
+                fontSize: "15px",
                 backgroundColor: "#bd0026",
                 borderRadius: 50,
                 height: 40,
                 fontWeight: 600,
                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 transition: "all 0.3s",
-                marginTop: "40px"
+                marginTop: "40px",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.transform = "scale(0.95)")
@@ -124,49 +131,30 @@ export const BlogDetailPage = () => {
       </Col>
 
       {/* Comments Section */}
-      <Divider orientation="left" style={{ fontSize: 24, fontWeight: 600, marginTop: 60 }}>
+      <Divider
+        orientation="left"
+        style={{ fontSize: 24, fontWeight: 600, marginTop: 60 }}
+      >
         <MessageOutlined style={{ marginRight: 10 }} />
-        Comments ({comments.length})
+        Comments ({mockComments.length})
       </Divider>
 
       <List
         className="comment-list"
         itemLayout="horizontal"
-        dataSource={comments}
+        dataSource={mockComments}
         renderItem={(item) => (
-          <li>
-            <div
-              author={<a>{item.author}</a>}
+          <List.Item>
+            <List.Item.Meta
               avatar={<Avatar src={item.avatar} icon={<UserOutlined />} />}
-              content={<p>{item.content}</p>}
-              datetime={<span>{item.datetime}</span>}
-            ></div>
-          </li>
+              title={<a>{item.author}</a>}
+              description={item.content}
+            />
+            <div style={{ fontSize: 12, color: "#888" }}>{item.datetime}</div>
+          </List.Item>
         )}
         style={{ marginTop: 30 }}
       />
-
-      <div style={{ marginTop: 40 }}>
-        <Title level={4} style={{ fontFamily: "Raleway" }}>Leave a comment</Title>
-        <TextArea
-          rows={4}
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Write your comment here..."
-          style={{ marginBottom: 16 }}
-        />
-        <Button
-          type="primary"
-          onClick={handleCommentSubmit}
-          style={{
-            backgroundColor: "#bd0026",
-            borderRadius: 50,
-            fontWeight: 600,
-          }}
-        >
-          Post Comment
-        </Button>
-      </div>
     </div>
   );
 };
