@@ -13,7 +13,6 @@ import {
 import moment from "moment";
 import { userService } from "../../../services/manageUserService";
 
-
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -44,7 +43,8 @@ export const ProfileMember = () => {
           address: user.address || "",
           phone: user.phone || "",
         });
-      } catch (err) {
+      // eslint-disable-next-line no-unused-vars
+      } catch (error) {
         message.error("Failed to load user profile");
       }
     };
@@ -84,7 +84,7 @@ export const ProfileMember = () => {
         fontFamily: "Raleway",
       }}
     >
-      <Title level={2} style={{ fontWeight: "bold" }}>
+      <Title level={2} style={{fontFamily: "Raleway", fontWeight: "bold" }}>
         Account Information
       </Title>
 
@@ -102,17 +102,7 @@ export const ProfileMember = () => {
               label="Email"
               rules={[{ required: true, type: "email" }]}
             >
-              <Input style={inputStyle} disabled />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[{ required: true }]}
-            >
-              <Input.Password style={inputStyle} />
+              <Input style={inputStyle} />
             </Form.Item>
           </Col>
 
@@ -150,12 +140,19 @@ export const ProfileMember = () => {
             htmlType="submit"
             type="primary"
             style={{
-              backgroundColor: "#b8002b",
-              borderColor: "#b8002b",
-              borderRadius: 24,
-              padding: "6px 24px",
-              fontWeight: "bold",
-            }}
+                backgroundColor: "#bd0026",
+                borderRadius: 50,
+                height: 40,
+                fontWeight: 600,
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "all 0.3s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
           >
             Save Changes
           </Button>
@@ -169,4 +166,6 @@ const inputStyle = {
   borderRadius: 32,
   height: 48,
   width: "100%",
+  fontFamily:"Raleway",
+  fontWeight: 600
 };
