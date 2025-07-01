@@ -1,27 +1,32 @@
 import React, { useState } from "react";
-import { Card, Col, Row, Tag, Typography } from "antd";
+import { Card, Col, Row, Tag, Typography, Button } from "antd";
+import { HeartOutlined, HeartFilled, MessageOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { articles, categories } from "../../../../assets/blog";
 const { Title, Paragraph } = Typography;
 
 export const BlogSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const navigate = useNavigate();
 
   const filteredArticles =
     selectedCategory === "ALL"
       ? articles
       : articles.filter((item) => item.label === selectedCategory);
+
   return (
     <div
       style={{
         padding: "40px 60px",
         background: "#fff",
         borderRadius: "50px",
-        marginBottom: "40px"
+        marginBottom: "40px",
       }}
     >
       <Title level={2} style={{ fontFamily: "raleway", fontWeight: "bold" }}>
         CATEGORIES
       </Title>
+
       <div
         style={{ marginBottom: 40, display: "flex", gap: 12, flexWrap: "wrap" }}
       >
@@ -51,6 +56,7 @@ export const BlogSection = () => {
           <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
+              onClick={() => navigate(`/blog/${item.key}`)}
               cover={
                 <div style={{ position: "relative" }}>
                   <img
@@ -103,16 +109,57 @@ export const BlogSection = () => {
                 <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
                   {item.date}
                 </Paragraph>
-                <Paragraph strong style={{ fontWeight: "bold" }}>
+                <Paragraph 
+                  strong 
+                  style={{ 
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                    minHeight: 44, 
+                  }}
+                >
                   {item.title}
                 </Paragraph>
               </div>
-              <Paragraph
-                type="secondary"
-                style={{ fontSize: 14, marginTop: 12 }}
-              >
-                {item.description}
-              </Paragraph>
+
+              <div style={{ marginTop: "auto" }}>
+                <Row 
+                  align="middle" 
+                  style={{ 
+                    marginTop: 16,
+                    borderTop: "1px solid black",
+                    paddingTop: 12,
+                  }}
+                >
+                  <Button
+                    type="text"
+                    icon={
+                      item.likedBy?.includes("user123") ? (
+                        <HeartFilled style={{ color: "#bd0026" }} />
+                      ) : (
+                        <HeartOutlined style={{ color: "#bd0026" }} />
+                      )
+                    }
+                    disabled
+                    style={{ 
+                      cursor: "default",
+                      padding: "0 8px",
+                    }}
+                  >
+                    {item.likes || 0}
+                  </Button>
+                  <Button
+                    type="text"
+                    icon={<MessageOutlined style={{ color: "#555" }} />}
+                    disabled
+                    style={{ 
+                      cursor: "default",
+                      padding: "0 8px",
+                    }}
+                  >
+                    {item.comments || 0}
+                  </Button>
+                </Row>
+              </div>
             </Card>
           </Col>
         ))}
