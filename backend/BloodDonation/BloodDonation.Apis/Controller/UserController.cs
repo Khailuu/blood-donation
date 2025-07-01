@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Users.ActivateUser;
+using BloodDonation.Application.Users.ChangePassword;
 using BloodDonation.Application.Users.CreateHealthForm;
 using BloodDonation.Application.Users.GetHealthForm;
 using BloodDonation.Application.Users.CreateDonorInformation;
@@ -202,4 +204,34 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
+    
+    [HttpPut("user/activate-user")]
+    public async Task<IResult> ActivateUser([FromBody] ActivateUserRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ActivateUserCommand()
+        {
+            Email = request.Email,
+            NewPassword = request.NewPassword
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.MatchOk();
+    }
+    
+    [Authorize]
+    [HttpPut("user/change-password")]
+    public async Task<IResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ChangePasswordCommand
+        {
+            CurrentPassword = request.CurrentPassword,
+            NewPassword = request.NewPassword
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.MatchOk();
+    }
+
 }

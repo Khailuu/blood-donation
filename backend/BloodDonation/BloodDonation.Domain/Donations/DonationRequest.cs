@@ -1,9 +1,10 @@
 ﻿using BloodDonation.Domain.Bloods;
+using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Users;
 
 namespace BloodDonation.Domain.Donations;
 
-public class DonationRequest
+public class DonationRequest : Entity
 {
     public Guid RequestId { get; set; }
     public Guid BloodTypeId { get; set; }

@@ -3,6 +3,7 @@ using BloodDonation.Domain.BlogPost;
 using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
+using BloodDonation.Domain.EmailTemplates;
 using BloodDonation.Domain.QuestionForm;
 using BloodDonation.Domain.Users;
 using BloodDonation.Infrastructure.Database;
@@ -29,6 +30,11 @@ public sealed class ApplicationDbContext(
     public DbSet<HealthForm> HealthForms { get; set; }
     public DbSet<HealthQuestion> HealthQuestions { get; set; }
     public DbSet<HealthAnswer> HealthAnswers { get; set; }
+    public DbSet<EmailTemplate> EmailTemplates { get; set; }
+    public DbSet<BlogPostLike> BlogPostLikes { get; set; }
+    public DbSet<BlogPostComment> BlogPostComments { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

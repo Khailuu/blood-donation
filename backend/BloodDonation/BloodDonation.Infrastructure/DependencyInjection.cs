@@ -3,6 +3,8 @@ using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Infrastructure.Authentication;
 using BloodDonation.Infrastructure.Database;
+using BloodDonation.Infrastructure.Services;
+using BloodDonation.Infrastructure.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -38,6 +40,30 @@ public static class DependencyInjection
         services.AddHealthChecks().AddNpgSql(configuration.GetConnectionString("Database")!);
         return services;
     }
+    
+    private static IServiceCollection AddMailService(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var mailSettings = configuration.GetSection(nameof(MailSettings)).Get<MailSettings>();
+
+        services.Configure<MailSettings>(options =>
+        {
+            options.SmtpServer = mailSettings!.SmtpServer;
+            options.SmtpPort = mailSettings!.SmtpPort;
+            options.SmtpUsername = mailSettings!.SmtpUsername;
+            options.SmtpPassword = mailSettings!.SmtpPassword;
+        });
+
+        services.AddTransient<IMailService, MailService>();
+        return services;
+    }
+
+    private static IServiceCollection AddClientUrl(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<ClientSettings>(configuration.GetSection(nameof(ClientSettings)));
+        return services;
+    }
 
     private static IServiceCollection AddAuthenticationInternal(this IServiceCollection services, IConfiguration configuration)
     {
@@ -63,8 +89,11 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<ITokenProvider, TokenProvider>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<IEmailSender, EmailSender>();
+
+        // services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<IMailService, MailService>();
         services.AddSingleton<IPayload, Payload>();
+
 
 
     

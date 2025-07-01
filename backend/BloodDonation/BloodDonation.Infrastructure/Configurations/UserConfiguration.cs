@@ -69,6 +69,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany()
             .HasForeignKey(u => u.BloodTypeId)
             .IsRequired(false);
+        
+        builder.HasMany(u => u.BlogPostLikes)
+            .WithOne(l => l.User)
+            .HasForeignKey(l => l.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.BlogPostComments)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

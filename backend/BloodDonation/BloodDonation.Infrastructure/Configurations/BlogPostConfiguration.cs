@@ -25,5 +25,16 @@ public class BlogPostConfiguration : IEntityTypeConfiguration<BlogPost>
             .WithMany(u => u.BlogPosts)
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(p => p.Likes)
+            .WithOne(l => l.Post)
+            .HasForeignKey(l => l.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(p => p.Comments)
+            .WithOne(c => c.Post)
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

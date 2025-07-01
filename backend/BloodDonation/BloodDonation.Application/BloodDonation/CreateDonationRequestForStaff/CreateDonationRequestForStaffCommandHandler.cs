@@ -28,7 +28,7 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
             ComponentType = request.ComponentType,
             RequestTime = DateTime.UtcNow,
             Deadline = request.Deadline,
-            IsEmergency = request.IsEmergency,
+            IsEmergency = true,
             EmergencyContactName = request.EmergencyContactName,
             EmergencyContactPhone = request.EmergencyContactPhone,
             Note = request.Note,

@@ -36,7 +36,7 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
         user.Phone = request.Phone ?? user.Phone;
 
         // if (isStaff)
-        // {
+        // 
             user.Role = request.Role ?? user.Role;
             user.Status = request.Status ?? user.Status;
             user.IsDonor = request.IsDonor ?? user.IsDonor;
