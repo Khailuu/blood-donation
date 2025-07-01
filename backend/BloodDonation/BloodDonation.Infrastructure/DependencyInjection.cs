@@ -20,6 +20,8 @@ public static class DependencyInjection
         => services
             .AddDatabase(configuration)
             .AddHealthChecks(configuration)
+            .AddClientUrl(configuration)            
+            .AddMailService(configuration)
             .AddAuthenticationInternal(configuration);
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -93,9 +95,7 @@ public static class DependencyInjection
         // services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IMailService, MailService>();
         services.AddSingleton<IPayload, Payload>();
-
-
-
+        services.AddScoped<ITemplateRenderer, TemplateRenderer>();
     
         return services;
     }
