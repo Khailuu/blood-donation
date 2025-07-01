@@ -1,18 +1,31 @@
-import React, { useState } from "react";
-import { Card, Col, Row, Tag, Typography, Button } from "antd";
+import React, { useState, useEffect } from "react";
+import { Card, Col, Row, Tag, Typography, Button, Pagination } from "antd";
 import { HeartOutlined, HeartFilled, MessageOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { articles, categories } from "../../../../assets/blog";
+import "../../../../css/guest/BlogSection.css"
+
 const { Title, Paragraph } = Typography;
 
 export const BlogSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
   const navigate = useNavigate();
 
   const filteredArticles =
     selectedCategory === "ALL"
       ? articles
       : articles.filter((item) => item.label === selectedCategory);
+
+  const paginatedArticles = filteredArticles.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   return (
     <div
@@ -52,7 +65,7 @@ export const BlogSection = () => {
       </div>
 
       <Row gutter={[24, 32]}>
-        {filteredArticles.map((item) => (
+        {paginatedArticles.map((item) => (
           <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
@@ -95,6 +108,7 @@ export const BlogSection = () => {
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "#fffafa",
+                transition: "all 0.3s",
               }}
               bodyStyle={{
                 padding: 16,
@@ -164,6 +178,16 @@ export const BlogSection = () => {
           </Col>
         ))}
       </Row>
+
+      <div style={{display: "flex", justifyContent: "center", textAlign: "center", marginTop: 32 }}>
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredArticles.length}
+          onChange={(page) => setCurrentPage(page)}
+          showSizeChanger={false}
+        />
+      </div>
     </div>
   );
 };

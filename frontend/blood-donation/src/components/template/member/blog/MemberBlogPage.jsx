@@ -11,6 +11,7 @@ import {
   Form,
   message,
   Popconfirm,
+  Pagination,
 } from "antd";
 import {
   HeartOutlined,
@@ -20,16 +21,18 @@ import {
 } from "@ant-design/icons";
 import { articles as mockArticles } from "../../../../assets/blog";
 import { useNavigate } from "react-router-dom";
+import "../../../../css/member/MemberBlogPage.css";
 
 const { Title, Paragraph } = Typography;
 const currentUserId = "user123";
 
 export const MemberBlogPage = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
   const [articles, setArticles] = useState(
     mockArticles.map((item) => ({ ...item, likedBy: [] }))
   );
   const [activeView, setActiveView] = useState("ALL");
-
   const [modalOpen, setModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [form] = Form.useForm();
@@ -39,6 +42,11 @@ export const MemberBlogPage = () => {
     activeView === "ALL"
       ? articles
       : articles.filter((item) => item.authorId === currentUserId);
+
+  const paginatedArticles = filteredArticles.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const handleCreateOrEdit = (values) => {
     if (editingArticle) {
@@ -115,24 +123,21 @@ export const MemberBlogPage = () => {
             padding: 4,
           }}
         >
-          {[
-            { key: "ALL", label: "All Blogs" },
-            { key: "MY", label: "My Blogs" },
-          ].map((tab) => (
+          {[{ key: "ALL", label: "All Blogs" }, { key: "MY", label: "My Blogs" }].map((tab) => (
             <Button
               key={tab.key}
-              onClick={() => setActiveView(tab.key)}
+              onClick={() => {
+                setActiveView(tab.key);
+                setCurrentPage(1);
+              }}
               style={{
                 fontFamily: "Raleway",
                 border: "none",
-                backgroundColor:
-                  activeView === tab.key ? "#bd0026" : "transparent",
+                backgroundColor: activeView === tab.key ? "#bd0026" : "transparent",
                 color: activeView === tab.key ? "white" : "#444",
                 padding: "6px 20px",
                 borderRadius: 999,
                 fontWeight: activeView === tab.key ? "bold" : "normal",
-                cursor: "pointer",
-                transition: "all 0.3s",
               }}
             >
               {tab.label}
@@ -140,43 +145,31 @@ export const MemberBlogPage = () => {
           ))}
         </div>
 
-        <div>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              form.resetFields();
-              setEditingArticle(null);
-              setModalOpen(true);
-            }}
-            style={{
-              backgroundColor: "#bd0026",
-              borderRadius: 50,
-              height: 40,
-              fontWeight: 600,
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              transition: "all 0.3s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(0.95)")
-            }
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            Create Blog
-          </Button>
-        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            form.resetFields();
+            setEditingArticle(null);
+            setModalOpen(true);
+          }}
+          style={{
+            backgroundColor: "#bd0026",
+            borderRadius: 50,
+            height: 40,
+            fontWeight: 600,
+          }}
+        >
+          Create Blog
+        </Button>
       </Row>
 
       <Row gutter={[24, 32]}>
-        {filteredArticles.map((item) => (
+        {paginatedArticles.map((item) => (
           <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
               onClick={() => navigate(`/app/member/blogs/${item.key}`)}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)")
-              }
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               cover={
                 <div style={{ position: "relative" }}>
                   <img
@@ -188,7 +181,6 @@ export const MemberBlogPage = () => {
                       objectFit: "cover",
                       borderTopLeftRadius: 8,
                       borderTopRightRadius: 8,
-                      transition: "transform 0.3s",
                     }}
                   />
                   <Tag
@@ -216,7 +208,6 @@ export const MemberBlogPage = () => {
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "#fffafa",
-                transition: "all 0.3s",
               }}
               bodyStyle={{
                 padding: 16,
@@ -228,29 +219,14 @@ export const MemberBlogPage = () => {
               }}
             >
               <div>
-                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
-                  {item.date}
-                </Paragraph>
-                <Paragraph
-                  strong
-                  style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}
-                >
+                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>{item.date}</Paragraph>
+                <Paragraph strong style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}>
                   {item.title}
                 </Paragraph>
               </div>
-              {/* <Paragraph
-                type="secondary"
-                style={{ fontSize: 14, marginTop: 12 }}
-              >
-                {item.description}
-              </Paragraph> */}
 
               <div style={{ marginTop: "auto" }}>
-                <Row
-                  justify="space-between"
-                  align="middle"
-                  style={{ marginTop: 16 }}
-                >
+                <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
                   <Col>
                     <Button
                       type="text"
@@ -307,10 +283,7 @@ export const MemberBlogPage = () => {
                           <Button
                             size="small"
                             danger
-                            style={{
-                              borderRadius: 8,
-                              fontWeight: 500,
-                            }}
+                            style={{ borderRadius: 8, fontWeight: 500 }}
                             onClick={(e) => e.stopPropagation()}
                           >
                             Delete
@@ -327,11 +300,7 @@ export const MemberBlogPage = () => {
       </Row>
 
       <Modal
-        title={
-          <Title level={4} style={{ margin: 0 }}>
-            {editingArticle ? "Edit Blog" : "Create Blog"}
-          </Title>
-        }
+        title={<Title level={4}>{editingArticle ? "Edit Blog" : "Create Blog"}</Title>}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={() => form.submit()}
@@ -350,10 +319,7 @@ export const MemberBlogPage = () => {
             <Input placeholder="Enter blog title" />
           </Form.Item>
           <Form.Item name="description" label="Short Description">
-            <Input.TextArea
-              rows={3}
-              placeholder="Enter a short blog summary..."
-            />
+            <Input.TextArea rows={3} placeholder="Enter a short blog summary..." />
           </Form.Item>
           <Form.Item name="label" label="Category">
             <Input placeholder="e.g. BLOG / SUCCESS STORIES" />
@@ -363,6 +329,24 @@ export const MemberBlogPage = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          textAlign: "center",
+          marginTop: 32,
+        }}
+      >
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredArticles.length}
+          onChange={(page) => setCurrentPage(page)}
+          showSizeChanger={false}
+          style={{ fontFamily: "Raleway" }}
+        />
+      </div>
     </div>
   );
 };
