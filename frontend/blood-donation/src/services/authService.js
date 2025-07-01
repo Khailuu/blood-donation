@@ -24,6 +24,7 @@ export const authService = {
           role: roleStr,
           email,
           name: name || email.split("@")[0],
+
         })
       );
 

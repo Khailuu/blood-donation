@@ -32,14 +32,12 @@ export const DonateSchedule = () => {
     <div
       style={{
         minHeight: "100vh",
-        background: "#fff2f2",
         padding: "48px 16px",
         fontFamily: "Raleway",
       }}
     >
       <Card
         style={{
-          maxWidth: 1100,
           margin: "0 auto",
           borderRadius: 20,
           padding: 24,

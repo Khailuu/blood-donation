@@ -1,68 +1,32 @@
 import React, { useState } from "react";
-import { Typography, Button, Checkbox, Card, Radio, Progress } from "antd";
+import {
+  Typography,
+  Button,
+  Checkbox,
+  Card,
+  Radio,
+  Progress,
+  message,
+} from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import "../../../css/custom-radio.css";
+import { steps } from "../../../assets/survey";
+import "../../../css/custom-checkbox.css"
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text, Paragraph } = Typography;
 
-const steps = [
-  {
-    section: 2,
-    totalQuestions: 3,
-    questions: [
-      {
-        title: "Have you ever donated?",
-        options: ["Yes", "No"],
-        subQuestion: {
-          condition: "Yes",
-          title: "When was your last donation?",
-          options: ["1 month ago", "3 months ago", "More than 6 months ago"],
-        },
-      },
-      {
-        title: "Do you feel healthy today?",
-        options: ["Yes", "No"],
-      },
-      {
-        title: "Have you slept at least 5 hours?",
-        options: ["Yes", "No"],
-      },
-    ],
-  },
-  {
-    section: 3,
-    totalQuestions: 2,
-    questions: [
-      {
-        title: "Did you eat in the last 4 hours?",
-        options: ["Yes", "No"],
-      },
-      {
-        title: "Do you weigh more than 50kg?",
-        options: ["Yes", "No"],
-      },
-    ],
-  },
-  {
-    section: 4,
-    totalQuestions: 2,
-    questions: [
-      {
-        title: "Do you have any chronic diseases?",
-        options: ["Yes", "No"],
-      },
-      {
-        title: "Have you taken any medication in the last 48 hours?",
-        options: ["Yes", "No"],
-      },
-    ],
-  },
-];
-
 export const HealthSurvey = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [accepted, setAccepted] = useState(false);
   const [answers, setAnswers] = useState({});
+  const [showIntro, setShowIntro] = useState(false);
 
+  const totalQuestions = steps.reduce(
+    (sum, section) => sum + section.questions.length,
+    0
+  );
   const stepOffset = step - 1;
 
   const getCurrentSection = () => {
@@ -87,42 +51,150 @@ export const HealthSurvey = () => {
     step > 0 ? currentSection.questions[questionIndex] : null;
 
   const handleNext = () => {
-    if (step === 0 && !accepted) return;
-    setStep((prev) => prev + 1);
+    if (step === 0 && accepted) {
+      setStep(1);
+      return;
+    }
+
+    if (step < totalQuestions) {
+      const isLastQuestionInSection =
+        questionIndex + 1 === currentSection.totalQuestions;
+
+      if (isLastQuestionInSection) {
+        setShowIntro(true);
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    }
   };
 
   const handleBack = () => {
-    if (step > 0) setStep((prev) => prev - 1);
+    if (showIntro) {
+      setShowIntro(false);
+    } else if (step > 0) {
+      setStep((prev) => prev - 1);
+    }
   };
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#fdd8df",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 32,
-        fontFamily: "Raleway",
-      }}
-    >
-      <div style={{ width: "100%", maxWidth: 700 }}>
-        <img
-          src="/logo.svg"
-          alt="ROSSO"
-          style={{ height: 32, marginBottom: 16 }}
-        />
+  const handleSubmit = () => {
+    console.log("Submitted Answers:", answers);
+    message.success("Survey submitted successfully!");
+  };
 
-        {/* Progress Bar */}
+  const mainContainerStyle = {
+    minHeight: "100vh",
+    backgroundColor: "#fdd8df",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+    fontFamily: "Raleway",
+  };
+
+  const buttonPrimaryStyle = {
+    backgroundColor: "#b8002b",
+    borderColor: "#b8002b",
+  };
+
+  const radioStyle = {
+    padding: "12px 20px",
+    borderRadius: 16,
+    border: "1px solid #b8002b",
+    fontSize: 16,
+    color: "#b8002b",
+    fontWeight: "600",
+    backgroundColor: "#fff",
+    marginBottom: 4,
+    width: "100%",
+  };
+
+  const cardStyle = {
+    borderRadius: 24,
+    padding: 24,
+    margin: "32px auto",
+    background: "#fff",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  };
+
+  if (showIntro) {
+    return (
+      <div style={mainContainerStyle}>
+        <div style={{ width: "100%", maxWidth: 700, textAlign: "center" }}>
+          <Title
+            style={{
+              fontFamily: "oi",
+              fontWeight: "normal",
+              color: "#b8002b",
+            }}
+          >
+            Hemora
+          </Title>
+          <Title level={2} style={{ color: "#b8002b", marginTop: 40 }}>
+            Section {sectionIndex + 3} - Get Ready!
+          </Title>
+          <Paragraph style={{ fontFamily: "Raleway",fontSize: 18 }}>
+            We’re about to ask you some quick questions to ensure your
+            eligibility.
+          </Paragraph>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 16,
+              marginTop: 32,
+            }}
+          >
+            <Button
+              shape="round"
+              size="large"
+              style={{
+                backgroundColor: "transparent",
+                border: "1px solid #b8002b",
+                color: "#b8002b",
+              }}
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+            <Button
+              shape="round"
+              size="large"
+              type="primary"
+              style={buttonPrimaryStyle}
+              onClick={() => {
+                setShowIntro(false);
+                setStep((prev) => prev + 1);
+              }}
+            >
+              Let’s go
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={mainContainerStyle}>
+      <div style={{ width: "100%", maxWidth: 700 }}>
+        <Title
+          style={{
+            fontFamily: "oi",
+            fontWeight: "normal",
+            color: "#b8002b",
+            textAlign: "center",
+          }}
+        >
+          Hemora
+        </Title>
+
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           {[0, ...steps.map((_, i) => i + 1)].map((sectionIndexUI, i) => {
             let percentage = 0;
-
             if (step === 0) {
               percentage = 0;
             } else if (i === 0) {
-              percentage = 100; // intro completed
+              percentage = 100;
             } else {
               const realSectionIndex = i - 1;
               const totalBefore = steps
@@ -130,12 +202,9 @@ export const HealthSurvey = () => {
                 .reduce((a, s) => a + s.questions.length, 0);
               const currentTotal = steps[realSectionIndex].questions.length;
               const currentStepInSection = step - 1 - totalBefore;
-
-              if (currentStepInSection < 0) {
-                percentage = 0; // chưa vào section này
-              } else if (currentStepInSection >= currentTotal) {
-                percentage = 100;
-              } else {
+              if (currentStepInSection < 0) percentage = 0;
+              else if (currentStepInSection >= currentTotal) percentage = 100;
+              else {
                 percentage = Math.round(
                   (currentStepInSection / currentTotal) * 100
                 );
@@ -149,32 +218,31 @@ export const HealthSurvey = () => {
                   showInfo={false}
                   strokeColor="#b8002b"
                   trailColor="#e4a5af"
-                  size="small"
+                  size="default"
                 />
               </div>
             );
           })}
         </div>
 
-        {/* Introduction */}
         {step === 0 && (
           <>
-            <Title level={2} style={{ color: "#b8002b" }}>
+            <Title
+              level={2}
+              style={{
+                fontWeight: "bold",
+                color: "#b8002b",
+                textAlign: "center",
+              }}
+            >
               Are you eligible to donate?
               <br />
-              <strong style={{ color: "#9d0025" }}>
+              <strong style={{ fontWeight: "200" }}>
                 Let's find out together
               </strong>
             </Title>
-            <Card
-              style={{
-                borderRadius: 24,
-                padding: 24,
-                margin: "32px auto",
-                background: "white",
-              }}
-            >
-              <Text>
+            <Card style={cardStyle}>
+              <Text style={{fontFamily:"raleway", fontSize:15}}>
                 <InfoCircleOutlined
                   style={{ color: "#b8002b", marginRight: 8 }}
                 />
@@ -182,14 +250,15 @@ export const HealthSurvey = () => {
                 needed to donate.
               </Text>
               <br />
-              <Text>
+              <Text style={{fontFamily:"raleway", fontSize:15}}>
                 <strong>Please answer truthfully</strong>, it's important.
               </Text>
-              <Paragraph style={{ fontSize: 12, marginTop: 12 }}>
+              <Paragraph style={{ fontFamily:"raleway", fontSize: 15, marginTop: 12 }}>
                 I give consent for the processing of Personal Data of a
                 sensitive nature... <a href="#">privacy policy</a>.
               </Paragraph>
               <Checkbox
+                className="custom-checkbox"
                 checked={accepted}
                 onChange={(e) => setAccepted(e.target.checked)}
               >
@@ -197,36 +266,51 @@ export const HealthSurvey = () => {
               </Checkbox>
             </Card>
             <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
-              <Button shape="round" size="large" disabled>
+              <Button
+                onClick={() => navigate(-1)}
+                shape="round"
+                size="large"
+                style={{
+                  backgroundColor: "transparent",
+                  border: "1px solid #b8002b",
+                  color: "#b8002b",
+                }}
+              >
                 Back
               </Button>
               <Button
                 shape="round"
                 size="large"
                 type="primary"
-                style={{ backgroundColor: "#b8002b", borderColor: "#b8002b" }}
+                style={buttonPrimaryStyle}
                 onClick={handleNext}
                 disabled={!accepted}
               >
-                Start the Quiz!
+                Start the Health Survey
               </Button>
             </div>
           </>
         )}
 
-        {/* Question Section */}
-        {step > 0 && currentQuestion && (
+        {!showIntro && step > 0 && currentQuestion && (
           <>
-            <Text strong style={{ color: "#b8002b" }}>
+            <Text
+              strong
+              style={{ color: "#b8002b", fontWeight: 600, marginBottom: 8 }}
+            >
               Section {sectionIndex + 2}/4 - Question {questionIndex + 1} of{" "}
               {currentSection.totalQuestions}
             </Text>
 
-            <Title level={4} style={{ marginTop: 16 }}>
+            <Title
+              level={4}
+              style={{ marginTop: 16, color: "#333", fontWeight: 600 }}
+            >
               {currentQuestion.title}
             </Title>
 
             <Radio.Group
+              className="custom-radio"
               onChange={(e) =>
                 setAnswers({ ...answers, [step]: e.target.value })
               }
@@ -234,14 +318,14 @@ export const HealthSurvey = () => {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 16,
+                gap: 8,
                 marginTop: 16,
               }}
             >
               {currentQuestion.options.map((opt, i) => (
-                <Radio.Button key={i} value={opt} style={radioStyle}>
+                <Radio key={i} value={opt} style={radioStyle}>
                   {opt}
-                </Radio.Button>
+                </Radio>
               ))}
             </Radio.Group>
 
@@ -250,9 +334,12 @@ export const HealthSurvey = () => {
                 <>
                   <Title
                     level={5}
-                    style={{ marginTop: 24 }}
-                  >{`1.1 ${currentQuestion.subQuestion.title}`}</Title>
+                    style={{ marginTop: 24, fontWeight: 500, color: "#444" }}
+                  >
+                    1.1 {currentQuestion.subQuestion.title}
+                  </Title>
                   <Radio.Group
+                    className="custom-radio"
                     onChange={(e) =>
                       setAnswers({
                         ...answers,
@@ -263,14 +350,14 @@ export const HealthSurvey = () => {
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: 16,
+                      gap: 8,
                       marginTop: 16,
                     }}
                   >
                     {currentQuestion.subQuestion.options.map((opt, i) => (
-                      <Radio.Button key={i} value={opt} style={radioStyle}>
+                      <Radio key={i} value={opt} style={radioStyle}>
                         {opt}
-                      </Radio.Button>
+                      </Radio>
                     ))}
                   </Radio.Group>
                 </>
@@ -284,33 +371,49 @@ export const HealthSurvey = () => {
                 marginTop: 32,
               }}
             >
-              <Button shape="round" size="large" onClick={handleBack}>
-                Back
-              </Button>
               <Button
                 shape="round"
                 size="large"
-                type="primary"
-                style={{ backgroundColor: "#b8002b", borderColor: "#b8002b" }}
-                disabled={!answers[step]}
-                onClick={handleNext}
+                onClick={handleBack}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "1px solid #b8002b",
+                  color: "#b8002b",
+                }}
               >
-                Next
+                Back
               </Button>
+              {step === totalQuestions ? (
+                <Button
+                  shape="round"
+                  size="large"
+                  type="primary"
+                  style={{
+                    backgroundColor: "#28a745",
+                    borderColor: "#28a745",
+                    borderRadius: 24,
+                    padding: "8px 24px",
+                  }}
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              ) : (
+                <Button
+                  shape="round"
+                  size="large"
+                  type="primary"
+                  style={buttonPrimaryStyle}
+                  disabled={!answers[step]}
+                  onClick={handleNext}
+                >
+                  Next
+                </Button>
+              )}
             </div>
           </>
         )}
       </div>
     </div>
   );
-};
-
-const radioStyle = {
-  padding: "12px 24px",
-  borderRadius: 12,
-  backgroundColor: "#fff",
-  border: "1px solid #ccc",
-  fontSize: 16,
-  width: "100%",
-  textAlign: "left",
 };

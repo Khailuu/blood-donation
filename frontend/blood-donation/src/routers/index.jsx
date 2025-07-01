@@ -28,15 +28,30 @@ import { MemberHomePage } from "../pages/member/MemberHomePage";
 import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
 import { MemberSchedule } from "../pages/member/MemberSchedule";
 import { HealthSurvey } from "../components/template/member/HealthSurvey";
+import { ProfileMember } from "../components/template/member/ProfileMember";
+import { MemberBlogPage } from "../components/template/member/blog/MemberBlogPage";
+import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage";
+import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
+import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
+import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
 
 const router = [
+  {
+    element: <UnauthorizedLayout/>,
+    children: [
+      { path: "/unauthorized", element: <UnauthorizedPage /> },
+    ]
+  },
+
   {
     element: <MainLayoutGuest />,
     children: [
       { path: "/", element: <HomePage /> },
       { path: "/donate", element: <DonatePage /> },
       { path: "/blog", element: <BlogPage /> },
+      { path: "/blog/:id", element: <BlogDetailPage /> },
       { path: "/contacts", element: <ContactsPage /> },
+      
     ],
   },
 
@@ -68,8 +83,11 @@ const router = [
           { path: "home", element: <MemberHomePage /> },
           { path: "donate", element: <MemberDonate /> },
           { path: "schedule", element: <MemberSchedule /> },
+          { path: "blogs", element: <MemberBlogPage /> },
+          { path: "blogs/:id", element: <BlogDetailPageMember /> },
           { path: "faq", element: <DoubtsSection /> },
           { path: "health-survey", element: <HealthSurvey /> },
+          { path: "profile-member", element: <ProfileMember /> },
         ],
       },
 
