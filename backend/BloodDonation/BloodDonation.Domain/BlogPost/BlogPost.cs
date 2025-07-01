@@ -12,5 +12,8 @@ public class BlogPost : Entity
     public DateTime PublishedDate { get; set; }
     
     public User? User { get; set; }
+    public ICollection<BlogPostLike> Likes { get; set; } = new List<BlogPostLike>();
+    public ICollection<BlogPostComment> Comments { get; set; } = new List<BlogPostComment>();
+
 
 }

@@ -31,6 +31,9 @@ public sealed class ApplicationDbContext(
     public DbSet<HealthQuestion> HealthQuestions { get; set; }
     public DbSet<HealthAnswer> HealthAnswers { get; set; }
     public DbSet<EmailTemplate> EmailTemplates { get; set; }
+    public DbSet<BlogPostLike> BlogPostLikes { get; set; }
+    public DbSet<BlogPostComment> BlogPostComments { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

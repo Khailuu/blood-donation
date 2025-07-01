@@ -25,6 +25,8 @@ public interface IDbContext
     DbSet<HealthQuestion> HealthQuestions { get; set; }
     DbSet<HealthAnswer> HealthAnswers { get; set; }
     DbSet<EmailTemplate> EmailTemplates { get; set; }
-
+    DbSet<BlogPostLike> BlogPostLikes { get; set; }
+    DbSet<BlogPostComment> BlogPostComments { get; set; }
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

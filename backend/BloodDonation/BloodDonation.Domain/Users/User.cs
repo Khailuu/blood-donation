@@ -1,4 +1,5 @@
-﻿using BloodDonation.Domain.Bloods;
+﻿using BloodDonation.Domain.BlogPost;
+using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.QuestionForm;
@@ -38,5 +39,9 @@ public class User : Entity
 
     public DonorInformation? DonorInformation { get; set; }
     public ICollection<HealthForm> HealthForms { get; set; } = new List<HealthForm>();
+    
+    public ICollection<BlogPostLike> BlogPostLikes { get; set; } = new List<BlogPostLike>();
+    public ICollection<BlogPostComment> BlogPostComments { get; set; } = new List<BlogPostComment>();
+
 
 }

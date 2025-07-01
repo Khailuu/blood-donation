@@ -51,7 +51,7 @@ public class Program
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
-        app.UseCors();
+        app.UseCors("AllowLocalAndProdFE");
         app.UseRequestContextLogging();
         app.UseSerilogRequestLogging();
         app.UseExceptionHandler();
