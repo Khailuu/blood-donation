@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
-using BloodDonation.Application.Users.ActivateUser;
 using BloodDonation.Application.Users.ChangePassword;
 using BloodDonation.Application.Users.CreateHealthForm;
 using BloodDonation.Application.Users.GetHealthForm;
@@ -13,6 +12,7 @@ using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateDonorInformation;
 using BloodDonation.Application.Users.UpdateUser;
+using BloodDonation.Application.Users.VerifyUser;
 using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using MediatR;
@@ -205,20 +205,6 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     
-    [HttpPut("user/activate-user")]
-    public async Task<IResult> ActivateUser([FromBody] ActivateUserRequest request, CancellationToken cancellationToken)
-    {
-        var command = new ActivateUserCommand()
-        {
-            Email = request.Email,
-            NewPassword = request.NewPassword
-        };
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.MatchOk();
-    }
-    
     [Authorize]
     [HttpPut("user/change-password")]
     public async Task<IResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
@@ -231,6 +217,14 @@ public class UserController : ControllerBase
 
         var result = await _mediator.Send(command, cancellationToken);
 
+        return result.MatchOk();
+    }
+    
+    [HttpPut("user/verify")]
+    public async Task<IResult> VerifyUser([FromBody] VerifyUserRequest request, CancellationToken cancellationToken)
+    {
+        var command = new VerifyUserCommand(request.Token);
+        var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
 

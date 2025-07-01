@@ -28,6 +28,7 @@ public class CreateDonationRequestForDonorCommandHandler(IDbContext context, IUs
             RequestId = Guid.NewGuid(),
             UserId = user.UserId,
             BloodTypeId = bloodType.BloodTypeId,
+            ComponentType = request.ComponentType,
             AmountBlood = request.AmountBlood,
             RequestTime = DateTime.UtcNow,
             Note = request.Note,

@@ -1,5 +1,6 @@
 ﻿using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
+using BloodDonation.Application.Users.VerifyUser;
 using BloodDonation.Domain.Common.DTO;
 using BloodDonation.Domain.Users.Events;
 using MediatR;
@@ -8,48 +9,51 @@ using Microsoft.EntityFrameworkCore;
 namespace BloodDonation.Application.Users.Register
 {
     public class CreateUserCommandEventHandler(
-        IMailService mailService, 
-        IDbContext context, 
-        IUserContext userContext) : INotificationHandler<UserCreatedDomainEvent>
+        IMailService mailService,
+        IDbContext context,
+        ITemplateRenderer templateRenderer
+    ) : INotificationHandler<UserCreatedDomainEvent>
     {
         public async Task Handle(UserCreatedDomainEvent notification, CancellationToken cancellationToken)
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == notification.UserId, cancellationToken);
-            if (user == null)
-            {
-                return;
-            }
+            if (user == null || string.IsNullOrWhiteSpace(user.Email)) return;
 
             var emailTemplate = await context.EmailTemplates.FirstOrDefaultAsync(e => e.Id == 1, cancellationToken);
-            if (emailTemplate == null)
+            if (emailTemplate == null) return;
+
+            var currentYear = DateTime.UtcNow.Year;
+            var token = VerifyTokenHelper.Encode(user.Email);
+            var verifyEndpoint = $"/api/user/verify?token={token}";
+            var websiteLink = $"https://blood-donation-dvon.vercel.app/user/verify?token={token}";
+
+            var contentBody = templateRenderer.Render(emailTemplate.Content, new Dictionary<string, string>
             {
-                return;
-            }
-            var senderName = await context.Users
-                .Where(u => u.UserId == userContext.UserId)
-                .Select(u => u.Name) 
-                .FirstOrDefaultAsync();
-            // Thay thế nội dung trong template với dữ liệu thực tế
-            string ContentBody = emailTemplate.Content;
-                // .Replace("{{header}}", "VERIFY ACCOUNT")
-                // .Replace("{{username}}", user.FullName)
-                // .Replace("{{button_link}}", $"https://example.com/verify")
-                // .Replace("{{button_text}}", "Verify Now")
-                // .Replace("{{sender_name}}", senderName)
-                // .Replace("{{sender_title}}", "Admin")
-                // .Replace("{{year}}", currentYear.ToString());
+                { "header", "Verify Your Account" },
+                { "username", user.Name },
+                { "content", "Thank you for registering. Please verify your account by clicking the button below." },
+                { "year", currentYear.ToString() },
+                { "website_link", websiteLink }
+            });
 
             var emailBody = new CreateUserEmailBody
             {
-                Content = ContentBody, // Nội dung ngắn gọn của email
-                Header = emailTemplate.Header,   // Tiêu đề email
-                VerifyEndpoint = $"/verify?email={user.Email}", 
+                Content = contentBody,
+                Header = emailTemplate.Header,
+                VerifyEndpoint = $"/user/verify?token={token}", 
                 ButtonName = "Verify Now",
                 MainContent = emailTemplate.MainContent,
                 User = user
             };
 
-            mailService.SendCreateUserEmail(emailBody, user.Email);
+            try
+            {
+                mailService.SendCreateUserEmail(emailBody, user.Email);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Failed to send email to {user.Email}: {ex.Message}");
+            }
         }
     }
 }
