@@ -12,10 +12,12 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import "../../../css/custom-radio.css";
 import { steps } from "../../../assets/survey";
 import "../../../css/custom-checkbox.css"
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text, Paragraph } = Typography;
 
 export const HealthSurvey = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [accepted, setAccepted] = useState(false);
   const [answers, setAnswers] = useState({});
@@ -265,6 +267,7 @@ export const HealthSurvey = () => {
             </Card>
             <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
               <Button
+                onClick={() => navigate(-1)}
                 shape="round"
                 size="large"
                 style={{

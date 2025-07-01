@@ -28,14 +28,15 @@ export const MemberBlogPage = () => {
   const [articles, setArticles] = useState(
     mockArticles.map((item) => ({ ...item, likedBy: [] }))
   );
-  const [viewMode, setViewMode] = useState("ALL");
+  const [activeView, setActiveView] = useState("ALL");
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
   const filteredArticles =
-    viewMode === "ALL"
+    activeView === "ALL"
       ? articles
       : articles.filter((item) => item.authorId === currentUserId);
 
@@ -106,29 +107,37 @@ export const MemberBlogPage = () => {
       }}
     >
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <div>
-          <Tag
-            color={viewMode === "ALL" ? "#f8cfd3" : "white"}
-            style={{
-              border: "1px solid black",
-              cursor: "pointer",
-              marginRight: 8,
-            }}
-            onClick={() => setViewMode("ALL")}
-          >
-            All Blogs
-          </Tag>
-          <Tag
-            color={viewMode === "MY" ? "#f8cfd3" : "white"}
-            style={{
-              border: "1px solid black",
-              cursor: "pointer",
-              marginRight: 16,
-            }}
-            onClick={() => setViewMode("MY")}
-          >
-            My Blogs
-          </Tag>
+        <div
+          style={{
+            display: "inline-flex",
+            background: "#f3f3f3",
+            borderRadius: 999,
+            padding: 4,
+          }}
+        >
+          {[
+            { key: "ALL", label: "All Blogs" },
+            { key: "MY", label: "My Blogs" },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              onClick={() => setActiveView(tab.key)}
+              style={{
+                fontFamily: "Raleway",
+                border: "none",
+                backgroundColor:
+                  activeView === tab.key ? "#bd0026" : "transparent",
+                color: activeView === tab.key ? "white" : "#444",
+                padding: "6px 20px",
+                borderRadius: 999,
+                fontWeight: activeView === tab.key ? "bold" : "normal",
+                cursor: "pointer",
+                transition: "all 0.3s",
+              }}
+            >
+              {tab.label}
+            </Button>
+          ))}
         </div>
 
         <div>
@@ -151,9 +160,7 @@ export const MemberBlogPage = () => {
             onMouseEnter={(e) =>
               (e.currentTarget.style.transform = "scale(0.95)")
             }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             Create Blog
           </Button>
@@ -165,10 +172,9 @@ export const MemberBlogPage = () => {
           <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
-              onClick={() => navigate(`/app/member/blog/${item.key}`)}
+              onClick={() => navigate(`/app/member/blogs/${item.key}`)}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 4px 16px rgba(0,0,0,0.1)")
+                (e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)")
               }
               onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               cover={
@@ -186,7 +192,7 @@ export const MemberBlogPage = () => {
                     }}
                   />
                   <Tag
-                    color="#f8cfd3"
+                    color="white"
                     style={{
                       position: "absolute",
                       top: 12,
@@ -203,109 +209,118 @@ export const MemberBlogPage = () => {
                 </div>
               }
               style={{
-                borderRadius: 16,
+                borderRadius: 12,
                 overflow: "hidden",
-                border: "1px solid #f0f0f0",
+                border: "none",
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                backgroundColor: "#fff",
+                backgroundColor: "#fffafa",
                 transition: "all 0.3s",
               }}
               bodyStyle={{
-                padding: 20,
+                padding: 16,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 flexGrow: 1,
-                minHeight: 200,
+                minHeight: 180,
               }}
             >
               <div>
                 <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
                   {item.date}
                 </Paragraph>
-                <Paragraph strong style={{ fontWeight: "bold" }}>
+                <Paragraph
+                  strong
+                  style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}
+                >
                   {item.title}
                 </Paragraph>
               </div>
-              <Paragraph
+              {/* <Paragraph
                 type="secondary"
                 style={{ fontSize: 14, marginTop: 12 }}
               >
                 {item.description}
-              </Paragraph>
+              </Paragraph> */}
 
-              <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
-                <Col>
-                  <Button
-                    type="text"
-                    icon={
-                      item.likedBy.includes(currentUserId) ? (
-                        <HeartFilled style={{ color: "#bd0026" }} />
-                      ) : (
-                        <HeartOutlined style={{ color: "#bd0026" }} />
-                      )
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleLike(item.key);
-                    }}
-                  >
-                    {item.likes || 0}
-                  </Button>
-                  <Button
-                    type="text"
-                    icon={<MessageOutlined style={{ color: "#555" }} />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/app/member/blog/${item.key}#comments`);
-                    }}
-                  >
-                    {item.comments || 0}
-                  </Button>
-                </Col>
-                {item.authorId === currentUserId && (
-                  <Row gutter={8}>
-                    <Col>
-                      <Button
-                        size="small"
-                        style={{
-                          backgroundColor: "#f0f0f0",
-                          borderRadius: 8,
-                          fontWeight: 500,
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditModal(item);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Popconfirm
-                        title="Are you sure to delete this blog?"
-                        onConfirm={() => handleDelete(item.key)}
-                        okText="Yes"
-                        cancelText="No"
-                      >
+              <div style={{ marginTop: "auto" }}>
+                <Row
+                  justify="space-between"
+                  align="middle"
+                  style={{ marginTop: 16 }}
+                >
+                  <Col>
+                    <Button
+                      type="text"
+                      icon={
+                        item.likedBy.includes(currentUserId) ? (
+                          <HeartFilled style={{ color: "#bd0026" }} />
+                        ) : (
+                          <HeartOutlined style={{ color: "#bd0026" }} />
+                        )
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLike(item.key);
+                      }}
+                    >
+                      {item.likes || 0}
+                    </Button>
+                    <Button
+                      type="text"
+                      icon={<MessageOutlined style={{ color: "#555" }} />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/app/member/blogs/${item.key}#comments`);
+                      }}
+                    >
+                      {item.comments || 0}
+                    </Button>
+                  </Col>
+                  {item.authorId === currentUserId && (
+                    <Row gutter={8}>
+                      <Col>
                         <Button
                           size="small"
-                          danger
                           style={{
+                            backgroundColor: "#f0f0f0",
                             borderRadius: 8,
                             fontWeight: 500,
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(item);
+                          }}
                         >
-                          Delete
+                          Edit
                         </Button>
-                      </Popconfirm>
-                    </Col>
-                  </Row>
-                )}
-              </Row>
+                      </Col>
+                      <Col>
+                        <Popconfirm
+                          title="Are you sure to delete this blog?"
+                          onConfirm={() => handleDelete(item.key)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <Button
+                            size="small"
+                            danger
+                            style={{
+                              borderRadius: 8,
+                              fontWeight: 500,
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Delete
+                          </Button>
+                        </Popconfirm>
+                      </Col>
+                    </Row>
+                  )}
+                </Row>
+              </div>
             </Card>
           </Col>
         ))}
@@ -335,7 +350,10 @@ export const MemberBlogPage = () => {
             <Input placeholder="Enter blog title" />
           </Form.Item>
           <Form.Item name="description" label="Short Description">
-            <Input.TextArea rows={3} placeholder="Enter a short blog summary..." />
+            <Input.TextArea
+              rows={3}
+              placeholder="Enter a short blog summary..."
+            />
           </Form.Item>
           <Form.Item name="label" label="Category">
             <Input placeholder="e.g. BLOG / SUCCESS STORIES" />

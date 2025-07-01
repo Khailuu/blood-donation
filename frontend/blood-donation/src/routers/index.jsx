@@ -32,8 +32,17 @@ import { ProfileMember } from "../components/template/member/ProfileMember";
 import { MemberBlogPage } from "../components/template/member/blog/MemberBlogPage";
 import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage";
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
+import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
+import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
 
 const router = [
+  {
+    element: <UnauthorizedLayout/>,
+    children: [
+      { path: "/unauthorized", element: <UnauthorizedPage /> },
+    ]
+  },
+
   {
     element: <MainLayoutGuest />,
     children: [
@@ -42,6 +51,7 @@ const router = [
       { path: "/blog", element: <BlogPage /> },
       { path: "/blog/:id", element: <BlogDetailPage /> },
       { path: "/contacts", element: <ContactsPage /> },
+      
     ],
   },
 

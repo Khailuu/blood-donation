@@ -30,7 +30,7 @@ export const SignInPage = () => {
   const [form] = Form.useForm();
   const [showSuccessLoading, setShowSuccessLoading] = useState(false);
 
-  // Load saved email if "Remember me" was checked previously
+
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) {
@@ -73,9 +73,29 @@ export const SignInPage = () => {
         }
       }, 2000);
     } catch (error) {
-      message.error(
-        error.message || "Login failed. Please check your email and password."
-      );
+      console.error("Login error:", error);
+      // Xử lý thông báo lỗi cụ thể
+      if (error.response) {
+        const errorMessage =
+          error.response.data?.message || error.response.data?.error;
+
+        if (error.response.status === 401) {
+          message.error("Sai mật khẩu. Vui lòng thử lại.");
+        } else if (error.response.status === 404) {
+          message.error("Email không tồn tại trong hệ thống.");
+        } else {
+          message.error(
+            errorMessage || "Đăng nhập thất bại. Vui lòng thử lại sau."
+          );
+        }
+      } else if (error.request) {
+        message.error(
+          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+        );
+      } else {
+        // Lỗi khác
+        message.error("Có lỗi xảy ra. Vui lòng thử lại.");
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +123,7 @@ export const SignInPage = () => {
           height: "100vh",
           padding: 0,
           margin: 0,
-          backgroundColor: "#f8cfd3"
+          backgroundColor: "#f8cfd3",
         }}
       >
         <div style={{ textAlign: "center" }}>
