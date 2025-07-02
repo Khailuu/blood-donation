@@ -1,580 +1,198 @@
-import React, { useState, useMemo } from 'react';
-import {Eye} from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { message } from 'antd';
+import { donationRequestService } from '../../../services/donationRequestService ';
 
-const DonationRequestsManager = () => {
-  const [donationRequests, setDonationRequests] = useState([
-    { 
-      id: 1, 
-      patientName: 'Nguyen Van A', 
-      bloodType: 'A+', 
-      hospital: 'Cho Ray Hospital', 
-      urgency: 'Urgent', 
-      status: 'Pending',
-      requestDate: '2025-06-15',
-      contactPhone: '0901234567',
-      unitsNeeded: 2,
-      notes: 'Patient needs immediate transfusion'
-    },
-    { 
-      id: 2, 
-      patientName: 'Tran Thi B', 
-      bloodType: 'O-', 
-      hospital: '115 Hospital', 
-      urgency: 'Normal', 
-      status: 'Processed',
-      requestDate: '2025-06-14',
-      contactPhone: '0909876543',
-      unitsNeeded: 1,
-      notes: 'Scheduled surgery next week'
-    },
-    { 
-      id: 3, 
-      patientName: 'Le Van C', 
-      bloodType: 'B+', 
-      hospital: 'FV Hospital', 
-      urgency: 'Critical', 
-      status: 'Pending',
-      requestDate: '2025-06-16',
-      contactPhone: '0912345678',
-      unitsNeeded: 3,
-      notes: 'Emergency case - accident victim'
-    },
-    { 
-      id: 4, 
-      patientName: 'Pham Thi D', 
-      bloodType: 'AB-', 
-      hospital: 'Vinmec Hospital', 
-      urgency: 'Normal', 
-      status: 'Rejected',
-      requestDate: '2025-06-13',
-      contactPhone: '0987654321',
-      unitsNeeded: 1,
-      notes: 'Patient condition improved'
-    }
-  ]);
-
-  const [filters, setFilters] = useState({
-    status: '',
-    bloodType: '',
-    urgency: '',
-    hospital: ''
-  });
-
-  const [showFilters, setShowFilters] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
+const DonorRequestsManager = () => {
+  const [donationRequests, setDonationRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ bloodType: '', componentType: '', date: '' });
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [newRequest, setNewRequest] = useState({
-    patientName: '',
-    bloodType: '',
-    hospital: '',
-    urgency: 'Normal',
-    contactPhone: '',
-    unitsNeeded: 1,
-    notes: ''
-  });
 
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  const urgencyLevels = ['Normal', 'Urgent', 'Critical'];
-  const hospitals = ['Cho Ray Hospital', '115 Hospital', 'FV Hospital', 'Vinmec Hospital', 'Binh Dan Hospital'];
+  const componentTypes = ['Whole', 'Plasma', 'Platelets'];
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        setLoading(true);
+        const response = await donationRequestService.getAllDonationRequests();
+        const items = response.items || response.data?.items || [];
+        setDonationRequests(items);
+        if (!items.length) message.info('No donation requests found');
+      } catch (error) {
+        console.error(error);
+        message.error('Failed to load donation requests');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+  }, []);
 
   const filteredRequests = useMemo(() => {
-    return donationRequests.filter(request => {
+    return donationRequests.filter(req => {
+      const reqDate = new Date(req.requestTime).toISOString().split('T')[0];
       return (
-        (filters.status === '' || request.status === filters.status) &&
-        (filters.bloodType === '' || request.bloodType === filters.bloodType) &&
-        (filters.urgency === '' || request.urgency === filters.urgency) &&
-        (filters.hospital === '' || request.hospital.toLowerCase().includes(filters.hospital.toLowerCase()))
+        (!filters.bloodType || req.bloodType === filters.bloodType) &&
+        (!filters.componentType || req.componentType === filters.componentType) &&
+        (!filters.date || reqDate.includes(filters.date))
       );
     });
   }, [donationRequests, filters]);
 
-  const handleApprove = (id) => {
-    setDonationRequests(donationRequests.map(request => 
-      request.id === id ? { ...request, status: 'Processed' } : request
-    ));
-  };
+  const handleFilterChange = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
+  const clearFilters = () => setFilters({ bloodType: '', componentType: '', date: '' });
 
-  const handleReject = (id) => {
-    setDonationRequests(donationRequests.map(request => 
-      request.id === id ? { ...request, status: 'Rejected' } : request
-    ));
-  };
+  const formatDate = dateStr => new Date(dateStr).toLocaleDateString('vi-VN');
+  const formatTime = dateStr => new Date(dateStr).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  const getComponentText = type => ({ Whole: 'Whole Blood', Plasma: 'Plasma', Platelets: 'Platelets' }[type] || type);
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      status: '',
-      bloodType: '',
-      urgency: '',
-      hospital: ''
-    });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const handleExportReport = () => {
-    const csvContent = [
-      'ID,Patient Name,Blood Type,Hospital,Urgency,Status,Request Date,Contact Phone,Units Needed,Notes',
-      ...filteredRequests.map(request => 
-        `${request.id},"${request.patientName}",${request.bloodType},"${request.hospital}",${request.urgency},${request.status},${request.requestDate},${request.contactPhone},${request.unitsNeeded},"${request.notes}"`
-      )
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `blood_donation_requests_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Add new request functionality
-  const handleAddRequest = () => {
-    if (newRequest.patientName && newRequest.bloodType && newRequest.hospital) {
-      const request = {
-        ...newRequest,
-        id: Math.max(...donationRequests.map(r => r.id)) + 1,
-        status: 'Pending',
-        requestDate: new Date().toISOString().split('T')[0]
-      };
-      setDonationRequests([...donationRequests, request]);
-      setNewRequest({
-        patientName: '',
-        bloodType: '',
-        hospital: '',
-        urgency: 'Normal',
-        contactPhone: '',
-        unitsNeeded: 1,
-        notes: ''
-      });
-      setShowAddForm(false);
+  const handleApprove = async id => {
+    try {
+      await donationRequestService.approveDonationRequest(id);
+      message.success('Request approved');
+      setDonationRequests(reqs => reqs.map(r => (r.requestId === id ? { ...r, status: 'approved' } : r)));
+    } catch {
+      message.error('Approval failed');
     }
   };
 
-  const handleViewDetails = (request) => {
-    setSelectedRequest(request);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Processed':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'Rejected':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+  const handleReject = async id => {
+    try {
+      await donationRequestService.rejectDonationRequest(id);
+      message.success('Request rejected');
+      setDonationRequests(reqs => reqs.map(r => (r.requestId === id ? { ...r, status: 'rejected' } : r)));
+    } catch {
+      message.error('Rejection failed');
     }
   };
 
-  const getUrgencyColor = (urgency) => {
-    switch (urgency) {
-      case 'Critical':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'Urgent':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-  };
-
-  const stats = useMemo(() => {
-    const total = donationRequests.length;
-    const pending = donationRequests.filter(r => r.status === 'Pending').length;
-    const processed = donationRequests.filter(r => r.status === 'Processed').length;
-    const rejected = donationRequests.filter(r => r.status === 'Rejected').length;
-    const critical = donationRequests.filter(r => r.urgency === 'Critical' && r.status === 'Pending').length;
-    
-    return { total, pending, processed, rejected, critical };
-  }, [donationRequests]);
+  if (loading) return <div className="p-20 text-center">Loading donation requests...</div>;
 
   return (
-    <div className="space-y-6 ml-72 p-20">
+    <div className="space-y-6 p-6 md:p-20">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Blood Donation Requests Management</h2>
-        <div className="flex gap-3">
-          <button 
-            onClick={() => setShowFilters(!showFilters)}
-            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Filters
-          </button>
-          <button 
-            onClick={handleExportReport}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
-          >
-            Export Report
-          </button>
-          <button 
-            onClick={() => setShowAddForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Add Request
-          </button>
+        <h2 className="text-2xl font-bold text-gray-900">Donation Requests</h2>
+        <button onClick={clearFilters} className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
+          Reset Filters
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
+            <select value={filters.bloodType} onChange={e => handleFilterChange('bloodType', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
+              <option value="">All Blood Types</option>
+              {bloodTypes.map(type => <option key={type} value={type}>{type}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Component Type</label>
+            <select value={filters.componentType} onChange={e => handleFilterChange('componentType', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
+              <option value="">All Types</option>
+              {componentTypes.map(type => <option key={type} value={type}>{getComponentText(type)}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input type="date" value={filters.date} onChange={e => handleFilterChange('date', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md" />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Requests</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-orange-600">{stats.pending}</div>
-          <div className="text-sm text-gray-600">Pending</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-green-600">{stats.processed}</div>
-          <div className="text-sm text-gray-600">Processed</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
-          <div className="text-sm text-gray-600">Rejected</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-4">
-          <div className="text-2xl font-bold text-red-700">{stats.critical}</div>
-          <div className="text-sm text-red-600">Critical Pending</div>
-        </div>
-      </div>
-
-      {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select 
-                value={filters.status}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Processed">Processed</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
-              <select 
-                value={filters.bloodType}
-                onChange={(e) => handleFilterChange('bloodType', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Blood Types</option>
-                {bloodTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
-              <select 
-                value={filters.urgency}
-                onChange={(e) => handleFilterChange('urgency', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Urgency</option>
-                {urgencyLevels.map(level => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
-            </div>
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Hospital</label>
-              <input 
-                type="text"
-                value={filters.hospital}
-                onChange={(e) => handleFilterChange('hospital', e.target.value)}
-                placeholder="Search hospital..."
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              />
-            </div> */}
-          </div>
-          <div className="mt-4 flex gap-2 items-center">
-            <button 
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-            >
-              Clear Filters
-            </button>
-            <span className="text-sm text-gray-600">
-              Showing {filteredRequests.length} of {donationRequests.length} requests
-            </span>
-          </div>
-        </div>
-      )}
-      
-      {/* Main Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-pink-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-pink-50">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th> */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">#</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Requester</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Date</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Time</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Blood Type</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Type</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Amount</th>
+                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{request.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.patientName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
-                      {request.bloodType}
+              {filteredRequests.map((req, i) => (
+                <tr key={req.requestId} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-semibold text-gray-700">{i + 1}</td>
+                  <td className="px-4 py-3">{req.requesterName}</td>
+                  <td className="px-4 py-3">{formatDate(req.requestTime)}</td>
+                  <td className="px-4 py-3">{formatTime(req.requestTime)}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                      {req.bloodType}
                     </span>
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.hospital}</td> */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(request.urgency)}`}>
-                      {request.urgency}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{request.unitsNeeded}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
-                      {request.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center">
-                    <div className="text-center">
-                      {formatDate(request.requestDate)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button 
-                        onClick={() => handleApprove(request.id)}
-                        disabled={request.status === 'Processed'}
-                        className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-green-200 disabled:border-gray-200"
-                      >
-                        Approve
-                      </button>
-                      <button 
-                        onClick={() => handleReject(request.id)}
-                        disabled={request.status === 'Rejected'}
-                        className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-red-200 disabled:border-gray-200"
-                      >
-                        Reject
-                      </button>
-                      <button 
-                        onClick={() => handleViewDetails(request)}
-                        className="px-3 py-1"
-                      >
-                        <Eye/>
-                      </button>
+                  <td className="px-4 py-3">{getComponentText(req.componentType)}</td>
+                  <td className="px-4 py-3">{req.amountBlood} unit(s)</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => setSelectedRequest(req)} className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">View</button>
+                      <button onClick={() => handleApprove(req.requestId)} className="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md">Approve</button>
+                      <button onClick={() => handleReject(req.requestId)} className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md">Reject</button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {filteredRequests.length === 0 && (
+                <tr>
+                  <td colSpan="8" className="px-6 py-4 text-center text-gray-500">
+                    No requests match your filters
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Add New Request Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">Add New Request</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Patient Name</label>
-                <input 
-                  type="text"
-                  value={newRequest.patientName}
-                  onChange={(e) => setNewRequest({...newRequest, patientName: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
-                <select 
-                  value={newRequest.bloodType}
-                  onChange={(e) => setNewRequest({...newRequest, bloodType: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  <option value="">Select Blood Type</option>
-                  {bloodTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Hospital</label>
-                <select 
-                  value={newRequest.hospital}
-                  onChange={(e) => setNewRequest({...newRequest, hospital: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  <option value="">Select Hospital</option>
-                  {hospitals.map(hospital => (
-                    <option key={hospital} value={hospital}>{hospital}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
-                <select 
-                  value={newRequest.urgency}
-                  onChange={(e) => setNewRequest({...newRequest, urgency: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  {urgencyLevels.map(level => (
-                    <option key={level} value={level}>{level}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Units Needed</label>
-                <input 
-                  type="number"
-                  min="1"
-                  value={newRequest.unitsNeeded}
-                  onChange={(e) => setNewRequest({...newRequest, unitsNeeded: parseInt(e.target.value)})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-                <input 
-                  type="tel"
-                  value={newRequest.contactPhone}
-                  onChange={(e) => setNewRequest({...newRequest, contactPhone: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea 
-                  value={newRequest.notes}
-                  onChange={(e) => setNewRequest({...newRequest, notes: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md h-20 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-6">
-              <button 
-                onClick={handleAddRequest}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-              >
-                Add Request
-              </button>
-              <button 
-                onClick={() => setShowAddForm(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
             <h3 className="text-lg font-bold mb-4">Request Details</h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-medium text-gray-700">Patient:</span>
-                  <div className="text-gray-900">{selectedRequest.patientName}</div>
+                  <div className="text-sm text-gray-500">Requester</div>
+                  <div className="font-medium">{selectedRequest.requesterName}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Blood Type:</span>
-                  <div>
-                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
-                      {selectedRequest.bloodType}
-                    </span>
-                  </div>
+                  <div className="text-sm text-gray-500">Blood Type</div>
+                  <div className="font-medium">{selectedRequest.bloodType}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Hospital:</span>
-                  <div className="text-gray-900">{selectedRequest.hospital}</div>
+                  <div className="text-sm text-gray-500">Date</div>
+                  <div className="font-medium">{formatDate(selectedRequest.requestTime)}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Urgency:</span>
-                  <div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(selectedRequest.urgency)}`}>
-                      {selectedRequest.urgency}
-                    </span>
-                  </div>
+                  <div className="text-sm text-gray-500">Time</div>
+                  <div className="font-medium">{formatTime(selectedRequest.requestTime)}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Units Needed:</span>
-                  <div className="text-gray-900 font-medium">{selectedRequest.unitsNeeded}</div>
+                  <div className="text-sm text-gray-500">Component Type</div>
+                  <div className="font-medium">{getComponentText(selectedRequest.componentType)}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Status:</span>
-                  <div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedRequest.status)}`}>
-                      {selectedRequest.status}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Request Date:</span>
-                  <div className="text-gray-900">{formatDate(selectedRequest.requestDate)}</div>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Contact:</span>
-                  <div className="text-gray-900">{selectedRequest.contactPhone}</div>
+                  <div className="text-sm text-gray-500">Amount</div>
+                  <div className="font-medium">{selectedRequest.amountBlood} unit(s)</div>
                 </div>
               </div>
-              <div>
-                <span className="font-medium text-gray-700">Notes:</span>
-                <div className="mt-1 p-3 bg-gray-50 rounded-md text-sm text-gray-900 border">{selectedRequest.notes}</div>
-              </div>
+              {selectedRequest.note && (
+                <div>
+                  <div className="text-sm text-gray-500">Notes</div>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-md">{selectedRequest.note}</div>
+                </div>
+              )}
             </div>
             <div className="flex gap-2 mt-6">
-              {selectedRequest.status === 'Pending' && (
-                <>
-                  <button 
-                    onClick={() => {
-                      handleApprove(selectedRequest.id);
-                      setSelectedRequest(null);
-                    }}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    Approve
-                  </button>
-                  <button 
-                    onClick={() => {
-                      handleReject(selectedRequest.id);
-                      setSelectedRequest(null);
-                    }}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-                  >
-                    Reject
-                  </button>
-                </>
-              )}
-              <button 
-                onClick={() => setSelectedRequest(null)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Close
-              </button>
+              <button onClick={() => { handleApprove(selectedRequest.requestId); setSelectedRequest(null); }} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Approve</button>
+              <button onClick={() => { handleReject(selectedRequest.requestId); setSelectedRequest(null); }} className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Reject</button>
+              <button onClick={() => setSelectedRequest(null)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Close</button>
             </div>
           </div>
         </div>
@@ -583,4 +201,4 @@ const DonationRequestsManager = () => {
   );
 };
 
-export default DonationRequestsManager;
+export default DonorRequestsManager;

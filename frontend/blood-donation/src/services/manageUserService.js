@@ -12,7 +12,7 @@ export const userService = {
   },
 
   async updateProfile(data) {
-    const response = await apiInstance.put("/api/user/update-user", data);
+    const response = await api.put("/api/user/update-current-user", data);
     return response.data;
   },
 };

@@ -125,7 +125,7 @@ const DonationSchedule = () => {
   };
 
   return (
-    <div className="space-y-6 ml-72 p-20">
+    <div className="space-y-6  p-20">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Donation Schedule Management</h2>
         <div className="flex gap-2">
