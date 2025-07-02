@@ -50,6 +50,7 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
         return Result.Success(new CreateDonationRequestForStaffResponse
         {
             RequestId = donationRequest.RequestId,
+            UserId = request.UserId,
             Message = "Donation request (from staff) created successfully."
         });
     }

@@ -10,6 +10,7 @@ using BloodDonation.Application.Users.DeleteHealthForm;
 using BloodDonation.Application.Users.GetCurrentUser;
 using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
+using BloodDonation.Application.Users.UpdateCurrentUser;
 using BloodDonation.Application.Users.UpdateDonorInformation;
 using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Application.Users.VerifyUser;
@@ -67,30 +68,12 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPut("user/update-current-user")]
-    public async Task<IResult> UpdateSelf([FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> UpdateMyProfile([FromBody] UpdateCurrentUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Results.Unauthorized();
-
-        var command = new UpdateUserCommand
-        {
-            UserId = Guid.Parse(userId),
-            FullName = request.FullName,
-            Email = request.Email,
-            Role = null,              
-            Status = null,
-            BloodType = null,
-            IsDonor = null,
-            DateOfBirth = request.DateOfBirth,
-            Gender = request.Gender,
-            Address = request.Address,
-            Phone = request.Phone
-        };
-
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(request, cancellationToken);
         return result.MatchOk();
     }
+    
     [Authorize]
     [HttpPost("user/create-healthform")]
     public async Task<IResult> CreateHealthForm([FromBody] CreateHealthFormRequest request, CancellationToken cancellationToken)
@@ -141,7 +124,7 @@ public class UserController : ControllerBase
             Email = request.Email,
             Role = request.Role,
             Status = request.Status,
-            BloodType= request.BloodType.Name,
+            BloodTypeId = request.BloodTypeId,
             IsDonor = request.IsDonor,
             DateOfBirth = request.DateOfBirth,
             Gender = request.Gender,

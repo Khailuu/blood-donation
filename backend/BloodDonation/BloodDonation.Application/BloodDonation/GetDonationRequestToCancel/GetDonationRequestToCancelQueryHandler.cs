@@ -23,12 +23,15 @@ public class GetDonationRequestToCancelQueryHandler(IDbContext context)
             .Select(r => new GetDonationRequestToCancelResponse
             {
                 RequestId = r.RequestId,
+                UserId = r.UserId,
+                Email = r.User.Email,
                 RequesterName = r.User != null ? r.User.Name : "N/A",
                 BloodType = r.BloodType != null ? r.BloodType.Name : "Unknown",
                 AmountBlood = r.AmountBlood,
                 ComponentType = r.ComponentType.ToString(),
                 RequestTime = r.RequestTime,
                 IsEmergency = r.IsEmergency,
+                Status = r.Status.ToString(),
                 Note = r.Note
             })
             .ToListAsync(cancellationToken);

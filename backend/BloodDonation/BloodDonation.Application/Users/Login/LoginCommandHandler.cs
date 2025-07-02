@@ -54,6 +54,7 @@ public sealed class LoginCommandHandler(
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
             Role = user.Role,
+            UserId = user.UserId,
         };
     }
 }
