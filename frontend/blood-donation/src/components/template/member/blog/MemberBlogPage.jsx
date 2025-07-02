@@ -226,7 +226,7 @@ export const MemberBlogPage = () => {
               </div>
 
               <div style={{ marginTop: "auto" }}>
-                <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+                <Row justify="space-between" align="middle" style={{ marginTop: 16 ,borderTop: "1px solid black",}}>
                   <Col>
                     <Button
                       type="text"

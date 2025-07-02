@@ -48,7 +48,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="ml-72 space-y-6 p-24 min-h-screen relative">
+    <div className="space-y-6 p-24 min-h-screen relative">
       <div className="max-w-7xl mx-auto px-12 py-24">
         
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
