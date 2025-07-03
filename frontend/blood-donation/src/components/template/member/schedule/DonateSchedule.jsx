@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Row, Col, message } from "antd";
+import { Card, Typography, Button, Row, Col, message, Tag } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
@@ -10,10 +10,8 @@ const { Title, Text } = Typography;
 
 export const DonateSchedule = () => {
   const currentUser = authService.getCurrentUser();
-  console.log({ currentUser });
-
   const [activeTab, setActiveTab] = useState("upcoming");
-  const [appointments, setAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -21,7 +19,6 @@ export const DonateSchedule = () => {
         const response = await donationRequestService.getMyDonationRequests(
           currentUser.userId
         );
-        console.log(response);
 
         const allItems = response.items || response.data?.items || [];
 
@@ -29,17 +26,16 @@ export const DonateSchedule = () => {
           (item) => item.userId === currentUser.userId
         );
 
-        console.log({ myItems });
-
         const formatted = myItems.map((item) => ({
           date: dayjs(item.requestTime),
           time: dayjs(item.requestTime).format("HH:mm"),
           donationType: item.componentType,
           status: item.status,
+          statusLower: item.status.toLowerCase(),
           id: item.requestId,
         }));
 
-        setAppointments(formatted);
+        setAllAppointments(formatted);
       } catch (error) {
         console.error(error);
         message.error("Failed to fetch appointments");
@@ -48,6 +44,31 @@ export const DonateSchedule = () => {
 
     fetchAppointments();
   }, [currentUser.userId]);
+
+  // Filter appointments based on active tab
+  const filteredAppointments = allAppointments.filter((item) => {
+    if (activeTab === "upcoming") {
+      return item.statusLower === "pending";
+    } else {
+      return item.statusLower !== "pending";
+    }
+  });
+
+  // Function to get status color
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "orange";
+      case "approved":
+        return "green";
+      case "rejected":
+        return "red";
+      case "cancelled":
+        return "gray";
+      default:
+        return "blue";
+    }
+  };
 
   return (
     <div
@@ -108,128 +129,110 @@ export const DonateSchedule = () => {
           </div>
         </div>
 
-        {activeTab === "upcoming" ? (
-          <Row gutter={[16, 16]}>
-            {appointments.length > 0 ? (
-              appointments.map((item, idx) => (
-                <Col key={idx}>
-                  <Card
+        <Row gutter={[16, 16]}>
+          {filteredAppointments.length > 0 ? (
+            filteredAppointments.map((item, idx) => (
+              <Col key={idx} xs={24} sm={12} md={8} lg={6}>
+                <Card
+                  style={{
+                    width: "100%",
+                    borderRadius: 16,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                    padding: 0,
+                  }}
+                  bodyStyle={{ padding: 0 }}
+                >
+                  <div
                     style={{
-                      width: "285px",
-                      borderRadius: 16,
-                      backgroundColor: "#fff",
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-                      padding: 0,
+                      backgroundColor: "#ffd9df",
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                      padding: "12px 0",
+                      textAlign: "center",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
-                    bodyStyle={{ padding: 0 }}
                   >
+                    <img
+                      src={blood_bag}
+                      alt="donation"
+                      style={{ height: 60, marginBottom: 4 }}
+                    />
+                  </div>
+
+                  <div style={{ padding: 16 }}>
                     <div
                       style={{
-                        backgroundColor: "#ffd9df",
-                        borderTopLeftRadius: 16,
-                        borderTopRightRadius: 16,
-                        padding: "12px 0",
+                        backgroundColor: "#fff",
+                        width: 50,
+                        height: 60,
                         textAlign: "center",
-                        display: "flex",
-                        justifyContent: "center"
+                        borderRadius: 12,
+                        fontFamily: "Raleway",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                        marginBottom: 16,
                       }}
                     >
-
-                      <img
-                        src={blood_bag}
-                        alt="donation"
-                        style={{ height: 60, marginBottom: 4}}
-                      />
-                    </div>
-
-                    <div style={{ padding: 16 }}>
-                      <div
-                        style={{
-                          backgroundColor: "#fff",
-                          width: 50,
-                          height: 60,
-                          textAlign: "center",
-                          borderRadius: 12,
-                          fontFamily: "Raleway",
-                          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                          marginBottom: 16,
-                        }}
-                      >
-                        <Title
-                          level={4}
-                          style={{ margin: 0, color: "#bd0026" }}
-                        >
-                          {item.date.format("DD")}
-                        </Title>
-                        <Text style={{ fontSize: 12 }}>
-                          {item.date.format("MMM").toUpperCase()}
-                        </Text>
-                      </div>
-
                       <Title
-                        level={5}
-                        style={{ fontFamily: "Raleway", marginBottom: 8 }}
+                        level={4}
+                        style={{ margin: 0, color: "#bd0026" }}
                       >
-                        {item.donationType} Donation
+                        {item.date.format("DD")}
                       </Title>
-                      <Text style={{ display: "block", marginBottom: 4 }}>
-                        <ClockCircleOutlined /> {item.time}
+                      <Text style={{ fontSize: 12 }}>
+                        {item.date.format("MMM").toUpperCase()}
                       </Text>
+                    </div>
 
-                      <Text
+                    <Title
+                      level={5}
+                      style={{ fontFamily: "Raleway", marginBottom: 8 }}
+                    >
+                      {item.donationType} Donation
+                    </Title>
+                    <Text style={{ display: "block", marginBottom: 4 }}>
+                      <ClockCircleOutlined /> {item.time}
+                    </Text>
+
+                    <Tag
+                      color={getStatusColor(item.status)}
+                      style={{ marginBottom: 12, fontWeight: "bold" }}
+                    >
+                      {item.status}
+                    </Tag>
+
+                    {item.statusLower === "pending" && (
+                      <Button
+                        type="default"
                         style={{
-                          display: "inline-block",
-                          marginBottom: 12,
-                          color:
-                            item.status === "Approved"
-                              ? "#52c41a"
-                              : item.status === "Pending"
-                              ? "#faad14"
-                              : "#888",
+                          backgroundColor: "#bd0026",
+                          borderColor: "#bd0026",
+                          color: "#fff",
+                          width: "100%",
+                          borderRadius: "50px",
+                          height: "40px",
                           fontWeight: "bold",
+                          fontSize: "14px",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          marginTop: 8,
                         }}
                       >
-                        {item.status === "Approved"
-                          ? "Approved"
-                          : item.status === "Pending"
-                          ? "Pending"
-                          : "Cancelled"}
-                      </Text>
-
-                      {item.status !== "cancelled" && (
-                        <Button
-                          type="default"
-                          style={{
-                            backgroundColor: "#bd0026",
-                            borderColor: "#bd0026",
-                            color: "#fff",
-                            width: "100%",
-                            borderRadius: "50px",
-                            height: "40px",
-                            fontWeight: "bold",
-                            fontSize: "14px",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                            marginTop: 8,
-                          }}
-                        >
-                          Cancel Booking
-                        </Button>
-                      )}
-                    </div>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <div style={{ width: "100%", textAlign: "center", padding: 32 }}>
-                No appointments found.
-              </div>
-            )}
-          </Row>
-        ) : (
-          <div style={{ textAlign: "center", padding: 32 }}>
-            No archived appointments.
-          </div>
-        )}
+                        Cancel Booking
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <div style={{ width: "100%", textAlign: "center", padding: 32 }}>
+              {activeTab === "upcoming"
+                ? "No pending appointments found."
+                : "No archived appointments found."}
+            </div>
+          )}
+        </Row>
       </Card>
     </div>
   );
