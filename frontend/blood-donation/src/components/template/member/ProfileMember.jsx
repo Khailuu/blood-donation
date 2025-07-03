@@ -23,6 +23,7 @@ import {
   Divider,
   message,
   Spin,
+  Form,
 } from "antd";
 import moment from "moment";
 import { userService } from "../../../services/manageUserService";
@@ -30,6 +31,7 @@ import { userService } from "../../../services/manageUserService";
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
+const { Item } = Form;
 
 const cardStyle = {
   height: "100%",
@@ -57,103 +59,135 @@ export const ProfileMember = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [bloodTypes, setBloodTypes] = useState([]);
+  const [form] = Form.useForm();
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [userResponse, bloodTypesResponse] = await Promise.all([
+        userService.getCurrentUser(),
+        userService.getBloodTypes(),
+      ]);
+
+      const bloodTypeMap = {};
+      bloodTypesResponse.forEach(type => {
+        bloodTypeMap[type.name] = type.bloodTypeId;
+      });
+
+      const userData = userResponse;
+      const transformedData = {
+        userId: userData.id || userData.userId || "",
+        fullName: userData.fullName || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        dateOfBirth: userData.dateOfBirth || null,
+        gender: userData.gender === 1 ? "Male" : userData.gender === 0 ? "Female" : "Other",
+        address: userData.address || "",
+        bloodTypeName: userData.bloodTypeName || "",
+        bloodTypeId: bloodTypeMap[userData.bloodTypeName] || null,
+        role: userData.role ,
+        isDonor: userData.isDonor || false
+      };
+
+      setProfileData(transformedData);
+      form.setFieldsValue({
+        ...transformedData,
+        dateOfBirth: transformedData.dateOfBirth ? moment(transformedData.dateOfBirth) : null,
+        bloodType: transformedData.bloodTypeName 
+      });
+
+      setBloodTypes(bloodTypesResponse);
+      localStorage.setItem('bloodTypeMap', JSON.stringify(bloodTypeMap));
+      localStorage.setItem('userProfile', JSON.stringify(transformedData));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      
+      const cachedProfile = localStorage.getItem('userProfile');
+      const cachedBloodTypes = localStorage.getItem('bloodTypeMap');
+      
+      if (cachedProfile) {
+        const parsedData = JSON.parse(cachedProfile);
+        setProfileData(parsedData);
+        form.setFieldsValue({
+          ...parsedData,
+          dateOfBirth: parsedData.dateOfBirth ? moment(parsedData.dateOfBirth) : null,
+        });
+      }
+      
+      if (cachedBloodTypes) {
+        // No need to set bloodTypes from cache since we need fresh data
+      }
+      
+      message.error("Failed to load profile information");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const user = await userService.getCurrentUser();
-
-        const transformedData = {
-          fullName: user.fullName || "Not provided",
-          email: user.email || "Not provided",
-          phone: user.phone || "Not provided",
-          dateOfBirth: user.dateOfBirth || null,
-          gender:
-            user.gender === 1 ? "Male" : user.gender === 0 ? "Female" : "Other",
-          address: user.address || "Not provided",
-          bloodType: user.bloodType || "Not provided",
-          medicalCertificate: user.medicalCertificate || "Not provided",
-          vaccinationStatus: user.vaccinationStatus || "Not provided",
-          healthCheckDate: user.healthCheckDate || null,
-          role: user.role || "Not provided",
-        };
-
-        setProfileData(transformedData);
-        setLoading(false);
-      } catch (error) {
-        message.error("Failed to load profile information");
-        setLoading(false);
-      }
-    };
-
-    fetchUserProfile();
+    fetchData();
   }, []);
-
-  const handleInputChange = (field, value) => {
-    setProfileData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
 
   const handleSave = async () => {
     try {
       setUpdating(true);
+      const values = await form.validateFields();
 
-      // Chuẩn bị dữ liệu để gửi lên server
+      const bloodTypeMap = JSON.parse(localStorage.getItem('bloodTypeMap')) || {};
+      const bloodTypeId = bloodTypeMap[values.bloodType];
+
       const submitData = {
-        fullName: profileData.fullName,
-        email: profileData.email,
-        phone: profileData.phone,
-        dateOfBirth: profileData.dateOfBirth
-          ? moment(profileData.dateOfBirth).format("YYYY-MM-DD")
-          : null,
-        gender:
-          profileData.gender === "Male"
-            ? 1
-            : profileData.gender === "Female"
-            ? 0
-            : 2,
-        address: profileData.address,
-        bloodType: profileData.bloodType,
+        fullName: values.fullName,
+        email: values.email,
+        phone: values.phone,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null,
+        gender: values.gender === "Male" ? 1 : values.gender === "Female" ? 0 : 2,
+        address: values.address,
+        // bloodTypeId: bloodTypeId,
+        isDonor: true
       };
 
-      console.log("Submitting data:", submitData); // Debug log
+      if (bloodTypeId) {
+        submitData.bloodTypeId = bloodTypeId;
+      }
 
-      // Gọi API update
       const response = await userService.updateProfile(submitData);
 
-      console.log("API response:", response); // Debug log
+      if (response.isSuccess) {
+        const updatedUser = {
+          ...profileData,
+          fullName: values.fullName,
+          email: values.email,
+          phone: values.phone,
+          dateOfBirth: values.dateOfBirth,
+          gender: values.gender, 
+          address: values.address,
+          bloodTypeName: values.bloodType || null, 
+          bloodTypeId: bloodTypeId || null, 
+          role: profileData.role
+        };
 
-      if (response && response.success) {
-        message.success("Cập nhật thông tin thành công!");
+        setProfileData(updatedUser);
+        form.setFieldsValue(updatedUser);
+        localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+        
+        message.success("Profile updated successfully!");
         setIsEditing(false);
-
-        // Cập nhật state với dữ liệu mới từ server
-        setProfileData((prev) => ({
-          ...prev,
-          ...response.user,
-          gender:
-            response.user.gender === 1
-              ? "Male"
-              : response.user.gender === 0
-              ? "Female"
-              : "Other",
-        }));
+        
+        await fetchData();
       } else {
-        message.error(response?.message || "Cập nhật thông tin thất bại");
+        message.error(response.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error("Update error:", error); // Debug log
-      message.error(
-        error.response?.data?.message || "Lỗi khi cập nhật thông tin"
-      );
+      console.error("Update error:", error);
+      message.error(error.message || "Failed to update profile");
     } finally {
       setUpdating(false);
     }
   };
 
-  if (loading || !profileData) {
+  if (loading && !profileData) {
     return (
       <div
         style={{
@@ -179,511 +213,446 @@ export const ProfileMember = () => {
         fontFamily: "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       }}
     >
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card
-            style={{
-              ...cardStyle,
-              padding: "24px",
-            }}
-            bodyStyle={{ padding: 0 }}
-          >
-            <Row justify="space-between" align="middle">
-              <Title
-                level={4}
-                style={{
-                  margin: 0,
-                  color: "#333",
-                  fontWeight: 600,
-                }}
-              >
-                Profile Information
-              </Title>
-              <Button
-                type="primary"
-                icon={isEditing ? <SaveOutlined /> : <EditOutlined />}
-                onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-                style={buttonStyle}
-                loading={updating}
-                disabled={updating}
-              >
-                {isEditing ? "Save Changes" : "Edit"}
-              </Button>
-            </Row>
-
-            <Divider style={{ margin: "16px 0" }} />
-
-            <Row gutter={24} align="middle">
-              <Col>
-                <Avatar
-                  size={80}
-                  icon={<UserOutlined />}
-                  style={{
-                    backgroundColor: "#f0f2f5",
-                    color: "#8c8c8c",
-                    fontSize: "32px",
-                  }}
-                />
-                <Button
-                  type="primary"
-                  shape="circle"
-                  icon={<CameraOutlined />}
-                  size="small"
-                  style={{
-                    position: "relative",
-                    top: -15,
-                    left: -20,
-                    backgroundColor: "#b8002b",
-                    borderColor: "#b8002b",
-                    width: "32px",
-                    height: "32px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                />
-              </Col>
-              <Col>
+      <Form form={form} initialValues={profileData || {}}>
+        <Row gutter={[24, 24]}>
+          <Col span={24}>
+            <Card
+              style={{ ...cardStyle, padding: "24px" }}
+              bodyStyle={{ padding: 0 }}
+            >
+              <Row justify="space-between" align="middle">
                 <Title
                   level={4}
-                  style={{
-                    margin: 0,
-                    color: "#333",
-                    fontWeight: 600,
-                  }}
+                  style={{ margin: 0, color: "#333", fontWeight: 600 }}
                 >
-                  {profileData.fullName}
+                  Profile Information
                 </Title>
-                <Text
-                  type="secondary"
-                  style={{
-                    fontSize: "16px",
-                    color: "#666",
-                  }}
+                <Button
+                  type="primary"
+                  icon={isEditing ? <SaveOutlined /> : <EditOutlined />}
+                  onClick={() =>
+                    isEditing ? handleSave() : setIsEditing(true)
+                  }
+                  style={buttonStyle}
+                  loading={updating}
                 >
-                  {profileData.role}
-                </Text>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
+                  {isEditing ? "Save Changes" : "Edit"}
+                </Button>
+              </Row>
 
-        <Col span={24}>
-          <Row gutter={24} style={{ alignItems: "stretch" }}>
-            <Col span={12}>
-              <Card
-                style={cardStyle}
-                title={
-                  <span
+              <Divider style={{ margin: "16px 0" }} />
+
+              <Row gutter={24} align="middle">
+                <Col>
+                  <Avatar
+                    size={80}
+                    icon={<UserOutlined />}
                     style={{
+                      backgroundColor: "#f0f2f5",
+                      color: "#8c8c8c",
+                      fontSize: "32px",
+                    }}
+                  />
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon={<CameraOutlined />}
+                    size="small"
+                    style={{
+                      position: "relative",
+                      top: -15,
+                      left: -20,
+                      backgroundColor: "#b8002b",
+                      borderColor: "#b8002b",
+                      width: "32px",
+                      height: "32px",
                       display: "flex",
                       alignItems: "center",
-                      fontWeight: 600,
-                      color: "#333",
+                      justifyContent: "center",
                     }}
+                  />
+                </Col>
+                <Col>
+                  <Title
+                    level={4}
+                    style={{ margin: 0, color: "#333", fontWeight: 600 }}
                   >
-                    <UserOutlined
-                      style={{
-                        color: "#b8002b",
-                        marginRight: "10px",
-                        fontSize: "18px",
-                      }}
-                    />
-                    Personal Information
-                  </span>
-                }
-                headStyle={{
-                  borderBottom: "1px solid #f0f0f0",
-                  padding: "16px 24px",
-                }}
-                bodyStyle={{ padding: "16px 24px" }}
-              >
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Full Name
-                    </Text>
-                    {isEditing ? (
-                      <Input
-                        value={profileData.fullName}
-                        onChange={(e) =>
-                          handleInputChange("fullName", e.target.value)
-                        }
-                        style={{ ...inputStyle, marginBottom: "16px" }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                        }}
-                      >
-                        {profileData.fullName}
-                      </div>
-                    )}
-                  </Col>
-                  <Col span={12}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Gender
-                    </Text>
-                    {isEditing ? (
-                      <Select
-                        value={profileData.gender}
-                        onChange={(value) => handleInputChange("gender", value)}
-                        style={{
-                          width: "100%",
-                          ...inputStyle,
-                          marginBottom: "16px",
-                        }}
-                      >
-                        <Option value="Male">Male</Option>
-                        <Option value="Female">Female</Option>
-                        <Option value="Other">Other</Option>
-                      </Select>
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                        }}
-                      >
-                        {profileData.gender}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Email
-                    </Text>
-                    {isEditing ? (
-                      <Input
-                        value={profileData.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                        style={{ ...inputStyle, marginBottom: "16px" }}
-                        prefix={<MailOutlined style={{ color: "#999" }} />}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        <MailOutlined
-                          style={{ marginRight: "8px", color: "#8c8c8c" }}
-                        />
-                        {profileData.email}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Phone Number
-                    </Text>
-                    {isEditing ? (
-                      <Input
-                        value={profileData.phone}
-                        onChange={(e) =>
-                          handleInputChange("phone", e.target.value)
-                        }
-                        style={{ ...inputStyle, marginBottom: "16px" }}
-                        prefix={<PhoneOutlined style={{ color: "#999" }} />}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        <PhoneOutlined
-                          style={{ marginRight: "8px", color: "#8c8c8c" }}
-                        />
-                        {profileData.phone}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Date of Birth
-                    </Text>
-                    {isEditing ? (
-                      <DatePicker
-                        value={
-                          profileData.dateOfBirth
-                            ? moment(profileData.dateOfBirth)
-                            : null
-                        }
-                        onChange={(date) =>
-                          handleInputChange(
-                            "dateOfBirth",
-                            date ? date.format("YYYY-MM-DD") : null
-                          )
-                        }
-                        style={{
-                          width: "100%",
-                          ...inputStyle,
-                          marginBottom: "16px",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        <CalendarOutlined
-                          style={{ marginRight: "8px", color: "#8c8c8c" }}
-                        />
-                        {profileData.dateOfBirth
-                          ? moment(profileData.dateOfBirth).format("DD/MM/YYYY")
-                          : "Not provided"}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Address
-                    </Text>
-                    {isEditing ? (
-                      <TextArea
-                        value={profileData.address}
-                        onChange={(e) =>
-                          handleInputChange("address", e.target.value)
-                        }
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          minHeight: "80px",
-                        }}
-                        rows={3}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          marginBottom: "16px",
-                          background: "#f9f9f9",
-                          color: "#333",
-                          display: "flex",
-                          minHeight: "80px",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <EnvironmentOutlined
-                          style={{
-                            marginRight: "8px",
-                            color: "#8c8c8c",
-                            marginTop: "4px",
-                            flexShrink: 0,
-                          }}
-                        />
-                        {profileData.address}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card
-                style={cardStyle}
-                title={
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: 600,
-                      color: "#333",
-                    }}
+                    {profileData?.fullName || "No Name"}
+                  </Title>
+                  <Text
+                    type="secondary"
+                    style={{ fontSize: "16px", color: "#666" }}
                   >
-                    <HeartOutlined
-                      style={{
-                        color: "#b8002b",
-                        marginRight: "10px",
-                        fontSize: "18px",
-                      }}
-                    />
-                    Medical Information
-                  </span>
-                }
-                headStyle={{
-                  borderBottom: "1px solid #f0f0f0",
-                  padding: "16px 24px",
-                }}
-                bodyStyle={{ padding: "16px 24px" }}
-              >
-                <Row style={{ marginBottom: "16px" }}>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Blood Type
-                    </Text>
-                    {isEditing ? (
-                      <Select
-                        value={profileData.bloodType}
-                        onChange={(value) =>
-                          handleInputChange("bloodType", value)
-                        }
-                        style={{
-                          width: "100%",
-                          ...inputStyle,
-                          marginBottom: "16px",
-                        }}
-                      >
-                        <Option value="A+">A+</Option>
-                        <Option value="A-">A-</Option>
-                        <Option value="B+">B+</Option>
-                        <Option value="B-">B-</Option>
-                        <Option value="AB+">AB+</Option>
-                        <Option value="AB-">AB-</Option>
-                        <Option value="O+">O+</Option>
-                        <Option value="O-">O-</Option>
-                      </Select>
-                    ) : (
-                      <div
-                        style={{
-                          ...inputStyle,
-                          background: "#fff1f0",
-                          border: "1px solid #ffccc7",
-                          color: "#cf1322",
-                          fontWeight: 500,
-                          fontSize: "16px",
-                        }}
-                      >
-                        {profileData.bloodType}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
+                    {profileData?.role || "No Role"}
+                  </Text>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
 
-                <Row style={{ marginBottom: "16px" }}>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Health Certificate
-                    </Text>
-                    <div
+          <Col span={24}>
+            <Row gutter={24} style={{ alignItems: "stretch" }}>
+              <Col span={12}>
+                <Card
+                  style={cardStyle}
+                  title={
+                    <span
                       style={{
-                        ...inputStyle,
-                        background: "#f9f9f9",
-                        color: "#333",
-                      }}
-                    >
-                      {profileData.medicalCertificate}
-                    </div>
-                  </Col>
-                </Row>
-
-                <Row style={{ marginBottom: "16px" }}>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Vaccination Status
-                    </Text>
-                    <div
-                      style={{
-                        ...inputStyle,
-                        background: "#f6ffed",
-                        border: "1px solid #b7eb8f",
-                        color: "#389e0d",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {profileData.vaccinationStatus}
-                    </div>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col span={24}>
-                    <Text
-                      strong
-                      style={{ display: "block", marginBottom: "4px" }}
-                    >
-                      Last Health Check
-                    </Text>
-                    <div
-                      style={{
-                        ...inputStyle,
-                        background: "#f9f9f9",
-                        color: "#333",
                         display: "flex",
                         alignItems: "center",
+                        fontWeight: 600,
+                        color: "#333",
                       }}
                     >
-                      <CalendarOutlined
-                        style={{ marginRight: "8px", color: "#8c8c8c" }}
+                      <UserOutlined
+                        style={{
+                          color: "#b8002b",
+                          marginRight: "10px",
+                          fontSize: "18px",
+                        }}
                       />
-                      {profileData.healthCheckDate
-                        ? moment(profileData.healthCheckDate).format(
-                            "DD/MM/YYYY"
-                          )
-                        : "Not provided"}
-                    </div>
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+                      Personal Information
+                    </span>
+                  }
+                  headStyle={{
+                    borderBottom: "1px solid #f0f0f0",
+                    padding: "16px 24px",
+                  }}
+                  bodyStyle={{ padding: "16px 24px" }}
+                >
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Full Name
+                      </Text>
+                      {isEditing ? (
+                        <Item
+                          name="fullName"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your full name!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            style={{ ...inputStyle, marginBottom: "16px" }}
+                          />
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                          }}
+                        >
+                          {profileData?.fullName || "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                    <Col span={12}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Gender
+                      </Text>
+                      {isEditing ? (
+                        <Item name="gender" initialValue={profileData?.gender}>
+                          <Select
+                            style={{
+                              width: "100%",
+                              ...inputStyle,
+                              marginBottom: "16px",
+                            }}
+                          >
+                            <Option value="Male">Male</Option>
+                            <Option value="Female">Female</Option>
+                            <Option value="Other">Other</Option>
+                          </Select>
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                          }}
+                        >
+                          {profileData?.gender || "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col span={24}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Email
+                      </Text>
+                      {isEditing ? (
+                        <Item
+                          name="email"
+                          rules={[
+                            {
+                              type: "email",
+                              message: "Please input a valid email!",
+                            },
+                            {
+                              required: true,
+                              message: "Please input your email!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            style={{ ...inputStyle, marginBottom: "16px" }}
+                            prefix={<MailOutlined style={{ color: "#999" }} />}
+                          />
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <MailOutlined
+                            style={{ marginRight: "8px", color: "#8c8c8c" }}
+                          />
+                          {profileData?.email || "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col span={24}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Phone Number
+                      </Text>
+                      {isEditing ? (
+                        <Item
+                          name="phone"
+                          rules={[
+                            {
+                              pattern: /^[0-9]+$/,
+                              message: "Please input numbers only!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            style={{ ...inputStyle, marginBottom: "16px" }}
+                            prefix={<PhoneOutlined style={{ color: "#999" }} />}
+                          />
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <PhoneOutlined
+                            style={{ marginRight: "8px", color: "#8c8c8c" }}
+                          />
+                          {profileData?.phone || "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row gutter={16}>
+                    <Col span={24}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Date of Birth
+                      </Text>
+                      {isEditing ? (
+                        <Item name="dateOfBirth">
+                          <DatePicker
+                            style={{
+                              width: "100%",
+                              ...inputStyle,
+                              marginBottom: "16px",
+                            }}
+                            format="YYYY-MM-DD"
+                          />
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <CalendarOutlined
+                            style={{ marginRight: "8px", color: "#8c8c8c" }}
+                          />
+                          {profileData?.dateOfBirth
+                            ? moment(profileData.dateOfBirth).format(
+                                "DD/MM/YYYY"
+                              )
+                            : "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col span={24}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Address
+                      </Text>
+                      {isEditing ? (
+                        <Item name="address">
+                          <TextArea
+                            style={{
+                              ...inputStyle,
+                              marginBottom: "16px",
+                              minHeight: "80px",
+                            }}
+                            rows={3}
+                          />
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            marginBottom: "16px",
+                            background: "#f9f9f9",
+                            color: "#333",
+                            display: "flex",
+                            minHeight: "80px",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <EnvironmentOutlined
+                            style={{
+                              marginRight: "8px",
+                              color: "#8c8c8c",
+                              marginTop: "4px",
+                              flexShrink: 0,
+                            }}
+                          />
+                          {profileData?.address || "Not provided"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+
+              <Col span={12}>
+                <Card
+                  style={cardStyle}
+                  title={
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        fontWeight: 600,
+                        color: "#333",
+                      }}
+                    >
+                      <HeartOutlined
+                        style={{
+                          color: "#b8002b",
+                          marginRight: "10px",
+                          fontSize: "18px",
+                        }}
+                      />
+                      Medical Information
+                    </span>
+                  }
+                  headStyle={{
+                    borderBottom: "1px solid #f0f0f0",
+                    padding: "16px 24px",
+                  }}
+                  bodyStyle={{ padding: "16px 24px" }}
+                >
+                  <Row style={{ marginBottom: "16px" }}>
+                    <Col span={24}>
+                      <Text
+                        strong
+                        style={{ display: "block", marginBottom: "4px" }}
+                      >
+                        Blood Type
+                      </Text>
+                      {isEditing ? (
+                        <Item
+                          name="bloodType"
+                          initialValue={profileData?.bloodTypeName || null}
+                          rules={[{ required: true, message: "Please select blood type" }]}
+                        >
+                          <Select
+                            style={{
+                              width: "100%",
+                              ...inputStyle,
+                              marginBottom: "16px",
+                            }}
+                            showSearch
+                            optionFilterProp="children"
+                            placeholder="Select blood type"
+                            allowClear
+                          >
+                            {bloodTypes.map((type) => (
+                              <Option key={type.bloodTypeId} value={type.name}>
+                                {type.name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Item>
+                      ) : (
+                        <div
+                          style={{
+                            ...inputStyle,
+                            background: "#fff1f0",
+                            border: "1px solid #ffccc7",
+                            color: "#cf1322",
+                            fontWeight: 500,
+                            fontSize: "16px",
+                          }}
+                        >
+                          {profileData?.bloodTypeName || "Not specified"}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Form>
     </div>
   );
 };

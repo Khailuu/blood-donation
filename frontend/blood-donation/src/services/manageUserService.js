@@ -15,4 +15,21 @@ export const userService = {
     const response = await api.put("/api/user/update-current-user", data);
     return response.data;
   },
+
+  async getBloodTypes() {
+    try {
+      const response = await api.get("/api/blood/get-blood-Type", {
+      params: {
+        pageNumber: 1,
+        pageSize: 100, 
+      },
+    });
+    console.log({response});
+    
+      return response.data.data.items; 
+    } catch (error) {
+      console.error("Error fetching blood types:", error);
+      return [];
+    }
+  }
 };
