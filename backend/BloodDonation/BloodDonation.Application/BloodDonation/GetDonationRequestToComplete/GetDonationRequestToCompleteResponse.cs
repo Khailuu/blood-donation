@@ -1,8 +1,6 @@
-using BloodDonation.Domain.Donations;
+namespace BloodDonation.Application.BloodDonation.GetDonationRequestToComplete;
 
-namespace BloodDonation.Application.BloodDonation.GetDonationRequestToCancel;
-
-public class GetDonationRequestToCancelResponse
+public class GetDonationRequestToCompleteResponse
 {
     public Guid RequestId { get; set; }
     public Guid UserId { get; set; }
@@ -10,7 +8,7 @@ public class GetDonationRequestToCancelResponse
     public string? RequesterName { get; set; } 
     public string? BloodType { get; set; } 
     public int AmountBlood { get; set; }
-    public string? ComponentType { get; set; }
+    public string? ComponentType { get; set; } 
     public DateTime RequestTime { get; set; }
     public bool IsEmergency { get; set; }
     public string? Status { get; set; }

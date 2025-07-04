@@ -9,6 +9,7 @@ public class CreateDonationRequestForStaffCommand : ICommand<CreateDonationReque
     public Guid BloodTypeId { get; set; }
     public int AmountBlood { get; set; }
     public BloodComponentType ComponentType { get; set; }
+    public DateTime Date { get; set; }
     public DateTime? Deadline { get; set; }
     // public bool IsEmergency { get; set; }
     public string? EmergencyContactName { get; set; }

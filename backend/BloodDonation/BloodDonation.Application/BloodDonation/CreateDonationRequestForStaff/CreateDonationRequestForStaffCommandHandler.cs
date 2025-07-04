@@ -26,7 +26,7 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
             BloodTypeId = request.BloodTypeId,
             AmountBlood = request.AmountBlood,
             ComponentType = request.ComponentType,
-            RequestTime = DateTime.UtcNow,
+            RequestTime = request.Date,
             Deadline = request.Deadline,
             IsEmergency = true,
             EmergencyContactName = request.EmergencyContactName,
@@ -50,6 +50,7 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
         return Result.Success(new CreateDonationRequestForStaffResponse
         {
             RequestId = donationRequest.RequestId,
+            UserId = request.UserId,
             Message = "Donation request (from staff) created successfully."
         });
     }

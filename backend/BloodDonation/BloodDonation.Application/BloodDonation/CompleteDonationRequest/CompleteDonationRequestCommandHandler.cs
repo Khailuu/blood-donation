@@ -7,12 +7,12 @@ using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.Donations.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace BloodDonation.Application.BloodDonation.ConfirmDonationRequestForDonor;
+namespace BloodDonation.Application.BloodDonation.CompleteDonationRequest;
 
-public class ConfirmDonationRequestForDonorCommandHandler(IDbContext context, IUserContext userContext)
-    : ICommandHandler<ConfirmDonationRequestForDonorCommand>
+public class CompleteDonationRequestCommandHandler(IDbContext context, IUserContext userContext)
+    : ICommandHandler<CompleteDonationRequestCommand>
 {
-    public async Task<Result> Handle(ConfirmDonationRequestForDonorCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CompleteDonationRequestCommand request, CancellationToken cancellationToken)
     {
         var donationRequest = await context.DonationRequests
             .FirstOrDefaultAsync(r => r.RequestId == request.RequestId, cancellationToken);
@@ -20,11 +20,11 @@ public class ConfirmDonationRequestForDonorCommandHandler(IDbContext context, IU
         if (donationRequest == null)
             return Result.Failure(DonationRequestErrors.RequestNotFound);
 
-        if (donationRequest.Status != DonationRequestStatus.WaitingForDonorToConfirm)
+        if (donationRequest.Status != DonationRequestStatus.Scheduled)
             return Result.Failure(DonationRequestErrors.InvalidStatus);
 
-        if (donationRequest.UserId != userContext.UserId)
-            return Result.Failure(DonationRequestErrors.NotDonor);
+        // if (donationRequest.UserId != userContext.UserId)
+        //     return Result.Failure(DonationRequestErrors.NotDonor);
 
         var bloodStored = await context.BloodStored
             .FirstOrDefaultAsync(b => b.BloodTypeId == donationRequest.BloodTypeId, cancellationToken);
@@ -45,7 +45,7 @@ public class ConfirmDonationRequestForDonorCommandHandler(IDbContext context, IU
             ConfirmedBy = userContext.UserId
         });
 
-        donationRequest.Status = DonationRequestStatus.Fulfilled;
+        donationRequest.Status = DonationRequestStatus.Completed;
 
         await context.SaveChangesAsync(cancellationToken);
         return Result.Success();

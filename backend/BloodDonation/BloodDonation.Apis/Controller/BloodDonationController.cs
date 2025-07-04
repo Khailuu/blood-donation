@@ -1,8 +1,8 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Application.BloodDonation.CancelDonationMatch;
 using BloodDonation.Application.BloodDonation.CancelDonationRequest;
+using BloodDonation.Application.BloodDonation.CompleteDonationRequest;
 using BloodDonation.Application.BloodDonation.ConfirmDonationMatch;
-using BloodDonation.Application.BloodDonation.ConfirmDonationRequestForDonor;
 using BloodDonation.Application.BloodDonation.ConfirmDonationRequestForStaff;
 using BloodDonation.Application.BloodDonation.CreateDonationMatch;
 using BloodDonation.Application.BloodDonation.CreateDonationRequestForDonor;
@@ -11,6 +11,7 @@ using BloodDonation.Application.BloodDonation.GetDonationHistory;
 using BloodDonation.Application.BloodDonation.GetDonationMatch;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToCancel;
+using BloodDonation.Application.BloodDonation.GetDonationRequestToComplete;
 using BloodDonation.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -45,15 +46,7 @@ public class BloodDonationController : ControllerBase
         Result<CreateDonationRequestForDonorResponse> result = await _mediator.Send(forStaffCommand, cancellationToken);
         return result.MatchCreated(id => $"/blood-donation/requestForDonor/{id}");
     }
-
-    // [Authorize(Roles = "Staff")]
-    // [HttpPost("blood-donation/create-match")]
-    // public async Task<IResult> CreateDonationMatch([FromBody] CreateDonationMatchCommand command, CancellationToken cancellationToken)
-    // {
-    //     Result<CreateDonationMatchResponse> result = await _mediator.Send(command, cancellationToken);
-    //     return result.MatchCreated(id => $"/blood-donation/match/{id}");
-    // }
-
+    
     [Authorize]
     [HttpPut("blood-donation/confirm-match")]
     public async Task<IResult> ConfirmDonationMatch([FromBody] ConfirmDonationMatchCommand command, CancellationToken cancellationToken)
@@ -96,9 +89,9 @@ public class BloodDonationController : ControllerBase
         return result.MatchOk();
     }
     
-    [Authorize]
-    [HttpPut("blood-donation/confirm-request-for-donor")]
-    public async Task<IResult> ConfirmDonationRequestForDonor([FromBody] ConfirmDonationRequestForDonorCommand forStaffCommand, CancellationToken cancellationToken)
+    [Authorize(Roles = "Staff")]
+    [HttpPut("blood-donation/complete-request-for-staff")]
+    public async Task<IResult> CompleteDonationRequest([FromBody] CompleteDonationRequestCommand forStaffCommand, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(forStaffCommand, cancellationToken);
         return result.MatchOk();
@@ -126,6 +119,15 @@ public class BloodDonationController : ControllerBase
     public async Task<IResult> GetDonationMatch([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetDonationMatchQuery { PageNumber = pageNumber, PageSize = pageSize };
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
+    [HttpGet("blood-donation/get-requests-to-complete")]
+    public async Task<IResult> GetRequestsToComplete([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetDonationRequestToCompleteQuery { PageNumber = pageNumber, PageSize = pageSize };
         var result = await _mediator.Send(query, cancellationToken);
         return result.MatchOk();
     }

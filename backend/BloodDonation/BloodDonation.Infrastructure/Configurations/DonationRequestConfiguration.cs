@@ -14,7 +14,9 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
 
         builder.Property(x => x.AmountBlood).IsRequired();
         builder.Property(x => x.RequestTime).IsRequired();
-        builder.Property(x => x.Deadline).IsRequired();
+        builder.Property(x => x.Deadline)
+            .HasDefaultValueSql("NOW() + interval '7 days'")
+            .IsRequired();
         builder.Property(x => x.IsEmergency).HasDefaultValue(false);
         
         builder.Property(x => x.Status)

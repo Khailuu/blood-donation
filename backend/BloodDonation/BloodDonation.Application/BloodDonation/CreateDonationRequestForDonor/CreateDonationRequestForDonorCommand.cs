@@ -7,6 +7,7 @@ public class CreateDonationRequestForDonorCommand : ICommand<CreateDonationReque
 { 
     public int AmountBlood { get; set; }
     public BloodComponentType ComponentType { get; set; }
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
+    public string? Phone { get; set; }
     public string? Note { get; set; }
 }

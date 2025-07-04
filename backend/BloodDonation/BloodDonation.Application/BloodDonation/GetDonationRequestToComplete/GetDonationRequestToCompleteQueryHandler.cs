@@ -1,26 +1,27 @@
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Application.Abstraction.Messaging;
+using BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using Microsoft.EntityFrameworkCore;
 
-namespace BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
+namespace BloodDonation.Application.BloodDonation.GetDonationRequestToComplete;
 
-public class GetDonationRequestToApproveQueryHandler(IDbContext context)
-    : IQueryHandler<GetDonationRequestToApproveQuery, Page<GetDonationRequestToApproveResponse>>
+public class GetDonationRequestToCompleteQueryHandler(IDbContext context)
+    : IQueryHandler<GetDonationRequestToCompleteQuery, Page<GetDonationRequestToCompleteResponse>>
 {
-    public async Task<Result<Page<GetDonationRequestToApproveResponse>>> Handle(GetDonationRequestToApproveQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Page<GetDonationRequestToCompleteResponse>>> Handle(GetDonationRequestToCompleteQuery request, CancellationToken cancellationToken)
     {
         var query = context.DonationRequests
             .Include(r => r.User)
             .Include(r => r.BloodType)
-            .Where(r => r.Status == DonationRequestStatus.Pending)
+            .Where(r => r.Status == DonationRequestStatus.Scheduled)
             .OrderByDescending(r => r.RequestTime);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
         var result = await query
-            .Select(r => new GetDonationRequestToApproveResponse
+            .Select(r => new GetDonationRequestToCompleteResponse
             {
                 RequestId = r.RequestId,
                 UserId = r.UserId,
@@ -36,7 +37,7 @@ public class GetDonationRequestToApproveQueryHandler(IDbContext context)
             })
             .ToListAsync(cancellationToken);
         
-        return new Page<GetDonationRequestToApproveResponse>(
+        return new Page<GetDonationRequestToCompleteResponse>(
             result,
             totalCount,
             request.PageNumber,

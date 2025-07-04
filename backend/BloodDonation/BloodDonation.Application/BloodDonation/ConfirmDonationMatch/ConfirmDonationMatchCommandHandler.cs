@@ -48,7 +48,7 @@ public class ConfirmDonationMatchCommandHandler(IDbContext context, IUserContext
                 ConfirmedBy = userContext.UserId
             });
 
-            match.Request.Status = DonationRequestStatus.Fulfilled;
+            match.Request.Status = DonationRequestStatus.Completed;
 
             // Xóa các match khác cùng request để tránh donor khác xác nhận tiếp
             var otherMatches = await context.DonationMatches
