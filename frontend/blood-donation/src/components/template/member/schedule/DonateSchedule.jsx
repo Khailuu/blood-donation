@@ -6,6 +6,8 @@ import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
 import { donationRequestService } from "../../../../services/donationRequestService ";
 
+
+
 const { Title, Text } = Typography;
 
 export const DonateSchedule = () => {
@@ -19,12 +21,17 @@ export const DonateSchedule = () => {
         const response = await donationRequestService.getMyDonationRequests(
           currentUser.userId
         );
+        console.log(response);
+        
 
         const allItems = response.items || response.data?.items || [];
 
         const myItems = allItems.filter(
           (item) => item.userId === currentUser.userId
         );
+
+        console.log({allItems});
+        
 
         const formatted = myItems.map((item) => ({
           date: dayjs(item.requestTime),
@@ -34,6 +41,9 @@ export const DonateSchedule = () => {
           statusLower: item.status.toLowerCase(),
           id: item.requestId,
         }));
+
+        console.log({formatted});
+        
 
         setAllAppointments(formatted);
       } catch (error) {
@@ -49,12 +59,11 @@ export const DonateSchedule = () => {
   const filteredAppointments = allAppointments.filter((item) => {
     if (activeTab === "upcoming") {
       return item.statusLower === "pending";
-    } else {
+    } else  {
       return item.statusLower !== "pending";
     }
   });
 
-  // Function to get status color
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "pending":
