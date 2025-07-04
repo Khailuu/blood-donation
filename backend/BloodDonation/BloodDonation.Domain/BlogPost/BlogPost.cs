@@ -10,6 +10,7 @@ public class BlogPost : Entity
     public string Title { get; set; }
     public string Content { get; set; }
     public DateTime PublishedDate { get; set; }
+    public string? ImageUrl { get; set; }
     
     public User? User { get; set; }
     public ICollection<BlogPostLike> Likes { get; set; } = new List<BlogPostLike>();

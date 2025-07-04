@@ -43,4 +43,9 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\avatars\" />
+      <Folder Include="wwwroot\blog-images\" />
+    </ItemGroup>
+
 </Project>

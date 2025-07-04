@@ -6,4 +6,5 @@ public class CreateBlogPostCommand : ICommand<CreateBlogPostResponse>
 {
     public string Title { get; set; }
     public string Content { get; set; }
+    public string? ImageUrl { get; set; }
 }

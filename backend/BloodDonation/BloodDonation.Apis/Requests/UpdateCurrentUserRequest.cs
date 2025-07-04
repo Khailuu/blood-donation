@@ -1,10 +1,9 @@
-using BloodDonation.Application.Abstraction.Messaging;
-using BloodDonation.Application.Users.UpdateUser;
 using BloodDonation.Domain.Users;
+using Microsoft.AspNetCore.Http;
 
-namespace BloodDonation.Application.Users.UpdateCurrentUser;
+namespace BloodDonation.Apis.Requests;
 
-public sealed class UpdateCurrentUserCommand : ICommand<UpdateUserResponse>
+public class UpdateCurrentUserRequest
 {
     public string? FullName { get; set; }
     public string? Email { get; set; }
@@ -13,5 +12,6 @@ public sealed class UpdateCurrentUserCommand : ICommand<UpdateUserResponse>
     public string? Address { get; set; }
     public string? Phone { get; set; }
     public Guid? BloodTypeId { get; set; }
-    public string? ImageUrl { get; set; }
+    public IFormFile? Image { get; set; } // <-- ảnh từ FE
+
 }

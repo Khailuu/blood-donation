@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Users.ChangePassword;
 using BloodDonation.Application.Users.CreateHealthForm;
 using BloodDonation.Application.Users.GetHealthForm;
@@ -28,10 +29,14 @@ namespace BloodDonation.Apis.Controller;
 public class UserController : ControllerBase
 {
     private readonly ISender _mediator;
+    private readonly IImageUploader _imageUploader;
 
-    public UserController(ISender mediator)
+
+    public UserController(ISender mediator, IImageUploader imageUploader)
     {
         _mediator = mediator;
+        _imageUploader = imageUploader;
+
     }
     
     // [Authorize(Roles = "Staff")]
@@ -68,14 +73,33 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPut("user/update-current-user")]
-    public async Task<IResult> UpdateMyProfile([FromBody] UpdateCurrentUserCommand request, CancellationToken cancellationToken)
+    public async Task<IResult> UpdateMyProfile([FromForm] UpdateCurrentUserRequest request, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(request, cancellationToken);
+        string? imageUrl = null;
+        if (request.Image != null)
+        {
+            using var stream = request.Image.OpenReadStream();
+            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "blog-images");
+        }
+        
+        var command = new UpdateCurrentUserCommand()
+        {
+             FullName = request.FullName,
+            Email = request.Email,
+            DateOfBirth = request.DateOfBirth,
+            Gender = request.Gender,
+            Address = request.Address,
+            Phone = request.Phone,
+            BloodTypeId = request.BloodTypeId,
+            ImageUrl = imageUrl // truyền ảnh mới nếu có
+        };
+        
+        var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
     
     [Authorize]
-    [HttpPost("user/create-healthform")]
+    [HttpPost("user/create-health-form")]
     public async Task<IResult> CreateHealthForm([FromBody] CreateHealthFormRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateHealthFormCommand()
@@ -89,10 +113,10 @@ public class UserController : ControllerBase
         };
 
         var result = await _mediator.Send(command, cancellationToken);
-        return result.MatchCreated(id => $"/healthform/{id}");
+        return result.MatchCreated(id => $"/health-form/{id}");
     }
     [Authorize]
-    [HttpGet("user/get-current-user-healthform")]
+    [HttpGet("user/get-current-user-health-form")]
     public async Task<IResult> GetHealthForm([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetHealthFormQuery
@@ -104,7 +128,7 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     [Authorize(Roles = "Member")]
-    [HttpDelete("user/delete-current-user-healthform")]
+    [HttpDelete("user/delete-current-user-health-form")]
     public async Task<IResult> DeleteHealthForm(CancellationToken cancellationToken)
     {
         var command = new DeleteHealthFormCommand();

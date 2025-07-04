@@ -32,6 +32,7 @@ public sealed class UpdateCurrentUserCommandHandler(
         user.Gender = request.Gender ?? user.Gender;
         user.Address = request.Address ?? user.Address;
         user.Phone = request.Phone ?? user.Phone;
+        user.ImageUrl = request.ImageUrl ?? user.ImageUrl;
 
         if (request.BloodTypeId.HasValue)
         {

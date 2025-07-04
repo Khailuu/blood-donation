@@ -7,4 +7,6 @@ public class GetBlogPostResponse
     public string Title { get; set; } = default!;
     public string Content { get; set; } = default!;
     public DateTime PublishedDate { get; set; }
+    public string? ImageUrl { get; set; }
+
 }

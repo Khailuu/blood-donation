@@ -21,6 +21,7 @@ public class User : Entity
     public bool? IsDonor { get; set; }
     public DateTime? LastDonationDate { get; set; }
     public UserStatus Status { get; set; }
+    public string? ImageUrl { get; set; }
     public bool IsVerified { get; set; }
     
     // Các navigation property

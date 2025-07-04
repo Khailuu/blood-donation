@@ -54,6 +54,7 @@ public class Program
         app.UseCors("AllowLocalAndProdFE");
         app.UseRequestContextLogging();
         app.UseSerilogRequestLogging();
+        app.UseStaticFiles();
         app.UseExceptionHandler();
         app.UseHttpsRedirection();
         app.UseAuthentication();
