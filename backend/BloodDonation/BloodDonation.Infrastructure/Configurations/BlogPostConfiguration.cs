@@ -20,6 +20,10 @@ public class BlogPostConfiguration : IEntityTypeConfiguration<BlogPost>
 
         builder.Property(x => x.PublishedDate)
             .IsRequired();
+        
+        builder.Property(x => x.ImageUrl)
+            .HasMaxLength(500);
+
 
         builder.HasOne(p => p.User)
             .WithMany(u => u.BlogPosts)

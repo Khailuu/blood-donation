@@ -18,8 +18,8 @@ public class CancelDonationRequestCommandHandler(IDbContext context, IUserContex
         if (donationRequest == null)
             return Result.Failure(DonationRequestErrors.RequestNotFound);
 
-        if (donationRequest.UserId != userContext.UserId)
-            return Result.Failure(DonationRequestErrors.NotDonor);
+        // if (donationRequest.UserId != userContext.UserId)
+        //     return Result.Failure(DonationRequestErrors.NotDonor);
 
         if (donationRequest.Status != DonationRequestStatus.Pending && 
             donationRequest.Status != DonationRequestStatus.Scheduled)

@@ -15,6 +15,7 @@ public class UpdateUserResponse
     public string Address { get; init; }
     public string Phone { get; init; }
     public bool? IsDonor { get; init; }
+    public string? ImageUrl { get; init; }
 
     public UpdateUserResponse(User user)
     {
@@ -29,5 +30,6 @@ public class UpdateUserResponse
         Address = user.Address;
         Phone = user.Phone;
         IsDonor = user.IsDonor;
+        ImageUrl = user.ImageUrl;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BloodDonation.Application.BlogPosts.CreateBlogPost;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Apis.Extensions;
+using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.BlogPosts.DeleteBlogPost;
 using BloodDonation.Application.BlogPosts.GetBlogPost;
 using BloodDonation.Application.BlogPosts.UpdateBlogPost;
@@ -16,22 +17,33 @@ namespace BloodDonation.Apis.Controller;
 public class BlogPostController : ControllerBase
 {
     private readonly ISender _mediator;
-
-    public BlogPostController(ISender mediator)
+    private readonly IImageUploader _imageUploader;
+    
+    public BlogPostController(ISender mediator, IImageUploader imageUploader)
     {
         _mediator = mediator;
+        _imageUploader = imageUploader;
+
     }
     [Authorize]
     [HttpPost("blogpost/create-blogpost")]
-    public async Task<IResult> CreateBlogPost([FromBody] CreateBlogPostRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> CreateBlogPost([FromForm] CreateBlogPostRequest request, CancellationToken cancellationToken)
     {
+        string? imageUrl = null;
+        if (request.Image != null)
+        {
+            using var stream = request.Image.OpenReadStream();
+            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "blog-images");
+        }
+
         var command = new CreateBlogPostCommand
         {
             Title = request.Title,
-            Content = request.Content
+            Content = request.Content,
+            ImageUrl = imageUrl
         };
 
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);;
         return result.MatchCreated(id => $"/blogpost/{id}");
     }
     [HttpGet("blogpost/get-blogpost")]
@@ -48,18 +60,27 @@ public class BlogPostController : ControllerBase
     }
     [Authorize]
     [HttpPut("blogpost/update/{id:guid}")]
-    public async Task<IResult> UpdateBlogPost(Guid id, [FromBody] UpdateBlogPostRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> UpdateBlogPost(Guid id, [FromForm] UpdateBlogPostRequest request, CancellationToken cancellationToken)
     {
+        string? imageUrl = null;
+        if (request.Image != null)
+        {
+            using var stream = request.Image.OpenReadStream();
+            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "blog-images");
+        }
+
         var command = new UpdateBlogPostCommand()
         {
             PostId = id,
             Title = request.Title,
-            Content = request.Content
+            Content = request.Content,
+            ImageUrl = imageUrl // truyền ảnh mới nếu có
         };
 
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
+
     [Authorize]
     [HttpDelete("blogpost/delete/{id:guid}")]
     public async Task<IResult> DeleteBlogPost(Guid id, CancellationToken cancellationToken)

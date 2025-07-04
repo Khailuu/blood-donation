@@ -96,6 +96,8 @@ public static class DependencyInjection
         services.AddScoped<IMailService, MailService>();
         services.AddSingleton<IPayload, Payload>();
         services.AddScoped<ITemplateRenderer, TemplateRenderer>();
+        
+        services.AddScoped<IImageUploader, ImageUploader>();
     
         return services;
     }

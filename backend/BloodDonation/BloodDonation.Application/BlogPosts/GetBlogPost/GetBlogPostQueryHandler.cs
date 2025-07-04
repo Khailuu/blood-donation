@@ -23,7 +23,8 @@ public class GetBlogPostQueryHandler(IDbContext context) : IQueryHandler<GetBlog
                 UserId = bp.UserId,
                 Title = bp.Title,
                 Content = bp.Content,
-                PublishedDate = bp.PublishedDate
+                PublishedDate = bp.PublishedDate,
+                ImageUrl = bp.ImageUrl
             })
             .ToListAsync(cancellationToken);
 

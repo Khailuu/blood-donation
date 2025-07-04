@@ -2,3 +2,6 @@
 **/obj
 **/bin
 .env
+
+wwwroot/blog-images/*
+!wwwroot/blog-images/.gitkeep
