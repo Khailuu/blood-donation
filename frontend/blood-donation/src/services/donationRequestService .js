@@ -10,8 +10,8 @@ export const donationRequestService = {
         "/api/blood-donation/create-request-for-donor",
         requestData
       );
-      console.log({response});
-      
+      console.log({ response });
+
       return response.data;
     } catch (error) {
       this._handleRequestError(error, "Failed to create donation request");
@@ -25,7 +25,6 @@ export const donationRequestService = {
         "/api/blood-donation/get-requests-to-approve",
         { params }
       );
-      console.log({ response });
 
       return {
         data: response.data.data,
@@ -47,7 +46,6 @@ export const donationRequestService = {
           params: { userId },
         }
       );
-      console.log(response);
 
       return response.data;
     } catch (error) {
@@ -68,7 +66,6 @@ export const donationRequestService = {
     }
   },
 
-  // Update donation request
   async updateDonationRequest(id, updateData) {
     try {
       const response = await api.patch(
@@ -82,25 +79,27 @@ export const donationRequestService = {
     }
   },
 
-  // Approve donation request
-  async approveDonationRequest(id) {
+  //approve
+  async approveDonationRequest(requestId) {
     try {
-      const response = await api.patch(
-        `/api/blood-donation/requests/${id}/approve`
+      const response = await api.put(
+        "/api/blood-donation/confirm-request-for-staff",
+        { requestId }
       );
+
       return response.data;
     } catch (error) {
-      this._handleRequestError(error, "Failed to approve donation request");
+      this._handleRequestError(error, "Failed to confirm donation request");
       throw error;
     }
   },
 
-  // Reject donation request
-  async rejectDonationRequest(id, reason) {
+  //reject
+  async rejectDonationRequest(requestId) {
     try {
       const response = await api.patch(
-        `/api/blood-donation/requests/${id}/reject`,
-        { reason }
+        "/api/blood-donation/cancel-request",
+        { requestId }
       );
       return response.data;
     } catch (error) {
@@ -109,20 +108,31 @@ export const donationRequestService = {
     }
   },
 
-  // Complete donation request
-  async completeDonationRequest(id) {
+  async getApprovedDonationRequests() {
     try {
-      const response = await api.patch(
-        `/api/blood-donation/requests/${id}/complete`
+      const response = await api.get(
+        "/api/blood-donation/get-requests-to-complete"
       );
-      return response.data;
+      return response.data.data.items || [];
     } catch (error) {
-      this._handleRequestError(error, "Failed to mark donation as completed");
+      this._handleRequestError(
+        error,
+        "Failed to fetch approved donation requests"
+      );
       throw error;
     }
   },
 
-  // Get donation requests by user
+  async completeDonationRequest(requestId) {
+    try {
+      const response = await api.put(`/api/blood-donation/conplete-request-for-staff`,{requestId});
+      return response.data;
+    } catch (error) {
+      this._handleRequestError(error, "Failed to complete donation request");
+      throw error;
+    }
+  },
+
   async getDonationRequestsByUser(userId, params = {}) {
     try {
       const response = await api.get(`/api/users/${userId}/donation-requests`, {
@@ -138,7 +148,6 @@ export const donationRequestService = {
     }
   },
 
-  // Get upcoming appointments
   async getUpcomingAppointments() {
     try {
       const response = await api.get(
@@ -147,17 +156,6 @@ export const donationRequestService = {
       return response.data;
     } catch (error) {
       this._handleRequestError(error, "Failed to fetch upcoming appointments");
-      throw error;
-    }
-  },
-
-  // Get donation statistics
-  async getDonationStatistics() {
-    try {
-      const response = await api.get("/api/blood-donation/statistics");
-      return response.data;
-    } catch (error) {
-      this._handleRequestError(error, "Failed to fetch donation statistics");
       throw error;
     }
   },
