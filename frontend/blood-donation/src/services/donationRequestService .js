@@ -97,7 +97,7 @@ export const donationRequestService = {
   //reject
   async rejectDonationRequest(requestId) {
     try {
-      const response = await api.patch(
+      const response = await api.put(
         "/api/blood-donation/cancel-request",
         { requestId }
       );
@@ -125,7 +125,7 @@ export const donationRequestService = {
 
   async completeDonationRequest(requestId) {
     try {
-      const response = await api.put(`/api/blood-donation/conplete-request-for-staff`,{requestId});
+      const response = await api.put(`/api/blood-donation/complete-request-for-staff`,{requestId});
       return response.data;
     } catch (error) {
       this._handleRequestError(error, "Failed to complete donation request");

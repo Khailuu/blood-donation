@@ -106,7 +106,7 @@ const router = [
           { path: "inventory", element: <InventoryManagement /> },
           { path: "profile", element: <Profile /> },
           { path: "notifications", element: <Notifications /> },
-          { path: "update-profile", element: <UpdateProfile /> },
+          { path: "update-profile", element: <ProfileMember /> },
           { index: true, element: <Navigate to="dashboard" replace /> },
         ],
       },
