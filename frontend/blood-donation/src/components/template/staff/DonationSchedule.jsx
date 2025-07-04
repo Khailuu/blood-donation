@@ -11,7 +11,7 @@ const DonationSchedule = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  const statuses = ['Approved', 'Completed'];
+  const statuses = ['Scheduled', 'Completed'];
 
   useEffect(() => {
     const fetchApprovedRequests = async () => {
@@ -70,7 +70,7 @@ const DonationSchedule = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Approved': return 'bg-blue-100 text-blue-800';
+      case 'Scheduled': return 'bg-blue-100 text-blue-800';
       case 'Completed': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -105,6 +105,8 @@ const DonationSchedule = () => {
         schedule.status
       ])
     ].map(row => row.join(',')).join('\n');
+    console.log({ csvContent });
+    
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -223,7 +225,7 @@ const DonationSchedule = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {schedule.status === 'Approved' && (
+                    {schedule.status === 'Scheduled' && (
                       <button
                         onClick={() => handleComplete(schedule.requestId)}
                         className="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
@@ -237,7 +239,7 @@ const DonationSchedule = () => {
               {filteredSchedules.length === 0 && (
                 <tr>
                   <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
-                    No schedules found matching your criteria
+                    No schedules found
                   </td>
                 </tr>
               )}

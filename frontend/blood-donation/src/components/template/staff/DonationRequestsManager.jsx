@@ -71,7 +71,7 @@ const DonorRequestsManager = () => {
     try {
       await donationRequestService.approveDonationRequest(id);
       setDonationRequests((reqs) =>
-        reqs.map((r) => (r.requestId === id ? { ...r, status: "Approved" } : r))
+        reqs.map((r) => (r.requestId === id ? { ...r, status: "Scheduled" } : r))
       );
 
       message.success("Request approved and added to schedule");
