@@ -22,7 +22,7 @@ public class CancelDonationRequestCommandHandler(IDbContext context, IUserContex
             return Result.Failure(DonationRequestErrors.NotDonor);
 
         if (donationRequest.Status != DonationRequestStatus.Pending && 
-            donationRequest.Status != DonationRequestStatus.WaitingForDonorToConfirm)
+            donationRequest.Status != DonationRequestStatus.Scheduled)
             return Result.Failure(DonationRequestErrors.CannotCancel);
 
         donationRequest.Status = DonationRequestStatus.Cancelled;

@@ -26,56 +26,57 @@ public class ConfirmDonationRequestForStaffCommandHandler(IDbContext context, IU
 
         if (donationRequest.User?.IsDonor == true)
         {
-            donationRequest.Status = DonationRequestStatus.WaitingForDonorToConfirm;
+            donationRequest.Status = DonationRequestStatus.Scheduled;
         }
         else
         {
-            var bloodStored = await context.BloodStored
-                .FirstOrDefaultAsync(b => b.BloodTypeId == donationRequest.BloodTypeId, cancellationToken);
-
-            var available = bloodStored?.Quantity ?? 0;
-
-            if (available >= donationRequest.AmountBlood)
-            {
-                bloodStored!.Quantity -= donationRequest.AmountBlood;
-                bloodStored.LastUpdated = DateTime.UtcNow;
-
-                context.DonationsHistory.Add(new DonationHistory
-                {
-                    DonationId = Guid.NewGuid(),
-                    UserId = donationRequest.UserId,
-                    RequestId = donationRequest.RequestId,
-                    Date = DateTime.UtcNow,
-                    Status = DonationHistoryStatus.Completed,
-                    ConfirmedBy = userContext.UserId
-                });
-
-                donationRequest.Status = DonationRequestStatus.Fulfilled;
-            }
-            else
-            {
-                if (bloodStored != null)
-                {
-                    bloodStored.Quantity = 0;
-                    bloodStored.LastUpdated = DateTime.UtcNow;
-                }
-
-                if (available > 0)
-                {
-                    context.DonationsHistory.Add(new DonationHistory
-                    {
-                        DonationId = Guid.NewGuid(),
-                        UserId = donationRequest.UserId,
-                        RequestId = donationRequest.RequestId,
-                        Date = DateTime.UtcNow,
-                        Status = DonationHistoryStatus.Completed,
-                        ConfirmedBy = userContext.UserId
-                    });
-                }
-
-                var matcher = new AutoMatchDonorsForRequestHandler(context);
-                await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
-            }
+            return Result.Failure(DonationRequestErrors.NotDonor);;
+            // var bloodStored = await context.BloodStored
+            //     .FirstOrDefaultAsync(b => b.BloodTypeId == donationRequest.BloodTypeId, cancellationToken);
+            //
+            // var available = bloodStored?.Quantity ?? 0;
+            //
+            // if (available >= donationRequest.AmountBlood)
+            // {
+            //     bloodStored!.Quantity -= donationRequest.AmountBlood;
+            //     bloodStored.LastUpdated = DateTime.UtcNow;
+            //
+            //     context.DonationsHistory.Add(new DonationHistory
+            //     {
+            //         DonationId = Guid.NewGuid(),
+            //         UserId = donationRequest.UserId,
+            //         RequestId = donationRequest.RequestId,
+            //         Date = DateTime.UtcNow,
+            //         Status = DonationHistoryStatus.Completed,
+            //         ConfirmedBy = userContext.UserId
+            //     });
+            //
+            //     donationRequest.Status = DonationRequestStatus.Fulfilled;
+            // }
+            // else
+            // {
+            //     if (bloodStored != null)
+            //     {
+            //         bloodStored.Quantity = 0;
+            //         bloodStored.LastUpdated = DateTime.UtcNow;
+            //     }
+            //
+            //     if (available > 0)
+            //     {
+            //         context.DonationsHistory.Add(new DonationHistory
+            //         {
+            //             DonationId = Guid.NewGuid(),
+            //             UserId = donationRequest.UserId,
+            //             RequestId = donationRequest.RequestId,
+            //             Date = DateTime.UtcNow,
+            //             Status = DonationHistoryStatus.Completed,
+            //             ConfirmedBy = userContext.UserId
+            //         });
+            //     }
+            //
+            //     var matcher = new AutoMatchDonorsForRequestHandler(context);
+            //     await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
+            // }
         }
 
         await context.SaveChangesAsync(cancellationToken);
