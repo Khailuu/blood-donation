@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { message } from 'antd';
 import { donationRequestService } from '../../../services/donationRequestService ';
+import { userService } from '../../../services/manageUserService';
 
 const DonationSchedule = () => {
   const [donationSchedules, setDonationSchedules] = useState([]);
@@ -77,19 +78,43 @@ const DonationSchedule = () => {
   };
 
   const handleComplete = async (requestId) => {
-    try {
-      await donationRequestService.completeDonationRequest(requestId);
-      setDonationSchedules(prev => 
-        prev.map(req => 
-          req.requestId === requestId ? { ...req, status: 'Completed' } : req
-        )
-      );
-      message.success("Donation marked as completed");
-    // eslint-disable-next-line no-unused-vars
-    } catch (error) {
-      message.error("Failed to complete donation");
+  try {
+    const confirmed = window.confirm("Are you sure you want to mark this donation as completed?");
+    if (!confirmed) return;
+
+    // 1. Mark the donation as completed và nhận response
+    const donationResponse = await donationRequestService.completeDonationRequest(requestId);
+    
+    // 2. Kiểm tra và thêm vào inventory
+    if (donationResponse && donationResponse.data) {
+      const { bloodType, amountBlood } = donationResponse.data;
+      
+      // 3. Lấy bloodTypeId tương ứng với bloodType
+      const bloodTypes = await userService.getBloodTypes();
+      const bloodTypeInfo = bloodTypes.find(type => type.bloodType === bloodType);
+      
+      if (bloodTypeInfo) {
+        await userService.addBloodStored({
+          bloodTypeId: bloodTypeInfo.id, // Sử dụng bloodTypeId
+          quantity: amountBlood
+        });
+      }
     }
-  };
+
+    // 4. Update local state
+    setDonationSchedules(prev => 
+      prev.map(req => 
+        req.requestId === requestId ? { ...req, status: 'Completed' } : req
+      )
+    );
+    
+    message.success("Donation completed successfully");
+  } catch (error) {
+    console.error("Failed to complete donation:", error);
+    message.error("Failed to complete donation");
+  }
+};
+
 
   const handleExport = () => {
     const csvContent = [

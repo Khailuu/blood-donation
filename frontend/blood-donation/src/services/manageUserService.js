@@ -19,17 +19,42 @@ export const userService = {
   async getBloodTypes() {
     try {
       const response = await api.get("/api/blood/get-blood-Type", {
-      params: {
-        pageNumber: 1,
-        pageSize: 100, 
-      },
-    });
-    console.log({response});
-    
-      return response.data.data.items; 
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
+      console.log({ response });
+
+      return response.data.data.items;
     } catch (error) {
       console.error("Error fetching blood types:", error);
       return [];
     }
-  }
+  },
+
+  async getBloodStored() {
+    try {
+      const response = await api.get("/api/blood/get-blood-stored", {
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
+      return response.data.data.items;
+    } catch (error) {
+      console.error("Error fetching blood stored:", error);
+      return [];
+    }
+  },
+
+  async addBloodStored(data) {
+    try {
+      const response = await api.post("/api/blood/update-blood-stored", data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding blood stored:", error);
+      throw error;
+    }
+  },
 };
