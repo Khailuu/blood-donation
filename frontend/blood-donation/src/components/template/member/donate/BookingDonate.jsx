@@ -1,4 +1,3 @@
-// Giữ nguyên toàn bộ import như bạn gửi
 import {
   Card,
   Button,
@@ -11,6 +10,9 @@ import {
   Radio,
   message,
   Steps,
+  Divider,
+  Avatar,
+  Badge,
 } from "antd";
 import {
   EnvironmentOutlined,
@@ -20,6 +22,9 @@ import {
   CheckCircleOutlined,
   CalendarOutlined,
   ArrowLeftOutlined,
+  UserOutlined,
+  HeartOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
@@ -135,131 +140,212 @@ export const BookingDonate = () => {
       case 0:
         return (
           <div style={{ marginBottom: 24 }}>
-            <Title
-              level={4}
-              style={{ fontFamily: "Raleway", marginBottom: 16 }}
-            >
-              Select Donation Type
-            </Title>
-            <Radio.Group
-              onChange={(e) => {
-                setDonationType(e.target.value);
-                setStep(1);
-              }}
-              value={donationType}
-              style={{ width: "100%" }}
-            >
-              <Radio.Button
-                value="blood"
-                style={{
-                  width: "50%",
-                  textAlign: "center",
-                  fontFamily: "Raleway",
-                  backgroundColor:
-                    donationType === "blood" ? "#c41c33" : "#fff",
-                  color: donationType === "blood" ? "#fff" : "#000",
-                }}
-              >
-                Whole Blood
-              </Radio.Button>
-              <Radio.Button
-                value="plasma"
-                style={{
-                  width: "50%",
-                  textAlign: "center",
-                  fontFamily: "Raleway",
-                  backgroundColor:
-                    donationType === "plasma" ? "#c41c33" : "#fff",
-                  color: donationType === "plasma" ? "#fff" : "#000",
-                }}
-              >
-                Plasma
-              </Radio.Button>
-            </Radio.Group>
-            <div style={{ marginTop: 24 }}>
-              <Title level={5} style={{ fontFamily: "Raleway" }}>
-                What to expect:
+            <div className="modern-header">
+              <Title level={3} style={{ marginBottom: 8 }}>
+                Select Donation Type
               </Title>
-              <ul style={{ fontFamily: "Raleway", paddingLeft: 20 }}>
-                <li>Whole blood donation takes about 10-15 minutes</li>
-                <li>Plasma donation takes about 45-60 minutes</li>
-                <li>Please bring a valid ID</li>
-                <li>Drink plenty of water before donating</li>
-              </ul>
+              <Text type="secondary">
+                Choose the type of donation you'd like to make
+              </Text>
+            </div>
+
+            <div style={{ margin: "32px 0" }}>
+              <Radio.Group
+                onChange={(e) => {
+                  setDonationType(e.target.value);
+                  setStep(1);
+                }}
+                value={donationType}
+                style={{ width: "100%" }}
+              >
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Card
+                      hoverable
+                      onClick={() => {
+                        setDonationType("blood");
+                        setStep(1);
+                      }}
+                      style={{
+                        textAlign: "center",
+                        borderColor:
+                          donationType === "blood" ? "#bd0026" : "#f0f0f0",
+                        backgroundColor:
+                          donationType === "blood" ? "#fffafa" : "#fff",
+                      }}
+                    >
+                      <HeartOutlined
+                        style={{ fontSize: 32, color: "#bd0026" }}
+                      />
+                      <Title level={4} style={{ marginTop: 16 }}>
+                        Whole Blood
+                      </Title>
+                      <Text type="secondary">10-15 minutes</Text>
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card
+                      hoverable
+                      onClick={() => {
+                        setDonationType("plasma");
+                        setStep(1);
+                      }}
+                      style={{
+                        textAlign: "center",
+                        borderColor:
+                          donationType === "plasma" ? "#bd0026" : "#f0f0f0",
+                        backgroundColor:
+                          donationType === "plasma" ? "#f0f9ff" : "#fff",
+                      }}
+                    >
+                      <HeartOutlined
+                        style={{ fontSize: 32, color: "#1890ff" }}
+                      />
+                      <Title level={4} style={{ marginTop: 16 }}>
+                        Plasma
+                      </Title>
+                      <Text type="secondary">45-60 minutes</Text>
+                    </Card>
+                  </Col>
+                </Row>
+              </Radio.Group>
+            </div>
+
+            <Divider />
+
+            <div style={{ marginTop: 24 }}>
+              <Title
+                level={5}
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <InfoCircleOutlined /> What to expect
+              </Title>
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                  <Avatar size="small" style={{ backgroundColor: "#f0f0f0" }}>
+                    1
+                  </Avatar>
+                  <div>
+                    <Text strong>Bring valid ID</Text>
+                    <Text type="secondary" style={{ display: "block" }}>
+                      Government-issued photo ID required
+                    </Text>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                  <Avatar size="small" style={{ backgroundColor: "#f0f0f0" }}>
+                    2
+                  </Avatar>
+                  <div>
+                    <Text strong>Hydrate well</Text>
+                    <Text type="secondary" style={{ display: "block" }}>
+                      Drink extra water before donating
+                    </Text>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <Avatar size="small" style={{ backgroundColor: "#f0f0f0" }}>
+                    3
+                  </Avatar>
+                  <div>
+                    <Text strong>Eat healthy meals</Text>
+                    <Text type="secondary" style={{ display: "block" }}>
+                      Avoid fatty foods before donation
+                    </Text>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );
       case 1:
         return (
           <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 16,
-              }}
-            >
-              <Button icon={<ArrowLeftOutlined />} onClick={() => setStep(0)}>
+            <div className="modern-header">
+              <Button
+                icon={<ArrowLeftOutlined />}
+                onClick={() => setStep(0)}
+                type="text"
+                style={{ padding: 0, marginBottom: 16 }}
+              >
                 Back
               </Button>
-              
+              <Title level={3} style={{ marginBottom: 8 }}>
+                Select Date & Time
+              </Title>
+              <Text type="secondary">
+                Choose a convenient time for your donation
+              </Text>
             </div>
 
-            <div
+            <Card
               style={{
                 marginBottom: 24,
-                border: "1px solid #f0f0f0",
-                borderRadius: 12,
-                boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
+                borderRadius: 24,
+                boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                border: "none",
               }}
+              bodyStyle={{ padding: 0 }}
             >
+              <div
+                style={{
+                  padding: "16px 24px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #f0f0f0",
+                  backgroundColor: "#bd0026",
+                }}
+              >
+                <Button
+                  type="text"
+                  icon={<LeftOutlined />}
+                  onClick={handlePrevMonth}
+                  style={{ padding: 0, color: "#fff" }}
+                />
+                <Title level={5} style={{ margin: 0, color: "#fff" }}>
+                  {currentMonth.format("MMMM YYYY")}
+                </Title>
+                <Space>
+                  <Button
+                    type="text"
+                    onClick={handleGoToToday}
+                    style={{
+                      padding: 10,
+                      fontWeight: "bold",
+                      color: "#bd0026",
+                      backgroundColor: "#fff",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = "scale(0.95)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    type="text"
+                    icon={<RightOutlined />}
+                    onClick={handleNextMonth}
+                    style={{ padding: 0, color: "#fff" }}
+                  />
+                </Space>
+              </div>
+
               <Calendar
                 fullscreen={false}
                 value={currentMonth}
                 onPanelChange={handleMonthChange}
                 disabledDate={disabledDate}
-                headerRender={() => (
-                  <div
-                    style={{
-                      padding: 10,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderBottom: "1px solid #f0f0f0",
-                      backgroundColor: "#c41c33",
-                    }}
-                  >
-                    <Button
-                      type="text"
-                      icon={<LeftOutlined />}
-                      onClick={handlePrevMonth}
-                      style={{ color: "#fff" }}
-                    />
-                    <Title level={4} style={{ color: "#fff", margin: 0 }}>
-                      {currentMonth.format("MMMM YYYY")}
-                    </Title>
-                    <Space>
-                      <Button
-                        type="text"
-                        style={{ color: "#fff" }}
-                        onClick={handleGoToToday}
-                      >
-                        Today
-                      </Button>
-                      <Button
-                        type="text"
-                        icon={<RightOutlined />}
-                        onClick={handleNextMonth}
-                        style={{ color: "#fff" }}
-                      />
-                    </Space>
-                  </div>
-                )}
+                headerRender={() => null}
                 dateFullCellRender={(date) => {
                   const isSelected = date.isSame(selectedDate, "day");
                   const isToday = date.isSame(dayjs(), "day");
                   const isPast = date.isBefore(dayjs(), "day");
                   const isCurrentMonth = date.isSame(currentMonth, "month");
+
                   return (
                     <div
                       style={{
@@ -268,12 +354,12 @@ export const BookingDonate = () => {
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: isSelected ? "#c41c33" : "transparent",
+                        backgroundColor: isSelected ? "#bd0026" : "transparent",
                         borderRadius: 8,
                         color: isSelected
                           ? "#fff"
                           : isToday
-                          ? "#c41c33"
+                          ? "#bd0026"
                           : isPast
                           ? "rgba(0, 0, 0, 0.25)"
                           : isCurrentMonth
@@ -283,67 +369,91 @@ export const BookingDonate = () => {
                           isToday || (isCurrentMonth && !isPast)
                             ? "bold"
                             : "normal",
-                        border: isToday ? "1px solid #c41c33" : "none",
+                        border: isToday ? "1px solid #ff4d4f" : "none",
                         opacity: isPast ? 0.6 : 1,
                         cursor: isPast ? "not-allowed" : "pointer",
+                        transition: "all 0.2s",
+                        position: "relative",
                       }}
                       onClick={() => !isPast && setSelectedDate(date)}
                     >
+                      {isToday && !isSelected && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            width: 6,
+                            height: 6,
+                            backgroundColor: "#bd0026",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      )}
                       <div>{date.date()}</div>
                     </div>
                   );
                 }}
               />
-            </div>
+            </Card>
 
             <div style={{ marginBottom: 24 }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: 12,
-                }}
-              >
-                <ClockCircleOutlined
-                  style={{ color: "#c41c33", marginRight: 8 }}
-                />
-                <Title level={5} style={{ fontFamily: "Raleway", margin: 0 }}>
-                  Available Time Slots
+              <div className="modern-header">
+                <Title
+                  level={5}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  <ClockCircleOutlined /> Available Time Slots
                 </Title>
+                <Text type="secondary">
+                  {selectedDate.format("dddd, MMMM D")}
+                </Text>
               </div>
+
               {getAvailableTimeSlots().length > 0 ? (
-                <Space wrap>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(100px, 1fr))",
+                    gap: 12,
+                    marginTop: 16,
+                  }}
+                >
                   {getAvailableTimeSlots().map((time) => (
                     <Button
                       key={time}
                       type={selectedTime === time ? "primary" : "default"}
                       onClick={() => handleTimeSelect(time)}
                       style={{
-                        borderRadius: 12,
-                        padding: "6px 16px",
-                        fontFamily: "Raleway",
+                        borderRadius: 8,
+                        padding: "8px 12px",
+                        height: "auto",
+                        fontWeight: 600,
                         backgroundColor:
-                          selectedTime === time ? "#c41c33" : "#fff",
+                          selectedTime === time ? "#bd0026" : "#fff",
                         color: selectedTime === time ? "#fff" : "#000",
                         border:
                           selectedTime === time
-                            ? "1px solid #c41c33"
-                            : "1px solid #d9d9d9",
-                        boxShadow:
-                          selectedTime === time
-                            ? "0 2px 6px rgba(0,0,0,0.1)"
-                            : "none",
-                        transition: "all 0.3s",
+                            ? "1px solid #bd0026"
+                            : "1px solid #f0f0f0",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                        transition: "all 0.2s",
                       }}
                     >
                       {time}
                     </Button>
                   ))}
-                </Space>
+                </div>
               ) : (
-                <Tag color="error" style={{ fontFamily: "Raleway" }}>
-                  No available slots for this date
-                </Tag>
+                <Card style={{ marginTop: 16 }}>
+                  <Text type="secondary">No available slots for this date</Text>
+                </Card>
               )}
             </div>
 
@@ -355,12 +465,19 @@ export const BookingDonate = () => {
               loading={loading}
               disabled={!selectedTime}
               style={{
-                backgroundColor: "#c41c33",
-                borderRadius: 30,
+                backgroundColor: "#bd0026",
+                borderRadius: 8,
                 height: 48,
-                fontWeight: "bold",
+                fontWeight: 600,
                 fontSize: 16,
-                fontFamily: "Raleway",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(255,77,79,0.2)",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = "scale(0.95)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
               }}
             >
               Confirm Appointment
@@ -370,36 +487,152 @@ export const BookingDonate = () => {
       case 2:
         return (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <CheckCircleOutlined
-              style={{ fontSize: 64, color: "#52c41a", marginBottom: 24 }}
-            />
-            <Title level={3} style={{ fontFamily: "Raleway" }}>
-              Appointment Booked Successfully!
+            <Badge
+              count={
+                <CheckCircleOutlined style={{ color: "green", fontSize: 32 }} />
+              }
+              offset={[0, 32]}
+              style={{ backgroundColor: "#fff" }}
+            >
+              <Avatar
+                size={100}
+                style={{
+                  backgroundColor: "#ffd8df",
+                  border: "2px solid #bd0026",
+                }}
+                icon={
+                  <HeartOutlined style={{ color: "#bd0026", fontSize: 48 }} />
+                }
+              />
+            </Badge>
+
+            <Title level={3} style={{ marginTop: 48 }}>
+              Appointment Confirmed!
             </Title>
-            <Paragraph style={{ fontFamily: "Raleway", fontSize: 16 }}>
-              Your {donationType === "blood" ? "whole blood" : "plasma"}{" "}
-              donation is scheduled for
-              <br />
-              <Text strong>
-                {selectedDate.format("MMMM D, YYYY")} at {selectedTime}
-              </Text>
-            </Paragraph>
-            <Paragraph style={{ fontFamily: "Raleway" }}>
-              You'll receive a confirmation email shortly.
+
+            <Card
+              style={{
+                maxWidth: 400,
+                margin: "24px auto",
+                borderRadius: 12,
+                boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: 16,
+                }}
+              >
+                <Avatar
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: "#f0f0f0", color: "#000" }}
+                />
+                <div style={{ marginLeft: 12, textAlign: "left" }}>
+                  <Text strong style={{ display: "block" }}>
+                    {userInfo?.fullName || "Donor"}
+                  </Text>
+                  <Text type="secondary">
+                    {donationType === "blood" ? "Whole Blood" : "Plasma"}{" "}
+                    Donation
+                  </Text>
+                </div>
+              </div>
+
+              <Divider style={{ margin: "16px 0" }} />
+
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                  <Text
+                    type="secondary"
+                    style={{ display: "block", fontSize: 12 }}
+                  >
+                    Date
+                  </Text>
+                  <Text strong>{selectedDate.format("MMM D, YYYY")}</Text>
+                </div>
+                <div>
+                  <Text
+                    type="secondary"
+                    style={{ display: "block", fontSize: 12 }}
+                  >
+                    Time
+                  </Text>
+                  <Text strong>{selectedTime}</Text>
+                </div>
+                <div>
+                  <Text
+                    type="secondary"
+                    style={{ display: "block", fontSize: 12 }}
+                  >
+                    Location
+                  </Text>
+                  <Text strong>Hemora Center</Text>
+                </div>
+              </div>
+            </Card>
+
+            <Paragraph
+              style={{ fontSize: 16, maxWidth: 500, margin: "24px auto" }}
+            >
+              We've sent a confirmation to your email. Please arrive 15 minutes
+              early and bring a valid ID.
             </Paragraph>
 
-            <div style={{ marginTop: 24 }}>
+            <Space size={16}>
               <Button
                 type="default"
-                icon={<CalendarOutlined />}
+                size="large"
+                onClick={() => {
+                  navigate("/");
+                }}
+                style={{
+                  borderRadius: 8,
+                  height: 48,
+                  fontWeight: 600,
+                  fontSize: 16,
+                  border: "1px solid #d9d9d9",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = "#bd0026";
+                  e.currentTarget.style.border = "1px solid #bd0026";
+                  e.currentTarget.style.transform = "scale(0.95)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = "black";
+                  e.currentTarget.style.border = "1px solid #d9d9d9";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                Back to Home
+              </Button>
+              <Button
+                type="primary"
                 size="large"
                 onClick={() => {
                   navigate("/app/member/schedule");
                 }}
+                style={{
+                  borderRadius: 8,
+                  height: 48,
+                  fontWeight: 600,
+                  fontSize: 16,
+                  backgroundColor: "#bd0026",
+                  border: "1px solid #d9d9d9",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "scale(0.95)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
               >
                 View Schedule
               </Button>
-            </div>
+            </Space>
           </div>
         );
 
@@ -409,116 +642,146 @@ export const BookingDonate = () => {
   };
 
   return (
-    <div style={{ minHeight: "100vh", padding: "48px 16px" }}>
-      <Card
-        style={{
-          borderRadius: 20,
-          padding: 24,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-        }}
-      >
-        <Row gutter={[32, 32]} style={{ marginTop: 24 }}>
-          <Col xs={24} md={12}>
-            <Title level={3} style={{ fontFamily: "Raleway", fontWeight: 600 }}>
-              Hemora - Blood Donation Support
-            </Title>
-            <Text style={{ fontFamily: "Raleway", fontSize: 16 }}>
-              <EnvironmentOutlined /> District 1, HCMC
-            </Text>
-            <div style={{ marginTop: 32 }}>
-              <Steps
-                current={step}
-                direction="vertical"
-                style={{ marginBottom: 32 }}
-                progressDot={(dot, { status, index }) => (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor:
-                        index === step
-                          ? "#c41c33"
-                          : status === "finish"
-                          ? "#52c41a"
-                          : "#d9d9d9",
-                    }}
-                  />
-                )}
-              >
-                <Step
-                  title={
-                    <span
-                      style={{
-                        fontFamily: "Raleway",
-                        color: step >= 0 ? "#c41c33" : "#999",
-                      }}
-                    >
-                      Select Donation Type
-                    </span>
-                  }
-                />
-                <Step
-                  title={
-                    <span
-                      style={{
-                        fontFamily: "Raleway",
-                        color: step >= 1 ? "#c41c33" : "#999",
-                      }}
-                    >
-                      Choose Date & Time
-                    </span>
-                  }
-                />
-                <Step
-                  title={
-                    <span
-                      style={{
-                        fontFamily: "Raleway",
-                        color: step === 2 ? "#c41c33" : "#999",
-                      }}
-                    >
-                      Confirmation
-                    </span>
-                  }
-                />
-              </Steps>
-              <Title level={5} style={{ fontFamily: "Raleway" }}>
-                Additional Information
-              </Title>
-              <Paragraph
-                style={{ fontFamily: "Raleway", fontSize: 15, color: "#444" }}
-              >
-                Please arrive about 15 minutes before your appointment time.
-              </Paragraph>
-              <Paragraph
-                style={{ fontFamily: "Raleway", fontSize: 14, color: "#444" }}
-              >
-                Don't forget to bring a valid ID and your health card.
-              </Paragraph>
-              <div style={{ marginTop: "40px" }}>
-                <img src={banner2} alt="Rosso" style={{ height: 90 }} />
-                <Text
-                  type="secondary"
-                  style={{
-                    fontFamily: "Raleway",
-                    fontSize: 14,
-                    fontWeight: "bold",
-                    display: "block",
-                    marginTop: 8,
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "24px 16px",
+        background: "transparent",
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <Card
+          style={{
+            boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+            border: "none",
+          }}
+          bodyStyle={{ padding: 0 }}
+        >
+          <Row gutter={[32, 32]}>
+            <Col
+              xs={24}
+              md={10}
+              style={{
+                padding: 40,
+                background: "#ffd8df",
+                borderTopLeftRadius: 16,
+                borderBottomLeftRadius: 16,
+              }}
+            >
+              <div style={{ position: "sticky", top: 24 }}>
+                <Title level={3} style={{ fontWeight: 600, marginBottom: 8 }}>
+                  Book Your Donation
+                </Title>
+                <Text style={{ color: "#666" }}>
+                  Schedule your life-saving donation in just a few steps
+                </Text>
+
+                <Steps
+                  current={step}
+                  direction="vertical"
+                  style={{ margin: "40px 0" }}
+                  styles={{
+                    connector: {
+                      backgroundColor: "#f0f0f0",
+                      "&::after": {
+                        backgroundColor: "#bd0026",
+                      },
+                    },
                   }}
                 >
-                  Booking service in collaboration with Hemora.
-                </Text>
+                  <Step
+                    title="Donation Type"
+                    description={step > 0 ? "Selected" : null}
+                    icon={
+                      <Avatar
+                        size={24}
+                        style={{
+                          backgroundColor: step >= 0 ? "#bd0026" : "#f0f0f0",
+                          color: "#fff",
+                        }}
+                      >
+                        1
+                      </Avatar>
+                    }
+                  />
+                  <Step
+                    title="Date & Time"
+                    description={step > 1 ? "Scheduled" : null}
+                    icon={
+                      <Avatar
+                        size={24}
+                        style={{
+                          backgroundColor: step >= 1 ? "#bd0026" : "#f0f0f0",
+                          color: "#fff",
+                        }}
+                      >
+                        2
+                      </Avatar>
+                    }
+                  />
+                  <Step
+                    title="Confirmation"
+                    icon={
+                      <Avatar
+                        size={24}
+                        style={{
+                          backgroundColor: step === 2 ? "#bd0026" : "#f0f0f0",
+                          color: "#fff",
+                        }}
+                      >
+                        3
+                      </Avatar>
+                    }
+                  />
+                </Steps>
+
+                <div style={{ marginTop: "auto" }}>
+                  <div
+                    style={{
+                      padding: 16,
+                      backgroundColor: "#f6f6f6",
+                      borderRadius: 12,
+                      marginBottom: 24,
+                    }}
+                  >
+                    <Title level={5} style={{ marginBottom: 8 }}>
+                      Need Help?
+                    </Title>
+                    <Text style={{ color: "#666", display: "block" }}>
+                      Call us at (123) 456-7890
+                    </Text>
+                    <Text style={{ color: "#666" }}>
+                      Email: help@hemora.org
+                    </Text>
+                  </div>
+
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 12 }}
+                  >
+                    <img src={banner2} alt="Hemora" style={{ height: 40 }} />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      Powered by Hemora Donation System
+                    </Text>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col xs={24} md={12}>
-            {renderStepContent()}
-          </Col>
-        </Row>
-      </Card>
+            </Col>
+
+            <Col
+              xs={24}
+              md={14}
+              style={{
+                padding: 40,
+                backgroundColor: "#fff5f7",
+                borderTopRightRadius: 16,
+                borderBottomRightRadius: 16,
+              }}
+            >
+              {renderStepContent()}
+            </Col>
+          </Row>
+        </Card>
+      </div>
     </div>
   );
 };
