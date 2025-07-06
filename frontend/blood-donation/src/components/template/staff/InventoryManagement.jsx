@@ -24,12 +24,11 @@ const InventoryManagement = () => {
   });
   const [bloodTypes, setBloodTypes] = useState([]);
 
-  // Fetch data from API
   const fetchInventory = async () => {
     try {
       setLoading(true);
       const response = await userService.getBloodStored();
-      console.log("Inventory data:", response); // Debug log
+      console.log("Inventory data:", response); 
 
       setInventory(response);
       setPagination({
@@ -48,7 +47,7 @@ const InventoryManagement = () => {
     const fetchBloodTypes = async () => {
       try {
         const types = await userService.getBloodTypes();
-        console.log("Blood types data:", types); // Debug log
+        console.log("Blood types data:", types);
         setBloodTypes(types);
       } catch (error) {
         console.error("Failed to fetch blood types:", error);
@@ -96,7 +95,6 @@ const InventoryManagement = () => {
     }
   };
 
-  // Calculate stats
   const getTotalQuantity = () => {
     return inventory.reduce((total, item) => total + item.quantity, 0);
   };
@@ -189,7 +187,7 @@ const InventoryManagement = () => {
         try {
           await userService.deleteBloodStored(id);
           message.success("Inventory item deleted successfully");
-          fetchInventory(); // Refresh data
+          fetchInventory(); 
         } catch (error) {
           console.error("Failed to delete inventory item:", error);
           message.error("Failed to delete inventory item");
