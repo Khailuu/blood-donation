@@ -10,12 +10,11 @@ obj/
 appsettings.Development.json
 appsettings.Local.json
 
-# Ignore toàn bộ file trong wwwroot
-wwwroot/*
-!wwwroot/.gitkeep
 
 # Ignore thư mục con cụ thể (blog-images)
 wwwroot/blog-images/*
+wwwroot/avatars/*
+
 !wwwroot/blog-images/.gitkeep
 
 

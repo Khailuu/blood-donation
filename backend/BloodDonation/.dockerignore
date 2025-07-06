@@ -4,4 +4,4 @@
 .env
 
 wwwroot/blog-images/*
-!wwwroot/blog-images/.gitkeep
+wwwroot/avatars/*
