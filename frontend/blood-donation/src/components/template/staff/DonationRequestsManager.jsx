@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { message, Pagination, Spin, Button, Tabs, Tag, Checkbox } from "antd";
+import { message, Pagination, Spin, Button, Tabs, Tag, Checkbox, Typography } from "antd";
 import { 
   SyncOutlined, 
   CheckOutlined, 
@@ -10,11 +10,14 @@ import {
   StopOutlined
 } from "@ant-design/icons";
 import { donationRequestService } from "../../../services/donationRequestService ";
+import "../../../css/staff/DonorRequestManager.css"
+const { Title } = Typography;
 
 
 const { TabPane } = Tabs;
 
 const DonorRequestsManager = () => {
+  
   // State management
   const [donationRequests, setDonationRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,11 +34,9 @@ const DonorRequestsManager = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequests, setSelectedRequests] = useState([]);
 
-  // Constants
   const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
   const componentTypes = ["Whole", "Plasma", "Platelets"];
 
-  // Data fetching
   const fetchRequests = async () => {
     try {
       setLoading(true);
@@ -57,7 +58,6 @@ const DonorRequestsManager = () => {
     fetchRequests();
   }, []);
 
-  // Filter requests by status
   const filteredRequests = useMemo(() => {
     const filtered = donationRequests.filter((req) => {
       const reqDate = new Date(req.requestTime).toISOString().split("T")[0];
@@ -75,25 +75,24 @@ const DonorRequestsManager = () => {
     }
   }, [donationRequests, filters, activeTab]);
 
-  // Count requests for each tab
+
   const requestCounts = useMemo(() => {
     const pending = donationRequests.filter(req => req.status === "Pending").length;
     const processed = donationRequests.filter(req => req.status !== "Pending").length;
     return { pending, processed };
   }, [donationRequests]);
 
-  // Paginated requests
+
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredRequests.slice(startIndex, startIndex + pageSize);
   }, [filteredRequests, currentPage, pageSize]);
 
-  // Handlers
+
   const handleRefresh = () => {
     setRefreshing(true);
     fetchRequests();
     setCurrentPage(1);
-    // Keep the selected tab when refreshing
     setActiveTab(activeTab);
   };
 
@@ -116,7 +115,6 @@ const DonorRequestsManager = () => {
         )
       );
       
-      // Remove from selected requests if it was selected
       setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
       
       message.success("Request approved successfully");
@@ -143,7 +141,7 @@ const DonorRequestsManager = () => {
         )
       );
       
-      // Remove from selected requests if it was selected
+
       setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
       
       message.success("Request rejected successfully");
@@ -246,7 +244,6 @@ const DonorRequestsManager = () => {
     setSelectedRequests([]);
   };
 
-  // Utility functions
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("vi-VN");
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString("vi-VN", {
@@ -286,7 +283,6 @@ const DonorRequestsManager = () => {
     }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="p-20 text-center">
@@ -297,10 +293,12 @@ const DonorRequestsManager = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 md:p-20">
-      {/* Header with title and action buttons */}
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Donation Requests</h2>
+
+        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
+          Donation Requests
+        </Title>
         <div className="flex gap-2">
           <Button
             onClick={handleRefresh}
@@ -319,7 +317,6 @@ const DonorRequestsManager = () => {
         </div>
       </div>
 
-      {/* Status tabs */}
       <Tabs 
         activeKey={activeTab} 
         onChange={handleTabChange}
@@ -351,7 +348,6 @@ const DonorRequestsManager = () => {
         />
       </Tabs>
 
-      {/* Bulk actions for pending requests */}
       {activeTab === "pending" && selectedRequests.length > 0 && (
         <div className="bg-blue-50 p-3 rounded-lg flex justify-between items-center">
           <div className="text-blue-700">
@@ -380,7 +376,6 @@ const DonorRequestsManager = () => {
         </div>
       )}
 
-      {/* Filter controls */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -431,7 +426,6 @@ const DonorRequestsManager = () => {
         </div>
       </div>
 
-      {/* Requests table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

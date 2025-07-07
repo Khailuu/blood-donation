@@ -1,6 +1,7 @@
 import { useRoutes, Navigate } from "react-router-dom";
 import { MainLayout } from "../components/layouts/MainLayout";
 import { MainLayoutGuest } from "../components/layouts/MainLayoutGuest";
+import { DashboardLayout } from "../components/layouts/DashboardLayout"; // Layout mới cho staff/admin
 import { HomePage } from "../pages/guest/HomePage";
 import DonatePage from "../pages/guest/DonatePage";
 import BlogPage from "../pages/guest/BlogPage";
@@ -51,7 +52,6 @@ const router = [
       { path: "/blog", element: <BlogPage /> },
       { path: "/blog/:id", element: <BlogDetailPage /> },
       { path: "/contacts", element: <ContactsPage /> },
-      
     ],
   },
 
@@ -64,40 +64,40 @@ const router = [
   },
 
   {
+    path: "/app/member",
+    element: (
+      <ProtectedRoute>
+        <RoleRoute allowedRoles={["member"]}>
+          <MainLayout />
+        </RoleRoute>
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <Navigate to="home" replace /> },
+      { path: "home", element: <MemberHomePage /> },
+      { path: "donate", element: <MemberDonate /> },
+      { path: "schedule", element: <MemberSchedule /> },
+      { path: "blogs", element: <MemberBlogPage /> },
+      { path: "blogs/:id", element: <BlogDetailPageMember /> },
+      { path: "faq", element: <DoubtsSection /> },
+      { path: "health-survey", element: <HealthSurvey /> },
+      { path: "profile", element: <ProfileMember /> },
+    ],
+  },
+
+  {
     path: "/app",
     element: (
       <ProtectedRoute>
-        <MainLayout />
+        <DashboardLayout />
       </ProtectedRoute>
     ),
     children: [
       {
-        path: "member",
-        element: (
-          <RoleRoute allowedRoles={["member"]}>
-            <MemberPage />,
-          </RoleRoute>
-        ),
-        children: [
-          { index: true, element: <Navigate to="home" replace /> },
-          { path: "home", element: <MemberHomePage /> },
-          { path: "donate", element: <MemberDonate /> },
-          { path: "schedule", element: <MemberSchedule /> },
-          { path: "blogs", element: <MemberBlogPage /> },
-          { path: "blogs/:id", element: <BlogDetailPageMember /> },
-          { path: "faq", element: <DoubtsSection /> },
-          { path: "health-survey", element: <HealthSurvey /> },
-          { path: "profile-member", element: <ProfileMember /> },
-        ],
-      },
-
-      {
         path: "staff",
-        element: (
-          <RoleRoute allowedRoles={["staff", "admin"]}>
-            <StaffDashboard />
-          </RoleRoute>
-        ),
+        element: <RoleRoute allowedRoles={["staff"]}>
+          <StaffDashboard />
+        </RoleRoute>,
         children: [
           { path: "dashboard", element: <Dashboard /> },
           { path: "blood-requests", element: <BloodRequests /> },
@@ -110,13 +110,17 @@ const router = [
           { index: true, element: <Navigate to="dashboard" replace /> },
         ],
       },
+
       {
         path: "admin",
-        element: (
-          <RoleRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
-          </RoleRoute>
-        ),
+        element: <RoleRoute allowedRoles={["admin"]}>
+          <AdminDashboard />
+        </RoleRoute>,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: "settings", element: <div>Admin Settings</div> },
+          { path: "users", element: <div>User Management</div> },
+        ],
       },
     ],
   },

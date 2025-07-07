@@ -11,8 +11,9 @@ import {
   Eye,
   BarChart3,
 } from "lucide-react";
-import { message, Modal, Table, Pagination } from "antd";
+import { message, Modal, Table, Pagination, Typography } from "antd";
 import { userService } from "../../../services/manageUserService";
+const { Title } = Typography;
 
 const InventoryManagement = () => {
   const [inventory, setInventory] = useState([]);
@@ -28,7 +29,7 @@ const InventoryManagement = () => {
     try {
       setLoading(true);
       const response = await userService.getBloodStored();
-      console.log("Inventory data:", response); 
+      console.log("Inventory data:", response);
 
       setInventory(response);
       setPagination({
@@ -105,7 +106,7 @@ const InventoryManagement = () => {
   };
 
   const getUniqueBloodTypesCount = () => {
-    const uniqueTypes = new Set(inventory.map(item => item.bloodTypeId));
+    const uniqueTypes = new Set(inventory.map((item) => item.bloodTypeId));
     return uniqueTypes.size;
   };
 
@@ -124,9 +125,11 @@ const InventoryManagement = () => {
       title: "Description",
       key: "description",
       render: (_, record) => {
-        const type = bloodTypes.find(t => t.bloodTypeId === record.bloodTypeId);
+        const type = bloodTypes.find(
+          (t) => t.bloodTypeId === record.bloodTypeId
+        );
         return type?.description || "N/A";
-      }
+      },
     },
     {
       title: "Quantity (units)",
@@ -187,7 +190,7 @@ const InventoryManagement = () => {
         try {
           await userService.deleteBloodStored(id);
           message.success("Inventory item deleted successfully");
-          fetchInventory(); 
+          fetchInventory();
         } catch (error) {
           console.error("Failed to delete inventory item:", error);
           message.error("Failed to delete inventory item");
@@ -201,7 +204,7 @@ const InventoryManagement = () => {
     const csvContent = [
       headers,
       ...inventory.map((item) => {
-        const type = bloodTypes.find(t => t.bloodTypeId === item.bloodTypeId);
+        const type = bloodTypes.find((t) => t.bloodTypeId === item.bloodTypeId);
         return [
           type?.name || `Unknown (${item.bloodTypeId})`,
           type?.description || "N/A",
@@ -264,12 +267,15 @@ const InventoryManagement = () => {
   );
 
   return (
-    <div className="p-6 md:p-10">
+    <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <Title
+            className="text-2xl font-bold"
+            style={{ fontFamily: "Raleway" }}
+          >
             Blood Inventory Management
-          </h1>
+          </Title>
           <p className="text-gray-600">Track and manage blood stock levels</p>
         </div>
         <button
