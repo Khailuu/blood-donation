@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { message } from 'antd';
+import { message, Typography } from 'antd';
 import { donationRequestService } from '../../../services/donationRequestService ';
 import { userService } from '../../../services/manageUserService';
+const { Title } = Typography;
 
 const DonationSchedule = () => {
   const [donationSchedules, setDonationSchedules] = useState([]);
@@ -154,9 +155,12 @@ const DonationSchedule = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 md:p-20">
+    <div className="space-y-6 p-6 ">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Donation Schedule</h2>
+      
+        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
+          Donation Schedule
+        </Title>
         <div className="flex gap-2">
           <button 
             onClick={() => setShowFilters(!showFilters)}

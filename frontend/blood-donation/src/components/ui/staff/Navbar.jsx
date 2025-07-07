@@ -1,72 +1,69 @@
 import React from "react";
-import { Heart, User, LogOut, Settings } from "lucide-react";
-import { Dropdown, Typography } from "antd";
+import { User, LogOut, Settings, Bell } from "lucide-react";
+import { Dropdown, Badge } from "antd";
 import { authService } from "../../../services/authService";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-const { Title } = Typography;
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const currentUser = authService.getCurrentUser();
   const navigate = useNavigate();
-  console.log({ currentUser });
 
   const handleLogout = () => {
     authService.logout();
   };
 
-  return (
-    <nav className="bg-gradient-to-r from-pink-50 to-rose-50 shadow-lg border-b-2 border-pink-200 fixed top-0 left-0 right-0 z-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="logo-title">
-            <Link>
-              <Title
-                level={2}
-                style={{
-                  color: "#bd0026",
-                  margin: 0,
-                  fontFamily: "Oi",
-                  fontWeight: "normal",
-                }}
-              >
-                HEMORA
-              </Title>
-            </Link>
-          </div>
+  const unreadNotifications = 5;
 
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "profile",
-                  label: (
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      <Settings size={16} />
-                      <span>Edit Profile</span>
-                    </div>
-                  ),
-                  onClick: () => navigate("/app/staff/update-profile"),
-                },
-                {
-                  key: "logout",
-                  label: (
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      <LogOut size={16} />
-                      <span>Logout</span>
-                    </div>
-                  ),
-                  onClick: handleLogout,
-                },
-              ],
-            }}
-            placement="bottomRight"
-            trigger={["click"]}
-          >
-            <div
+  return (
+    <nav className="bg-white shadow-sm border-b border-gray-200 mx-6 mt-3 rounded-[50px]">
+      <div className="px-6">
+        <div className="flex justify-between items-center h-16">
+          <div></div>
+
+          <div className="flex items-center gap-4">
+            <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <Badge
+                count={unreadNotifications}
+                size="small"
+                className="text-xs"
+                offset={[2, 0]}
+              >
+                <Bell size={18} className="text-[#bd0026]" />
+              </Badge>
+            </button>
+
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: "profile",
+                    label: (
+                      <div className="flex items-center gap-2 px-2 py-1.5">
+                        <Settings size={16} className="text-gray-600" />
+                        <span className="text-sm">Edit Profile</span>
+                      </div>
+                    ),
+                    onClick: () => navigate("/app/staff/update-profile"),
+                  },
+                  {
+                    type: "divider",
+                  },
+                  {
+                    key: "logout",
+                    label: (
+                      <div className="flex items-center gap-2 px-2 py-1.5">
+                        <LogOut size={16} className="text-gray-600" />
+                        <span className="text-sm">Logout</span>
+                      </div>
+                    ),
+                    onClick: handleLogout,
+                  },
+                ],
+              }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
+              <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -116,11 +113,10 @@ export const Navbar = () => {
                 </div>
               </div>
             </div>
-          </Dropdown>
+            </Dropdown>
+          </div>
         </div>
       </div>
-
-      <div className="h-1 bg-[#bd0026]"></div>
     </nav>
   );
 };
