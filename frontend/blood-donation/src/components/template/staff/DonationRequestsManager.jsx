@@ -1,23 +1,30 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { message, Pagination, Spin, Button, Tabs, Tag, Checkbox, Typography } from "antd";
-import { 
-  SyncOutlined, 
-  CheckOutlined, 
-  CloseOutlined, 
+import {
+  message,
+  Pagination,
+  Spin,
+  Button,
+  Tabs,
+  Tag,
+  Checkbox,
+  Typography,
+} from "antd";
+import {
+  SyncOutlined,
+  CheckOutlined,
+  CloseOutlined,
   EyeOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  StopOutlined
+  StopOutlined,
 } from "@ant-design/icons";
 import { donationRequestService } from "../../../services/donationRequestService ";
-import "../../../css/staff/DonorRequestManager.css"
+import "../../../css/staff/DonorRequestManager.css";
 const { Title } = Typography;
-
 
 const { TabPane } = Tabs;
 
 const DonorRequestsManager = () => {
-  
   // State management
   const [donationRequests, setDonationRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +48,7 @@ const DonorRequestsManager = () => {
     try {
       setLoading(true);
       const response = await donationRequestService.getAllDonationRequests();
-      
+
       const items = response.items || response.data?.items || [];
       setDonationRequests(items);
       if (!items.length) message.info("No donation requests found");
@@ -63,31 +70,33 @@ const DonorRequestsManager = () => {
       const reqDate = new Date(req.requestTime).toISOString().split("T")[0];
       return (
         (!filters.bloodType || req.bloodType === filters.bloodType) &&
-        (!filters.componentType || req.componentType === filters.componentType) &&
+        (!filters.componentType ||
+          req.componentType === filters.componentType) &&
         (!filters.date || reqDate.includes(filters.date))
       );
     });
 
     if (activeTab === "pending") {
-      return filtered.filter(req => req.status === "Pending");
+      return filtered.filter((req) => req.status === "Pending");
     } else {
-      return filtered.filter(req => req.status !== "Pending");
+      return filtered.filter((req) => req.status !== "Pending");
     }
   }, [donationRequests, filters, activeTab]);
 
-
   const requestCounts = useMemo(() => {
-    const pending = donationRequests.filter(req => req.status === "Pending").length;
-    const processed = donationRequests.filter(req => req.status !== "Pending").length;
+    const pending = donationRequests.filter(
+      (req) => req.status === "Pending"
+    ).length;
+    const processed = donationRequests.filter(
+      (req) => req.status !== "Pending"
+    ).length;
     return { pending, processed };
   }, [donationRequests]);
-
 
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredRequests.slice(startIndex, startIndex + pageSize);
   }, [filteredRequests, currentPage, pageSize]);
-
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -108,17 +117,19 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await donationRequestService.approveDonationRequest(id);
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          request.requestId === id ? { ...request, status: "Approved" } : request
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Approved" }
+            : request
         )
       );
-      
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
-      
+
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
       message.success("Request approved successfully");
-      
+
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -134,18 +145,19 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await donationRequestService.rejectDonationRequest(id);
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          request.requestId === id ? { ...request, status: "Rejected" } : request
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Rejected" }
+            : request
         )
       );
-      
 
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
-      
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
       message.success("Request rejected successfully");
-      
+
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -166,22 +178,28 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map(id => donationRequestService.approveDonationRequest(id))
+        selectedRequests.map((id) =>
+          donationRequestService.approveDonationRequest(id)
+        )
       );
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          selectedRequests.includes(request.requestId) 
-            ? { ...request, status: "Approved" } 
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Approved" }
             : request
         )
       );
-      
-      message.success(`Approved ${selectedRequests.length} requests successfully`);
+
+      message.success(
+        `Approved ${selectedRequests.length} requests successfully`
+      );
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk approval error:", error);
-      message.error("Bulk approval failed: " + (error.message || "Unknown error"));
+      message.error(
+        "Bulk approval failed: " + (error.message || "Unknown error")
+      );
     } finally {
       setActionLoading(false);
     }
@@ -196,22 +214,28 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map(id => donationRequestService.rejectDonationRequest(id))
+        selectedRequests.map((id) =>
+          donationRequestService.rejectDonationRequest(id)
+        )
       );
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          selectedRequests.includes(request.requestId) 
-            ? { ...request, status: "Rejected" } 
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Rejected" }
             : request
         )
       );
-      
-      message.success(`Rejected ${selectedRequests.length} requests successfully`);
+
+      message.success(
+        `Rejected ${selectedRequests.length} requests successfully`
+      );
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk rejection error:", error);
-      message.error("Bulk rejection failed: " + (error.message || "Unknown error"));
+      message.error(
+        "Bulk rejection failed: " + (error.message || "Unknown error")
+      );
     } finally {
       setActionLoading(false);
     }
@@ -219,15 +243,15 @@ const DonorRequestsManager = () => {
 
   const handleSelectRequest = (id, checked) => {
     if (checked) {
-      setSelectedRequests(prev => [...prev, id]);
+      setSelectedRequests((prev) => [...prev, id]);
     } else {
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
     }
   };
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRequests(paginatedRequests.map(req => req.requestId));
+      setSelectedRequests(paginatedRequests.map((req) => req.requestId));
     } else {
       setSelectedRequests([]);
     }
@@ -255,7 +279,7 @@ const DonorRequestsManager = () => {
     ({
       Whole: "Whole Blood",
       Plasma: "Plasma",
-      Platelets: "Platelets"
+      Platelets: "Platelets",
     }[type] || type);
 
   const getStatusTag = (status) => {
@@ -295,7 +319,6 @@ const DonorRequestsManager = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-
         <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
           Donation Requests
         </Title>
@@ -304,21 +327,22 @@ const DonorRequestsManager = () => {
             onClick={handleRefresh}
             icon={<SyncOutlined spin={refreshing} />}
             loading={refreshing}
-            className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100"
+            type="primary"
+            className="flex items-center gap-2"
           >
             Refresh
           </Button>
-          <Button 
+          <Button
             onClick={clearFilters}
-            className="bg-gray-50 text-gray-600 hover:bg-gray-100"
+            className="bg-green-500 hover:bg-green-600 text-white"
           >
             Reset Filters
           </Button>
         </div>
       </div>
 
-      <Tabs 
-        activeKey={activeTab} 
+      <Tabs
+        activeKey={activeTab}
         onChange={handleTabChange}
         className="custom-tabs"
       >
@@ -401,7 +425,9 @@ const DonorRequestsManager = () => {
             </label>
             <select
               value={filters.componentType}
-              onChange={(e) => handleFilterChange("componentType", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("componentType", e.target.value)
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Types</option>
@@ -435,25 +461,43 @@ const DonorRequestsManager = () => {
                   <Checkbox
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     checked={
-                      selectedRequests.length > 0 && 
+                      selectedRequests.length > 0 &&
                       selectedRequests.length === paginatedRequests.length
                     }
                     indeterminate={
-                      selectedRequests.length > 0 && 
+                      selectedRequests.length > 0 &&
                       selectedRequests.length < paginatedRequests.length
                     }
                     disabled={activeTab !== "pending"}
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">#</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Full Name</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Date</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Time</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Blood Type</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Type</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Amount</th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Status</th>
-                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">Actions</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  #
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Full Name
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Date
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Time
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Blood Type
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Type
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Amount
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -462,8 +506,12 @@ const DonorRequestsManager = () => {
                   <td className="px-4 py-3">
                     <Checkbox
                       checked={selectedRequests.includes(req.requestId)}
-                      onChange={(e) => handleSelectRequest(req.requestId, e.target.checked)}
-                      disabled={activeTab !== "pending" || req.status !== "Pending"}
+                      onChange={(e) =>
+                        handleSelectRequest(req.requestId, e.target.checked)
+                      }
+                      disabled={
+                        activeTab !== "pending" || req.status !== "Pending"
+                      }
                     />
                   </td>
                   <td className="px-4 py-3 font-semibold text-gray-700">
@@ -473,20 +521,22 @@ const DonorRequestsManager = () => {
                   <td className="px-4 py-3">{formatDate(req.requestTime)}</td>
                   <td className="px-4 py-3">{formatTime(req.requestTime)}</td>
                   <td className="px-4 py-3">
-                    <Tag color="blue" className="font-medium">{req.bloodType}</Tag>
+                    <Tag color="blue" className="font-medium">
+                      {req.bloodType}
+                    </Tag>
                   </td>
-                  <td className="px-4 py-3">{getComponentText(req.componentType)}</td>
-                  <td className="px-4 py-3">{req.amountBlood} unit(s)</td>
                   <td className="px-4 py-3">
-                    {getStatusTag(req.status)}
+                    {getComponentText(req.componentType)}
                   </td>
+                  <td className="px-4 py-3">{req.amountBlood} unit(s)</td>
+                  <td className="px-4 py-3">{getStatusTag(req.status)}</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <Button
                         icon={<EyeOutlined />}
                         onClick={() => setSelectedRequest(req)}
-                        className="text-blue-500 hover:text-blue-600"
-                        type="text"
+                        type="primary"
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
                         size="small"
                       />
                       {req.status === "Pending" && (
@@ -495,16 +545,17 @@ const DonorRequestsManager = () => {
                             icon={<CheckOutlined />}
                             onClick={() => handleApprove(req.requestId)}
                             disabled={actionLoading}
-                            className="text-green-500 hover:text-green-600"
-                            type="text"
+                            type="primary"
+                            className="bg-green-500 hover:bg-green-600 text-white"
                             size="small"
                           />
                           <Button
                             icon={<CloseOutlined />}
                             onClick={() => handleReject(req.requestId)}
                             disabled={actionLoading}
-                            className="text-red-500 hover:text-red-600"
-                            type="text"
+                            danger
+                            type="primary"
+                            className="bg-red-500 hover:bg-red-600 text-white"
                             size="small"
                           />
                         </>
@@ -515,8 +566,12 @@ const DonorRequestsManager = () => {
               ))}
               {filteredRequests.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="px-6 py-4 text-center text-gray-500">
-                    No {activeTab === "pending" ? "pending" : "processed"} requests found
+                  <td
+                    colSpan="10"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    No {activeTab === "pending" ? "pending" : "processed"}{" "}
+                    requests found
                   </td>
                 </tr>
               )}
@@ -550,7 +605,9 @@ const DonorRequestsManager = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-gray-500">Full Name</div>
-                  <div className="font-medium">{selectedRequest.requesterName}</div>
+                  <div className="font-medium">
+                    {selectedRequest.requesterName}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Blood Type</div>
@@ -558,11 +615,15 @@ const DonorRequestsManager = () => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Date</div>
-                  <div className="font-medium">{formatDate(selectedRequest.requestTime)}</div>
+                  <div className="font-medium">
+                    {formatDate(selectedRequest.requestTime)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Time</div>
-                  <div className="font-medium">{formatTime(selectedRequest.requestTime)}</div>
+                  <div className="font-medium">
+                    {formatTime(selectedRequest.requestTime)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Component Type</div>
@@ -572,7 +633,9 @@ const DonorRequestsManager = () => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Amount</div>
-                  <div className="font-medium">{selectedRequest.amountBlood} unit(s)</div>
+                  <div className="font-medium">
+                    {selectedRequest.amountBlood} unit(s)
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Status</div>
@@ -612,7 +675,7 @@ const DonorRequestsManager = () => {
                   </Button>
                 </>
               )}
-              <Button 
+              <Button
                 onClick={() => setSelectedRequest(null)}
                 icon={<CloseOutlined />}
                 className="bg-gray-100 hover:bg-gray-200"
