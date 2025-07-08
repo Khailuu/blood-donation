@@ -51,7 +51,7 @@ public class CreateHealthFormCommandHandler(
             FormId = Guid.NewGuid(),
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
-            Status = FormStatus.Pending,
+            Status = FormStatus.Approved,
             Answers = command.Answers.Select(a => new HealthAnswer
             {
                 AnswerId = Guid.NewGuid(),

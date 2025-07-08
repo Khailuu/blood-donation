@@ -15,6 +15,9 @@ public class BlogPostErrors
     public static readonly Error ContentEmpty = Error.Failure(
         "BlogPost.ContentEmpty",
         "The blog post content cannot be empty.");
+    public static readonly Error AlreadyLiked = Error.Failure(
+        "BlogPostLike.AlreadyExists",
+        "User has already liked this post.");
     
     public static readonly Error PublishedDateInvalid = Error.Failure(
         "BlogPost.PublishedDateInvalid",
