@@ -9,6 +9,9 @@ using BloodDonation.Application.Users.CreateDonorInformation;
 using BloodDonation.Application.Users.CreateUser;
 using BloodDonation.Application.Users.DeleteHealthForm;
 using BloodDonation.Application.Users.GetCurrentUser;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPost;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostComment;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostLike;
 using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateCurrentUser;
@@ -233,6 +236,46 @@ public class UserController : ControllerBase
         var command = new VerifyUserCommand(request.Token);
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
+    }[Authorize]
+    [HttpGet("user/get-current-user-blogposts")]
+    public async Task<IResult> GetCurrentUserBlogPosts([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
     }
+    [Authorize]
+    [HttpGet("user/get-current-user-blogpost-comments")]
+    public async Task<IResult> GetCurrentUserBlogPostComments([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostCommentQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize]
+    [HttpGet("user/get-current-user-blogpost-likes")]
+    public async Task<IResult> GetCurrentUserBlogPostLikes([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostLikeQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+
+
 
 }
