@@ -6,6 +6,8 @@ using BloodDonation.Domain.Bloods.Errors;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.Donations.Errors;
+using BloodDonation.Domain.Donations.Events;
+using BloodDonation.Domain.Users.Errors;
 using Microsoft.EntityFrameworkCore;
 
 namespace BloodDonation.Application.BloodDonation.ConfirmDonationRequestForStaff;
@@ -78,7 +80,18 @@ public class ConfirmDonationRequestForStaffCommandHandler(IDbContext context, IU
             //     await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
             // }
         }
-
+        
+        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == donationRequest.UserId, cancellationToken);
+        if (user is null) return Result.Failure(UserErrors.NotFound(user.UserId));
+        
+        donationRequest.Raise(new DonationRequestStatusChangedDomainEvent(
+            donationRequest.RequestId,
+            donationRequest.UserId,
+            user.Email,
+            user.Name ?? "User",
+            donationRequest.Status.ToString()
+        ));
+        
         await context.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

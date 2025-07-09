@@ -1,10 +1,12 @@
+using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Domain.Donations;
+using BloodDonation.Domain.Donations.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace BloodDonation.Application.BloodDonation.CreateDonationMatch;
 
-public class AutoMatchDonorsForRequestHandler(IDbContext context)
+public class AutoMatchDonorsForRequestHandler(IDbContext context, ITokenProvider tokenProvider)
 {
     public async Task<List<DonationMatch>> MatchDonorsAsync(DonationRequest request, CancellationToken cancellationToken)
     {
@@ -31,6 +33,23 @@ public class AutoMatchDonorsForRequestHandler(IDbContext context)
         }).ToList();
 
         context.DonationMatches.AddRange(matches);
+        
+        foreach (var DonationMatch in matches)
+        {
+            var donor = compatibleDonors.First(u => u.UserId == DonationMatch.DonorId);
+            var token = tokenProvider.CreateDonationMatchConfirmToken(DonationMatch.MatchId);
+            var confirmUrl = $"https://blood-donation-dvon.vercel.app/donation-match/confirm?token={token}";
+
+
+            DonationMatch.Raise(new DonorMatchedDomainEvent(
+                DonationMatch.MatchId,
+                DonationMatch.DonorId,
+                donor.Email,
+                donor.Name ?? "Donor",
+                confirmUrl
+            ));
+        }
+
         await context.SaveChangesAsync(cancellationToken);
 
         return matches;

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
 
-public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUserContext userContext)
+public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUserContext userContext, ITokenProvider tokenProvider)
     : ICommandHandler<CreateDonationRequestForStaffCommand, CreateDonationRequestForStaffResponse>
 {
     public async Task<Result<CreateDonationRequestForStaffResponse>> Handle(CreateDonationRequestForStaffCommand request, CancellationToken cancellationToken)
@@ -43,7 +43,7 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
 
         if (bloodStored == null || bloodStored.Quantity < request.AmountBlood)
         {
-            var matcher = new AutoMatchDonorsForRequestHandler(context);
+            var matcher = new AutoMatchDonorsForRequestHandler(context, tokenProvider);
             await matcher.MatchDonorsAsync(donationRequest, cancellationToken);
         }
 

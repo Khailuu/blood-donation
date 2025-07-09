@@ -79,5 +79,55 @@ public class MailService : IMailService
             return false;
         }
     }
+    public bool SendDonationStatusEmail(string userEmail, string userName, string status)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(userEmail)) return false;
+
+            string fromEmail = _mailSettings.SmtpUsername;
+            string subject = "Donation Request Status Updated";
+            string clientUrl = _clientSettings.ClientUrl;
+            var currentYear = DateTime.Now.Year;
+
+            string body = $@"
+        <html>
+            <body>
+                <h2>Hello {userName},</h2>
+                <p>Your donation request status has been updated to: <strong>{status}</strong>.</p>
+                <p>Visit your schedule for more details.</p>
+                <br />
+                <footer>© {currentYear} Blood Donation System</footer>
+            </body>
+        </html>";
+
+            MailMessage mail = new MailMessage
+            {
+                From = new MailAddress(fromEmail),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+            mail.To.Add(userEmail);
+
+            SmtpClient smtp = new SmtpClient(_mailSettings.SmtpServer, _mailSettings.SmtpPort)
+            {
+                Credentials = new NetworkCredential(fromEmail, _mailSettings.SmtpPassword),
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false
+            };
+
+            smtp.Send(mail);
+            Console.WriteLine("✅ Status email sent successfully.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("❌ Failed to send status email: " + ex.Message);
+            return false;
+        }
+    }
+
    
 }
