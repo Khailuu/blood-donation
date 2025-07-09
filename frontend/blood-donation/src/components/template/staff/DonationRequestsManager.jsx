@@ -1,31 +1,30 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   message,
+  Typography,
+  Checkbox,
   Pagination,
-  Spin,
   Button,
   Tabs,
   Tag,
-  Checkbox,
-  Typography,
-} from "antd";
+  Spin
+} from 'antd';
 import {
   SyncOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
   CheckOutlined,
   CloseOutlined,
-  EyeOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
   StopOutlined,
-} from "@ant-design/icons";
-import { donationRequestService } from "../../../services/donationRequestService ";
-import "../../../css/staff/DonorRequestManager.css";
-const { Title } = Typography;
+  DownloadOutlined
+} from '@ant-design/icons';
+import { donationRequestService } from '../../../services/donationRequestService ';
 
+const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const DonorRequestsManager = () => {
-  // State management
   const [donationRequests, setDonationRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -33,7 +32,7 @@ const DonorRequestsManager = () => {
   const [filters, setFilters] = useState({
     bloodType: "",
     componentType: "",
-    date: "",
+    date: ""
   });
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,12 +47,23 @@ const DonorRequestsManager = () => {
     try {
       setLoading(true);
       const response = await donationRequestService.getAllDonationRequests();
-
-      const items = response.items || response.data?.items || [];
+      
+      let items = [];
+      if (Array.isArray(response)) {
+        items = response;
+      } else if (response?.data) {
+        items = Array.isArray(response.data) ? response.data : response.data.items || [];
+      } else if (response?.items) {
+        items = response.items;
+      }
+      
       setDonationRequests(items);
-      if (!items.length) message.info("No donation requests found");
+      
+      if (items.length === 0) {
+        message.info("No donation requests found");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Fetch error:", error);
       message.error("Failed to load donation requests");
     } finally {
       setLoading(false);
@@ -62,6 +72,10 @@ const DonorRequestsManager = () => {
   };
 
   useEffect(() => {
+    const savedTab = localStorage.getItem("activeTab");
+    if (savedTab && ["pending", "processed"].includes(savedTab)) {
+      setActiveTab(savedTab);
+    }
     fetchRequests();
   }, []);
 
@@ -70,26 +84,19 @@ const DonorRequestsManager = () => {
       const reqDate = new Date(req.requestTime).toISOString().split("T")[0];
       return (
         (!filters.bloodType || req.bloodType === filters.bloodType) &&
-        (!filters.componentType ||
-          req.componentType === filters.componentType) &&
+        (!filters.componentType || req.componentType === filters.componentType) &&
         (!filters.date || reqDate.includes(filters.date))
       );
     });
 
-    if (activeTab === "pending") {
-      return filtered.filter((req) => req.status === "Pending");
-    } else {
-      return filtered.filter((req) => req.status !== "Pending");
-    }
+    return activeTab === "pending"
+      ? filtered.filter(req => req.status === "Pending")
+      : filtered.filter(req => req.status !== "Pending");
   }, [donationRequests, filters, activeTab]);
 
   const requestCounts = useMemo(() => {
-    const pending = donationRequests.filter(
-      (req) => req.status === "Pending"
-    ).length;
-    const processed = donationRequests.filter(
-      (req) => req.status !== "Pending"
-    ).length;
+    const pending = donationRequests.filter(req => req.status === "Pending").length;
+    const processed = donationRequests.filter(req => req.status !== "Pending").length;
     return { pending, processed };
   }, [donationRequests]);
 
@@ -100,9 +107,10 @@ const DonorRequestsManager = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchRequests();
-    setCurrentPage(1);
-    setActiveTab(activeTab);
+    fetchRequests().then(() => {
+      const savedTab = localStorage.getItem("activeTab") || activeTab;
+      setActiveTab(savedTab);
+    });
   };
 
   const handleFilterChange = (key, value) =>
@@ -113,23 +121,48 @@ const DonorRequestsManager = () => {
     setCurrentPage(1);
   };
 
+  const handleExport = () => {
+    const csvContent = [
+      ['#', 'Donor', 'Date', 'Time', 'Blood Type', 'Component', 'Amount', 'Status', 'Note'],
+      ...filteredRequests.map((request, index) => [
+        index + 1,
+        request.requesterName,
+        formatDate(request.requestTime),
+        formatTime(request.requestTime),
+        request.bloodType,
+        getComponentText(request.componentType),
+        `${request.amountBlood} unit(s)`,
+        request.status,
+        request.note || 'N/A'
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `donation_requests_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    message.success('Report exported successfully');
+  };
+
   const handleApprove = async (id) => {
     try {
       setActionLoading(true);
       await donationRequestService.approveDonationRequest(id);
-
-      setDonationRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.requestId === id
-            ? { ...request, status: "Approved" }
-            : request
+      
+      setDonationRequests(prevRequests =>
+        prevRequests.map(request =>
+          request.requestId === id ? { ...request, status: "Approved" } : request
         )
       );
-
-      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
-
+      
+      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
+      
       message.success("Request approved successfully");
-
+      
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -145,19 +178,17 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await donationRequestService.rejectDonationRequest(id);
-
-      setDonationRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.requestId === id
-            ? { ...request, status: "Rejected" }
-            : request
+      
+      setDonationRequests(prevRequests =>
+        prevRequests.map(request =>
+          request.requestId === id ? { ...request, status: "Rejected" } : request
         )
       );
-
-      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
-
+      
+      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
+      
       message.success("Request rejected successfully");
-
+      
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -178,28 +209,22 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map((id) =>
-          donationRequestService.approveDonationRequest(id)
-        )
+        selectedRequests.map(id => donationRequestService.approveDonationRequest(id))
       );
-
-      setDonationRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          selectedRequests.includes(request.requestId)
-            ? { ...request, status: "Approved" }
+      
+      setDonationRequests(prevRequests =>
+        prevRequests.map(request =>
+          selectedRequests.includes(request.requestId) 
+            ? { ...request, status: "Approved" } 
             : request
         )
       );
-
-      message.success(
-        `Approved ${selectedRequests.length} requests successfully`
-      );
+      
+      message.success(`Approved ${selectedRequests.length} requests successfully`);
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk approval error:", error);
-      message.error(
-        "Bulk approval failed: " + (error.message || "Unknown error")
-      );
+      message.error("Bulk approval failed: " + (error.message || "Unknown error"));
     } finally {
       setActionLoading(false);
     }
@@ -214,28 +239,22 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map((id) =>
-          donationRequestService.rejectDonationRequest(id)
-        )
+        selectedRequests.map(id => donationRequestService.rejectDonationRequest(id))
       );
-
-      setDonationRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          selectedRequests.includes(request.requestId)
-            ? { ...request, status: "Rejected" }
+      
+      setDonationRequests(prevRequests =>
+        prevRequests.map(request =>
+          selectedRequests.includes(request.requestId) 
+            ? { ...request, status: "Rejected" } 
             : request
         )
       );
-
-      message.success(
-        `Rejected ${selectedRequests.length} requests successfully`
-      );
+      
+      message.success(`Rejected ${selectedRequests.length} requests successfully`);
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk rejection error:", error);
-      message.error(
-        "Bulk rejection failed: " + (error.message || "Unknown error")
-      );
+      message.error("Bulk rejection failed: " + (error.message || "Unknown error"));
     } finally {
       setActionLoading(false);
     }
@@ -243,15 +262,15 @@ const DonorRequestsManager = () => {
 
   const handleSelectRequest = (id, checked) => {
     if (checked) {
-      setSelectedRequests((prev) => [...prev, id]);
+      setSelectedRequests(prev => [...prev, id]);
     } else {
-      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
     }
   };
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRequests(paginatedRequests.map((req) => req.requestId));
+      setSelectedRequests(paginatedRequests.map(req => req.requestId));
     } else {
       setSelectedRequests([]);
     }
@@ -264,6 +283,7 @@ const DonorRequestsManager = () => {
 
   const handleTabChange = (key) => {
     setActiveTab(key);
+    localStorage.setItem("activeTab", key);
     setCurrentPage(1);
     setSelectedRequests([]);
   };
@@ -279,7 +299,7 @@ const DonorRequestsManager = () => {
     ({
       Whole: "Whole Blood",
       Plasma: "Plasma",
-      Platelets: "Platelets",
+      Platelets: "Platelets"
     }[type] || type);
 
   const getStatusTag = (status) => {
@@ -337,6 +357,13 @@ const DonorRequestsManager = () => {
             className="bg-green-500 hover:bg-green-600 text-white"
           >
             Reset Filters
+          </Button>
+          <Button
+            onClick={handleExport}
+            icon={<DownloadOutlined />}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Export Report
           </Button>
         </div>
       </div>
@@ -457,7 +484,7 @@ const DonorRequestsManager = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   <Checkbox
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     checked={
@@ -471,31 +498,31 @@ const DonorRequestsManager = () => {
                     disabled={activeTab !== "pending"}
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   #
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Full Name
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Date
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Time
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Blood Type
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Type
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Amount
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Status
                 </th>
-                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-center font-bold text-gray-600 ">
                   Actions
                 </th>
               </tr>
@@ -580,7 +607,6 @@ const DonorRequestsManager = () => {
         </div>
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-center mt-6">
         <Pagination
           current={currentPage}
@@ -596,7 +622,6 @@ const DonorRequestsManager = () => {
         />
       </div>
 
-      {/* Request details modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">

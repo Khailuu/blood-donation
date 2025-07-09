@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import {
   Button,
@@ -14,6 +13,7 @@ import {
   Popconfirm,
   Pagination,
   Spin,
+  Image,
 } from "antd";
 import {
   HeartOutlined,
@@ -46,14 +46,38 @@ export const MemberBlogPage = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const data =
-        activeView === "ALL"
-          ? await blogService.getAllBlog()
-          : await blogService.getBlogById(currentUserId);
-      setArticles(data);
-      // eslint-disable-next-line no-unused-vars
+      let data;
+      if (activeView === "ALL") {
+        data = await blogService.getAllBlog();
+      } else {
+        data = await blogService.getBlogById(currentUserId);
+      }
+
+      const processedData = data.map((item) => ({
+        _id: item._id || item.id || item.postId, 
+        title: item.title || "Untitled Blog",
+        content: item.content || "",
+        description:
+          item.description ||
+          (item.content
+            ? item.content.substring(0, 100) + "..."
+            : "No description"),
+        imageUrl:
+          item.imageUrl || item.image || "https://via.placeholder.com/400x200",
+        createdAt: item.publishedDate || new Date().toISOString(),
+        authorId: item.authorId || item.userId || "unknown", 
+        likes: item.likes || [],
+        likedBy: item.likedBy || [],
+        comments: item.comments || [],
+        label: item.label || "General",
+      }));
+
+      console.log({ processedData });
+
+      setArticles(processedData);
     } catch (error) {
-      message.error("Failed to fetch blogs");
+      console.error("Fetch error:", error);
+      message.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -72,29 +96,27 @@ export const MemberBlogPage = () => {
   const handleCreateOrEdit = async (values) => {
     try {
       setLoading(true);
-
       const blogData = {
         title: values.title,
-        content: values.content || values.description,
-        imageUrl: values.image,
-        // Bỏ trường label nếu API không cần
+        content: values.content,
+        imageUrl: values.imageUrl,
+        authorId: currentUserId,
       };
 
       if (editingArticle) {
-        await blogService.updateBlog(editingArticle.postId, blogData);
+        await blogService.updateBlog(editingArticle._id, blogData);
         message.success("Blog updated successfully!");
       } else {
         await blogService.createBlog(blogData);
         message.success("Blog created successfully!");
       }
 
-      fetchBlogs();
-      form.resetFields();
-      setEditingArticle(null);
+      await fetchBlogs();
       setModalOpen(false);
+      form.resetFields();
     } catch (error) {
       console.error("Error:", error);
-      message.error(error.message || "Operation failed");
+      message.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -104,19 +126,25 @@ export const MemberBlogPage = () => {
     try {
       await blogService.deleteBlog(id);
       message.success("Blog deleted successfully!");
-      fetchBlogs();
+      await fetchBlogs();
     } catch (error) {
-      message.error("Failed to delete blog");
+      console.error("Error:", error);
+      message.error(error.message);
     }
   };
 
   const openEditModal = (article) => {
     setEditingArticle(article);
-    form.setFieldsValue(article);
+    form.setFieldsValue({
+      title: article.title,
+      content: article.content,
+      imageUrl: article.imageUrl,
+    });
     setModalOpen(true);
   };
 
-  const toggleLike = async (blogId) => {
+  const toggleLike = async (blogId, e) => {
+    e.stopPropagation();
     try {
       const article = articles.find((item) => item._id === blogId);
       const isLiked = article.likedBy.includes(currentUserId);
@@ -127,9 +155,10 @@ export const MemberBlogPage = () => {
         await blogService.likeBlog(blogId, currentUserId);
       }
 
-      fetchBlogs();
+      await fetchBlogs();
     } catch (error) {
-      message.error("Failed to update like status");
+      console.error("Error:", error);
+      message.error(error.message);
     }
   };
 
@@ -213,17 +242,17 @@ export const MemberBlogPage = () => {
               hoverable
               onClick={() => navigate(`/app/member/blogs/${item._id}`)}
               cover={
-                <div style={{ position: "relative" }}>
-                  <img
-                    alt="article"
-                    src={item.image || "https://via.placeholder.com/400x200"}
+                <div style={{ position: "relative", height: "200px" }}>
+                  <Image
+                    alt="blog cover"
+                    src={item.imageUrl}
+                    preview={false}
                     style={{
                       width: "100%",
-                      height: 200,
+                      height: "100%",
                       objectFit: "cover",
-                      borderTopLeftRadius: 8,
-                      borderTopRightRadius: 8,
                     }}
+                    fallback="https://via.placeholder.com/400x200"
                   />
                   <Tag
                     color="white"
@@ -238,7 +267,7 @@ export const MemberBlogPage = () => {
                       border: "none",
                     }}
                   >
-                    {item.label || "Uncategorized"}
+                    {item.label}
                   </Tag>
                 </div>
               }
@@ -264,18 +293,15 @@ export const MemberBlogPage = () => {
                 <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
                   {new Date(item.createdAt).toLocaleDateString()}
                 </Paragraph>
-                <Paragraph
-                  strong
-                  style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}
-                >
+                <Title level={5} style={{ marginBottom: 8 }}>
                   {item.title}
-                </Paragraph>
-                <Paragraph style={{ fontSize: 14, color: "#666" }}>
-                  {item.description?.substring(0, 60)}...
+                </Title>
+                <Paragraph style={{ color: "#666" }}>
+                  {item.description}
                 </Paragraph>
               </div>
 
-              <div style={{ marginTop: "auto" }}>
+              <div>
                 <Row
                   justify="space-between"
                   align="middle"
@@ -289,18 +315,15 @@ export const MemberBlogPage = () => {
                     <Button
                       type="text"
                       icon={
-                        item.likedBy?.includes(currentUserId) ? (
+                        item.likedBy.includes(currentUserId) ? (
                           <HeartFilled style={{ color: "#bd0026" }} />
                         ) : (
                           <HeartOutlined style={{ color: "#bd0026" }} />
                         )
                       }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleLike(item._id);
-                      }}
+                      onClick={(e) => toggleLike(item._id, e)}
                     >
-                      {item.likes?.length || 0}
+                      {item.likes.length}
                     </Button>
                     <Button
                       type="text"
@@ -310,7 +333,7 @@ export const MemberBlogPage = () => {
                         navigate(`/app/member/blogs/${item._id}#comments`);
                       }}
                     >
-                      {item.comments?.length || 0}
+                      {item.comments.length}
                     </Button>
                   </Col>
                   {item.authorId === currentUserId && (
@@ -334,7 +357,11 @@ export const MemberBlogPage = () => {
                       <Col>
                         <Popconfirm
                           title="Are you sure to delete this blog?"
-                          onConfirm={() => handleDelete(item._id)}
+                          onConfirm={(e) => {
+                            e?.stopPropagation();
+                            handleDelete(item._id);
+                          }}
+                          onCancel={(e) => e?.stopPropagation()}
                           okText="Yes"
                           cancelText="No"
                         >
@@ -358,16 +385,11 @@ export const MemberBlogPage = () => {
       </Row>
 
       <Modal
-        title={
-          <Title level={4}>
-            {editingArticle ? "Edit Blog" : "Create Blog"}
-          </Title>
-        }
+        title={editingArticle ? "Edit Blog" : "Create Blog"}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={() => form.submit()}
-        okText="Save"
-        cancelText="Cancel"
+        confirmLoading={loading}
         okButtonProps={{
           style: {
             backgroundColor: "#bd0026",
@@ -375,8 +397,13 @@ export const MemberBlogPage = () => {
             fontWeight: 600,
           },
         }}
+        cancelButtonProps={{
+          style: {
+            borderRadius: 50,
+          },
+        }}
       >
-        <Form layout="vertical" form={form} onFinish={handleCreateOrEdit}>
+        <Form form={form} layout="vertical" onFinish={handleCreateOrEdit}>
           <Form.Item
             name="title"
             label="Title"
@@ -390,18 +417,18 @@ export const MemberBlogPage = () => {
             label="Content"
             rules={[{ required: true, message: "Please input blog content!" }]}
           >
-            <Input.TextArea rows={5} placeholder="Enter blog content..." />
+            <Input.TextArea rows={6} placeholder="Enter blog content..." />
           </Form.Item>
 
           <Form.Item
-            name="image"
+            name="imageUrl"
             label="Image URL"
-            rules={[{ type: "url", message: "Please enter a valid URL" }]}
+            rules={[
+              { required: true, message: "Please input image URL!" },
+              { type: "url", message: "Please enter a valid URL" },
+            ]}
           >
             <Input placeholder="https://example.com/image.jpg" />
-          </Form.Item>
-          <Form.Item name="content" label="Content" hidden>
-            <Input.TextArea rows={10} />
           </Form.Item>
         </Form>
       </Modal>
@@ -410,7 +437,6 @@ export const MemberBlogPage = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          textAlign: "center",
           marginTop: 32,
         }}
       >

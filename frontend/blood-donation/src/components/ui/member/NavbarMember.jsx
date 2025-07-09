@@ -73,7 +73,7 @@ export const NavbarMember = () => {
                       <span>Edit Profile</span>
                     </div>
                   ),
-                  onClick: () => navigate("/app/member/profile-member"),
+                  onClick: () => navigate("/app/member/profile"),
                 },
                 {
                   key: "logout",
