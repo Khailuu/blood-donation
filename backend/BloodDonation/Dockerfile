@@ -23,5 +23,5 @@ RUN dotnet publish "BloodDonation.Apis.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-COPY ./wwwroot ./wwwroot
+COPY --from=build /src/BloodDonation.Apis/wwwroot ./wwwroot
 ENTRYPOINT ["./BloodDonation.Apis"]

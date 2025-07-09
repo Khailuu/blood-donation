@@ -82,7 +82,7 @@ public class UserController : ControllerBase
         if (request.Image != null)
         {
             using var stream = request.Image.OpenReadStream();
-            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "blog-images");
+            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "avatars");
         }
         
         var command = new UpdateCurrentUserCommand()
