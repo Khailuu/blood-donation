@@ -1,23 +1,15 @@
-import { Navbar } from "../../components/ui/staff/Navbar";
-import { SideBar } from "../../components/ui/staff/SideBar";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import React from "react";
+import { Outlet } from "react-router-dom";
 
 export const StaffDashboard = () => {
-  const location = useLocation();
-
-  // Lấy phần cuối cùng của URL để xác định active section
-  const pathSegments = location.pathname.split("/");
-  const activeSection = pathSegments[pathSegments.length - 1] || "dashboard";
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
-      <Navbar />
-      <div className="flex">
-        <SideBar activeSection={activeSection} />
-        <div className="flex p-6" style={{ border: "1px solid red" }}>
+    <div className="flex-1" style={{ position: "relative" }}>
+      {/* Background Cloud */}
+      <main className="py-4">
+        <div className="rounded-[50px] bg-white shadow-sm p-5">
           <Outlet />
         </div>
-      </div>
+      </main>
     </div>
   );
 };

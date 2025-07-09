@@ -49,7 +49,7 @@ const UpdateProfile = () => {
 
   return (
     <div className="min-h-screen" >
-      <div className="max-w-7xl mx-auto px-12 py-24">
+      <div className="max-w-7xl p-6 mx-auto ">
         
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
           <div className="flex items-center justify-between mb-6">

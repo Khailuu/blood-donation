@@ -1,0 +1,91 @@
+/* Thêm vào file CSS global hoặc module */
+.custom-tabs {
+  /* Style cho tab item */
+  .ant-tabs-tab {
+    padding: 12px 16px;
+    margin: 0 4px !important;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+    
+    /* Style khi hover */
+    &:hover {
+      background: #f5f5f5;
+      .ant-tabs-tab-btn {
+        color: #1890ff;
+      }
+      .anticon {
+        color: #1890ff !important;
+      }
+      .ant-tag {
+        background: #e6f7ff !important;
+        color: #1890ff !important;
+      }
+    }
+    
+    /* Style khi active */
+    &.ant-tabs-tab-active {
+      background: #f0f7ff;
+      .ant-tabs-tab-btn {
+        color: #1890ff;
+        font-weight: 500;
+      }
+      .anticon {
+        color: #1890ff !important;
+      }
+      .ant-tag {
+        background: #1890ff !important;
+        color: white !important;
+      }
+    }
+  }
+  
+  /* Style cho ink bar (gạch chân) */
+  .ant-tabs-ink-bar {
+    background: #1890ff;
+    height: 3px;
+  }
+  
+  /* Style riêng cho tab Pending */
+  .ant-tabs-tab:nth-child(1) {
+    &:hover {
+      .anticon {
+        color: #faad14 !important;
+      }
+      .ant-tag {
+        background: #fff7e6 !important;
+        color: #faad14 !important;
+      }
+    }
+    &.ant-tabs-tab-active {
+      .anticon {
+        color: #faad14 !important;
+      }
+      .ant-tag {
+        background: #faad14 !important;
+        color: white !important;
+      }
+    }
+  }
+  
+  /* Style riêng cho tab Processed */
+  .ant-tabs-tab:nth-child(2) {
+    &:hover {
+      .anticon {
+        color: #52c41a !important;
+      }
+      .ant-tag {
+        background: #f6ffed !important;
+        color: #52c41a !important;
+      }
+    }
+    &.ant-tabs-tab-active {
+      .anticon {
+        color: #52c41a !important;
+      }
+      .ant-tag {
+        background: #52c41a !important;
+        color: white !important;
+      }
+    }
+  }
+}

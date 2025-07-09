@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
   message,
   Popconfirm,
   Pagination,
+  Spin,
 } from "antd";
 import {
   HeartOutlined,
@@ -19,24 +21,43 @@ import {
   MessageOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { articles as mockArticles } from "../../../../assets/blog";
 import { useNavigate } from "react-router-dom";
+import { blogService } from "../../../../services/blogService";
 import "../../../../css/member/MemberBlogPage.css";
 
 const { Title, Paragraph } = Typography;
-const currentUserId = "user123";
 
 export const MemberBlogPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
-  const [articles, setArticles] = useState(
-    mockArticles.map((item) => ({ ...item, likedBy: [] }))
-  );
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [activeView, setActiveView] = useState("ALL");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const currentUserId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [activeView, currentPage]);
+
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const data =
+        activeView === "ALL"
+          ? await blogService.getAllBlog()
+          : await blogService.getBlogById(currentUserId);
+      setArticles(data);
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      message.error("Failed to fetch blogs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredArticles =
     activeView === "ALL"
@@ -48,37 +69,45 @@ export const MemberBlogPage = () => {
     currentPage * pageSize
   );
 
-  const handleCreateOrEdit = (values) => {
-    if (editingArticle) {
-      setArticles((prev) =>
-        prev.map((item) =>
-          item.key === editingArticle.key ? { ...item, ...values } : item
-        )
-      );
-      message.success("Blog updated!");
-    } else {
-      const newBlog = {
-        ...values,
-        key: Date.now().toString(),
-        authorId: currentUserId,
-        date: new Date().toLocaleDateString(),
-        label: values.label || "Uncategorized",
-        image: values.image || "https://via.placeholder.com/400x200",
-        likes: 0,
-        comments: 0,
-        likedBy: [],
+  const handleCreateOrEdit = async (values) => {
+    try {
+      setLoading(true);
+
+      const blogData = {
+        title: values.title,
+        content: values.content || values.description,
+        imageUrl: values.image,
+        // Bỏ trường label nếu API không cần
       };
-      setArticles((prev) => [newBlog, ...prev]);
-      message.success("Blog created!");
+
+      if (editingArticle) {
+        await blogService.updateBlog(editingArticle.postId, blogData);
+        message.success("Blog updated successfully!");
+      } else {
+        await blogService.createBlog(blogData);
+        message.success("Blog created successfully!");
+      }
+
+      fetchBlogs();
+      form.resetFields();
+      setEditingArticle(null);
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error:", error);
+      message.error(error.message || "Operation failed");
+    } finally {
+      setLoading(false);
     }
-    form.resetFields();
-    setEditingArticle(null);
-    setModalOpen(false);
   };
 
-  const handleDelete = (key) => {
-    setArticles((prev) => prev.filter((item) => item.key !== key));
-    message.success("Blog deleted.");
+  const handleDelete = async (id) => {
+    try {
+      await blogService.deleteBlog(id);
+      message.success("Blog deleted successfully!");
+      fetchBlogs();
+    } catch (error) {
+      message.error("Failed to delete blog");
+    }
   };
 
   const openEditModal = (article) => {
@@ -87,23 +116,32 @@ export const MemberBlogPage = () => {
     setModalOpen(true);
   };
 
-  const toggleLike = (key) => {
-    setArticles((prev) =>
-      prev.map((item) => {
-        if (item.key === key) {
-          const liked = item.likedBy.includes(currentUserId);
-          return {
-            ...item,
-            likes: liked ? item.likes - 1 : item.likes + 1,
-            likedBy: liked
-              ? item.likedBy.filter((id) => id !== currentUserId)
-              : [...item.likedBy, currentUserId],
-          };
-        }
-        return item;
-      })
-    );
+  const toggleLike = async (blogId) => {
+    try {
+      const article = articles.find((item) => item._id === blogId);
+      const isLiked = article.likedBy.includes(currentUserId);
+
+      if (isLiked) {
+        await blogService.unlikeBlog(blogId, currentUserId);
+      } else {
+        await blogService.likeBlog(blogId, currentUserId);
+      }
+
+      fetchBlogs();
+    } catch (error) {
+      message.error("Failed to update like status");
+    }
   };
+
+  if (loading && articles.length === 0) {
+    return (
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "100px" }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -123,7 +161,10 @@ export const MemberBlogPage = () => {
             padding: 4,
           }}
         >
-          {[{ key: "ALL", label: "All Blogs" }, { key: "MY", label: "My Blogs" }].map((tab) => (
+          {[
+            { key: "ALL", label: "All Blogs" },
+            { key: "MY", label: "My Blogs" },
+          ].map((tab) => (
             <Button
               key={tab.key}
               onClick={() => {
@@ -133,7 +174,8 @@ export const MemberBlogPage = () => {
               style={{
                 fontFamily: "Raleway",
                 border: "none",
-                backgroundColor: activeView === tab.key ? "#bd0026" : "transparent",
+                backgroundColor:
+                  activeView === tab.key ? "#bd0026" : "transparent",
                 color: activeView === tab.key ? "white" : "#444",
                 padding: "6px 20px",
                 borderRadius: 999,
@@ -166,15 +208,15 @@ export const MemberBlogPage = () => {
 
       <Row gutter={[24, 32]}>
         {paginatedArticles.map((item) => (
-          <Col key={item.key} xs={24} sm={12} md={12} lg={6}>
+          <Col key={item._id} xs={24} sm={12} md={12} lg={6}>
             <Card
               hoverable
-              onClick={() => navigate(`/app/member/blogs/${item.key}`)}
+              onClick={() => navigate(`/app/member/blogs/${item._id}`)}
               cover={
                 <div style={{ position: "relative" }}>
                   <img
                     alt="article"
-                    src={item.image}
+                    src={item.image || "https://via.placeholder.com/400x200"}
                     style={{
                       width: "100%",
                       height: 200,
@@ -196,7 +238,7 @@ export const MemberBlogPage = () => {
                       border: "none",
                     }}
                   >
-                    {item.label}
+                    {item.label || "Uncategorized"}
                   </Tag>
                 </div>
               }
@@ -219,19 +261,35 @@ export const MemberBlogPage = () => {
               }}
             >
               <div>
-                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>{item.date}</Paragraph>
-                <Paragraph strong style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}>
+                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </Paragraph>
+                <Paragraph
+                  strong
+                  style={{ fontWeight: "bold", marginBottom: 8, minHeight: 44 }}
+                >
                   {item.title}
+                </Paragraph>
+                <Paragraph style={{ fontSize: 14, color: "#666" }}>
+                  {item.description?.substring(0, 60)}...
                 </Paragraph>
               </div>
 
               <div style={{ marginTop: "auto" }}>
-                <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+                <Row
+                  justify="space-between"
+                  align="middle"
+                  style={{
+                    marginTop: 16,
+                    borderTop: "1px solid #f0f0f0",
+                    paddingTop: 12,
+                  }}
+                >
                   <Col>
                     <Button
                       type="text"
                       icon={
-                        item.likedBy.includes(currentUserId) ? (
+                        item.likedBy?.includes(currentUserId) ? (
                           <HeartFilled style={{ color: "#bd0026" }} />
                         ) : (
                           <HeartOutlined style={{ color: "#bd0026" }} />
@@ -239,20 +297,20 @@ export const MemberBlogPage = () => {
                       }
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleLike(item.key);
+                        toggleLike(item._id);
                       }}
                     >
-                      {item.likes || 0}
+                      {item.likes?.length || 0}
                     </Button>
                     <Button
                       type="text"
                       icon={<MessageOutlined style={{ color: "#555" }} />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/app/member/blogs/${item.key}#comments`);
+                        navigate(`/app/member/blogs/${item._id}#comments`);
                       }}
                     >
-                      {item.comments || 0}
+                      {item.comments?.length || 0}
                     </Button>
                   </Col>
                   {item.authorId === currentUserId && (
@@ -276,7 +334,7 @@ export const MemberBlogPage = () => {
                       <Col>
                         <Popconfirm
                           title="Are you sure to delete this blog?"
-                          onConfirm={() => handleDelete(item.key)}
+                          onConfirm={() => handleDelete(item._id)}
                           okText="Yes"
                           cancelText="No"
                         >
@@ -300,7 +358,11 @@ export const MemberBlogPage = () => {
       </Row>
 
       <Modal
-        title={<Title level={4}>{editingArticle ? "Edit Blog" : "Create Blog"}</Title>}
+        title={
+          <Title level={4}>
+            {editingArticle ? "Edit Blog" : "Create Blog"}
+          </Title>
+        }
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={() => form.submit()}
@@ -315,17 +377,31 @@ export const MemberBlogPage = () => {
         }}
       >
         <Form layout="vertical" form={form} onFinish={handleCreateOrEdit}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: "Please input blog title!" }]}
+          >
             <Input placeholder="Enter blog title" />
           </Form.Item>
-          <Form.Item name="description" label="Short Description">
-            <Input.TextArea rows={3} placeholder="Enter a short blog summary..." />
+
+          <Form.Item
+            name="content"
+            label="Content"
+            rules={[{ required: true, message: "Please input blog content!" }]}
+          >
+            <Input.TextArea rows={5} placeholder="Enter blog content..." />
           </Form.Item>
-          <Form.Item name="label" label="Category">
-            <Input placeholder="e.g. BLOG / SUCCESS STORIES" />
-          </Form.Item>
-          <Form.Item name="image" label="Image URL">
+
+          <Form.Item
+            name="image"
+            label="Image URL"
+            rules={[{ type: "url", message: "Please enter a valid URL" }]}
+          >
             <Input placeholder="https://example.com/image.jpg" />
+          </Form.Item>
+          <Form.Item name="content" label="Content" hidden>
+            <Input.TextArea rows={10} />
           </Form.Item>
         </Form>
       </Modal>

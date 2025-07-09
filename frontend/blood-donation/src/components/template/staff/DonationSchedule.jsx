@@ -1,37 +1,41 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { message, Typography } from 'antd';
+import { donationRequestService } from '../../../services/donationRequestService ';
+import { userService } from '../../../services/manageUserService';
+const { Title } = Typography;
 
 const DonationSchedule = () => {
-  const [donationSchedule, setDonationSchedule] = useState([
-    { id: 1, date: '2024-06-10', time: '09:00', location: 'Blood Donation Center', donor: 'Le Van C', bloodType: 'B+', status: 'Scheduled' },
-    { id: 2, date: '2024-06-12', time: '14:00', location: 'University Medical Center Hospital', donor: 'Pham Thi D', bloodType: 'AB-', status: 'Completed' },
-    { id: 3, date: '2024-06-15', time: '10:30', location: 'Community Health Center', donor: 'Nguyen Van A', bloodType: 'O+', status: 'Scheduled' },
-    { id: 4, date: '2024-06-18', time: '16:00', location: 'Blood Donation Center', donor: 'Tran Thi B', bloodType: 'A-', status: 'Cancelled' }
-  ]);
-
-  const [showModal, setShowModal] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState(null);
+  const [donationSchedules, setDonationSchedules] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterBloodType, setFilterBloodType] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
 
-  const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    location: '',
-    donor: '',
-    bloodType: 'A+',
-    status: 'Scheduled'
-  });
-
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  const statuses = ['Scheduled', 'Completed', 'Cancelled'];
+  const statuses = ['Scheduled', 'Completed'];
+
+  useEffect(() => {
+    const fetchApprovedRequests = async () => {
+      try {
+        setLoading(true);
+        const requests = await donationRequestService.getApprovedDonationRequests();
+        setDonationSchedules(requests);
+      } catch (error) {
+        console.error("Failed to load approved requests:", error);
+        message.error("Failed to load donation schedules");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchApprovedRequests();
+  }, []);
 
   const filteredSchedules = useMemo(() => {
-    return donationSchedule.filter(schedule => {
+    return donationSchedules.filter(schedule => {
       const matchesSearch = 
-        schedule.donor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        schedule.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        schedule.requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         schedule.bloodType.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus = filterStatus === 'All' || schedule.status === filterStatus;
@@ -39,72 +43,103 @@ const DonationSchedule = () => {
 
       return matchesSearch && matchesStatus && matchesBloodType;
     });
-  }, [donationSchedule, searchTerm, filterStatus, filterBloodType]);
+  }, [donationSchedules, searchTerm, filterStatus, filterBloodType]);
 
-  const handleAdd = () => {
-    setEditingSchedule(null);
-    setFormData({
-      date: '',
-      time: '',
-      location: '',
-      donor: '',
-      bloodType: 'A+',
-      status: 'Scheduled'
-    });
-    setShowModal(true);
+  console.log({filteredSchedules});
+  
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('vi-VN');
   };
 
-  const handleEdit = (schedule) => {
-    setEditingSchedule(schedule);
-    setFormData({
-      date: schedule.date,
-      time: schedule.time,
-      location: schedule.location,
-      donor: schedule.donor,
-      bloodType: schedule.bloodType,
-      status: schedule.status
+  const formatTime = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    setShowModal(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this schedule?')) {
-      setDonationSchedule(donationSchedule.filter(schedule => schedule.id !== id));
+  const getComponentText = (type) => {
+    const componentMap = {
+      Whole: "Whole Blood",
+      Plasma: "Plasma",
+      Platelets: "Platelets"
+    };
+    return componentMap[type] || type;
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Scheduled': return 'bg-blue-100 text-blue-800';
+      case 'Completed': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editingSchedule) {
-      setDonationSchedule(donationSchedule.map(schedule => 
-        schedule.id === editingSchedule.id 
-          ? { ...schedule, ...formData }
-          : schedule
-      ));
-    } else {
-      const newSchedule = {
-        id: Math.max(...donationSchedule.map(s => s.id)) + 1,
-        ...formData
-      };
-      setDonationSchedule([...donationSchedule, newSchedule]);
+  const handleComplete = async (requestId) => {
+  try {
+    const confirmed = window.confirm("Are you sure you want to mark this donation as completed?");
+    if (!confirmed) return;
+
+    // 1. Mark the donation as completed
+    const donationResponse = await donationRequestService.completeDonationRequest(requestId);
+    
+    // 2. Update inventory if needed
+    if (donationResponse && donationResponse.data) {
+      const { bloodType, amountBlood } = donationResponse.data;
+      
+      const bloodTypes = await userService.getBloodTypes();
+      const bloodTypeInfo = bloodTypes.find(type => type.bloodType === bloodType);
+      
+      if (bloodTypeInfo) {
+        await userService.addBloodStored({
+          bloodTypeId: bloodTypeInfo.id,
+          quantity: amountBlood
+        });
+      }
     }
-    setShowModal(false);
-    setEditingSchedule(null);
-  };
+
+    setDonationSchedules(prev => 
+      prev.map(req => 
+        req.requestId === requestId 
+          ? { 
+              ...req, 
+              status: 'Completed',
+              ...(donationResponse.data ? {
+                bloodType: donationResponse.data.bloodType,
+                amountBlood: donationResponse.data.amountBlood
+              } : {})
+            } 
+          : req
+      )
+    );
+    
+    message.success("Donation completed successfully");
+  } catch (error) {
+    console.error("Failed to complete donation:", error);
+    message.error(error.response?.data?.message || "Failed to complete donation");
+  }
+};
+
 
   const handleExport = () => {
     const csvContent = [
-      ['ID', 'Date', 'Time', 'Location', 'Donor', 'Blood Type', 'Status'],
+      ['ID', 'Donor', 'Date', 'Time', 'Blood Type', 'Component', 'Amount', 'Status'],
       ...filteredSchedules.map(schedule => [
-        schedule.id,
-        schedule.date,
-        schedule.time,
-        schedule.location,
-        schedule.donor,
+        schedule.requestId,
+        schedule.requesterName,
+        formatDate(schedule.requestTime),
+        formatTime(schedule.requestTime),
         schedule.bloodType,
+        getComponentText(schedule.componentType),
+        `${schedule.amountBlood} unit(s)`,
         schedule.status
       ])
     ].map(row => row.join(',')).join('\n');
+    console.log({ csvContent });
+    
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -115,19 +150,17 @@ const DonationSchedule = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Scheduled': return 'bg-blue-100 text-blue-800';
-      case 'Completed': return 'bg-green-100 text-green-800';
-      case 'Cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  if (loading) {
+    return <div className="p-20 text-center">Loading donation schedules...</div>;
+  }
 
   return (
-    <div className="space-y-6 ml-72 p-20">
+    <div className="space-y-6 p-6 ">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Donation Schedule Management</h2>
+      
+        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
+          Donation Schedule
+        </Title>
         <div className="flex gap-2">
           <button 
             onClick={() => setShowFilters(!showFilters)}
@@ -141,27 +174,21 @@ const DonationSchedule = () => {
           >
             Export Report
           </button>
-          <button 
-            onClick={handleAdd}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
-          >
-            Add Schedule
-          </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex flex-col gap-4">
           <div className="flex gap-4 items-center">
             <input
               type="text"
-              placeholder="Search by donor name, location, or blood type..."
+              placeholder="Search by donor name or blood type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <div className="text-sm text-gray-600">
-              {filteredSchedules.length} of {donationSchedule.length} schedules
+              {filteredSchedules.length} of {donationSchedules.length} schedules
             </div>
           </div>
 
@@ -172,7 +199,7 @@ const DonationSchedule = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="All">All Status</option>
                   {statuses.map(status => (
@@ -185,7 +212,7 @@ const DonationSchedule = () => {
                 <select
                   value={filterBloodType}
                   onChange={(e) => setFilterBloodType(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="All">All Blood Types</option>
                   {bloodTypes.map(type => (
@@ -198,159 +225,64 @@ const DonationSchedule = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-pink-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-pink-50">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th> */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">ID</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Donor</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Date</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Time</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Blood Type</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Component</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Amount</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">Status</th>
+                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSchedules.map((schedule) => (
-                <tr key={schedule.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{schedule.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex flex-col">
-                      <span>{schedule.date}</span>
-                      <span className="text-xs text-gray-500">{schedule.time}</span>
-                    </div>
+                <tr key={schedule.requestId} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-semibold text-gray-700">#{schedule.requestId.substring(0, 6)}</td>
+                  <td className="px-4 py-3">{schedule.requesterName}</td>
+                  <td className="px-4 py-3">{formatDate(schedule.requestTime)}</td>
+                  <td className="px-4 py-3">{formatTime(schedule.requestTime)}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-block px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                      {schedule.bloodType}
+                    </span>
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.location}</td> */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{schedule.donor}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">{schedule.bloodType}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-4 py-3">{getComponentText(schedule.componentType)}</td>
+                  <td className="px-4 py-3">{schedule.amountBlood} unit(s)</td>
+                  <td className="px-4 py-3">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(schedule.status)}`}>
                       {schedule.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => handleEdit(schedule)}
-                        className="bg-white-200 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-300"
+                  <td className="px-4 py-3 text-center">
+                    {schedule.status === 'Scheduled' && (
+                      <button
+                        onClick={() => handleComplete(schedule.requestId)}
+                        className="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
                       >
-                        Edit
+                        Complete
                       </button>
-                      <button 
-                        onClick={() => handleDelete(schedule.id)}
-                        className="bg-white-200 text-red-800 px-3 py-1 rounded hover:bg-red-300"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    )}
                   </td>
                 </tr>
               ))}
+              {filteredSchedules.length === 0 && (
+                <tr>
+                  <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
+                    No schedules found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-
-          {filteredSchedules.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No schedules found matching your criteria.
-            </div>
-          )}
         </div>
       </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">
-              {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                <input
-                  type="time"
-                  value={formData.time}
-                  onChange={(e) => setFormData({...formData, time: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Donor Name</label>
-                <input
-                  type="text"
-                  value={formData.donor}
-                  onChange={(e) => setFormData({...formData, donor: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
-                <select
-                  value={formData.bloodType}
-                  onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                >
-                  {bloodTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                >
-                  {statuses.map(status => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex gap-2 pt-4">
-                <button
-                  type="submit"
-                  className="flex-1 bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700"
-                >
-                  {editingSchedule ? 'Update' : 'Add'} Schedule
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

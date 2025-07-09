@@ -11,21 +11,24 @@ export const MainLayout = () => {
 
   const location = useLocation();
 
-  const hideLayout =
-    location.pathname === "/app/member/health-survey";
+  const hideLayout = location.pathname === "/app/member/health-survey";
 
   return (
-    <div
-      className="flex flex-col"
-      style={{ position: "relative" }}
-    >
+    <div className="flex flex-col" style={{ position: "relative" }}>
       <BackgroundCloud />
       <div className="" style={{ zIndex: 2 }}>
         {!hideLayout && <HeaderComponent />}
-        <div className="flex-1" style={{margin: "0 100px"}}>
+        <div
+          className="flex-1"
+          style={{
+            margin: role === "staff" || role === "admin" ? "0" : "0 100px",
+          }}
+        >
           <Outlet />
         </div>
-        {!hideLayout && role !== "staff" && role !== "admin" && <FooterComponent />}
+        {!hideLayout && role !== "staff" && role !== "admin" && (
+          <FooterComponent />
+        )}
       </div>
     </div>
   );

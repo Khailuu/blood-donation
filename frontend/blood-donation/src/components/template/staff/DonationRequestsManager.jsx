@@ -1,580 +1,687 @@
-import React, { useState, useMemo } from 'react';
-import {Eye} from 'lucide-react';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  message,
+  Pagination,
+  Spin,
+  Button,
+  Tabs,
+  Tag,
+  Checkbox,
+  Typography,
+} from "antd";
+import {
+  SyncOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  EyeOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
+import { donationRequestService } from "../../../services/donationRequestService ";
+import "../../../css/staff/DonorRequestManager.css";
+const { Title } = Typography;
 
-const DonationRequestsManager = () => {
-  const [donationRequests, setDonationRequests] = useState([
-    { 
-      id: 1, 
-      patientName: 'Nguyen Van A', 
-      bloodType: 'A+', 
-      hospital: 'Cho Ray Hospital', 
-      urgency: 'Urgent', 
-      status: 'Pending',
-      requestDate: '2025-06-15',
-      contactPhone: '0901234567',
-      unitsNeeded: 2,
-      notes: 'Patient needs immediate transfusion'
-    },
-    { 
-      id: 2, 
-      patientName: 'Tran Thi B', 
-      bloodType: 'O-', 
-      hospital: '115 Hospital', 
-      urgency: 'Normal', 
-      status: 'Processed',
-      requestDate: '2025-06-14',
-      contactPhone: '0909876543',
-      unitsNeeded: 1,
-      notes: 'Scheduled surgery next week'
-    },
-    { 
-      id: 3, 
-      patientName: 'Le Van C', 
-      bloodType: 'B+', 
-      hospital: 'FV Hospital', 
-      urgency: 'Critical', 
-      status: 'Pending',
-      requestDate: '2025-06-16',
-      contactPhone: '0912345678',
-      unitsNeeded: 3,
-      notes: 'Emergency case - accident victim'
-    },
-    { 
-      id: 4, 
-      patientName: 'Pham Thi D', 
-      bloodType: 'AB-', 
-      hospital: 'Vinmec Hospital', 
-      urgency: 'Normal', 
-      status: 'Rejected',
-      requestDate: '2025-06-13',
-      contactPhone: '0987654321',
-      unitsNeeded: 1,
-      notes: 'Patient condition improved'
-    }
-  ]);
+const { TabPane } = Tabs;
 
+const DonorRequestsManager = () => {
+  // State management
+  const [donationRequests, setDonationRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [filters, setFilters] = useState({
-    status: '',
-    bloodType: '',
-    urgency: '',
-    hospital: ''
+    bloodType: "",
+    componentType: "",
+    date: "",
   });
-
-  const [showFilters, setShowFilters] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [newRequest, setNewRequest] = useState({
-    patientName: '',
-    bloodType: '',
-    hospital: '',
-    urgency: 'Normal',
-    contactPhone: '',
-    unitsNeeded: 1,
-    notes: ''
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [activeTab, setActiveTab] = useState("pending");
+  const [selectedRequests, setSelectedRequests] = useState([]);
 
-  const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  const urgencyLevels = ['Normal', 'Urgent', 'Critical'];
-  const hospitals = ['Cho Ray Hospital', '115 Hospital', 'FV Hospital', 'Vinmec Hospital', 'Binh Dan Hospital'];
+  const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+  const componentTypes = ["Whole", "Plasma", "Platelets"];
+
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
+      const response = await donationRequestService.getAllDonationRequests();
+
+      const items = response.items || response.data?.items || [];
+      setDonationRequests(items);
+      if (!items.length) message.info("No donation requests found");
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to load donation requests");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
   const filteredRequests = useMemo(() => {
-    return donationRequests.filter(request => {
+    const filtered = donationRequests.filter((req) => {
+      const reqDate = new Date(req.requestTime).toISOString().split("T")[0];
       return (
-        (filters.status === '' || request.status === filters.status) &&
-        (filters.bloodType === '' || request.bloodType === filters.bloodType) &&
-        (filters.urgency === '' || request.urgency === filters.urgency) &&
-        (filters.hospital === '' || request.hospital.toLowerCase().includes(filters.hospital.toLowerCase()))
+        (!filters.bloodType || req.bloodType === filters.bloodType) &&
+        (!filters.componentType ||
+          req.componentType === filters.componentType) &&
+        (!filters.date || reqDate.includes(filters.date))
       );
     });
-  }, [donationRequests, filters]);
 
-  const handleApprove = (id) => {
-    setDonationRequests(donationRequests.map(request => 
-      request.id === id ? { ...request, status: 'Processed' } : request
-    ));
-  };
-
-  const handleReject = (id) => {
-    setDonationRequests(donationRequests.map(request => 
-      request.id === id ? { ...request, status: 'Rejected' } : request
-    ));
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      status: '',
-      bloodType: '',
-      urgency: '',
-      hospital: ''
-    });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const handleExportReport = () => {
-    const csvContent = [
-      'ID,Patient Name,Blood Type,Hospital,Urgency,Status,Request Date,Contact Phone,Units Needed,Notes',
-      ...filteredRequests.map(request => 
-        `${request.id},"${request.patientName}",${request.bloodType},"${request.hospital}",${request.urgency},${request.status},${request.requestDate},${request.contactPhone},${request.unitsNeeded},"${request.notes}"`
-      )
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `blood_donation_requests_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Add new request functionality
-  const handleAddRequest = () => {
-    if (newRequest.patientName && newRequest.bloodType && newRequest.hospital) {
-      const request = {
-        ...newRequest,
-        id: Math.max(...donationRequests.map(r => r.id)) + 1,
-        status: 'Pending',
-        requestDate: new Date().toISOString().split('T')[0]
-      };
-      setDonationRequests([...donationRequests, request]);
-      setNewRequest({
-        patientName: '',
-        bloodType: '',
-        hospital: '',
-        urgency: 'Normal',
-        contactPhone: '',
-        unitsNeeded: 1,
-        notes: ''
-      });
-      setShowAddForm(false);
+    if (activeTab === "pending") {
+      return filtered.filter((req) => req.status === "Pending");
+    } else {
+      return filtered.filter((req) => req.status !== "Pending");
     }
-  };
+  }, [donationRequests, filters, activeTab]);
 
-  const handleViewDetails = (request) => {
-    setSelectedRequest(request);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Processed':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'Rejected':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    }
-  };
-
-  const getUrgencyColor = (urgency) => {
-    switch (urgency) {
-      case 'Critical':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'Urgent':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-  };
-
-  const stats = useMemo(() => {
-    const total = donationRequests.length;
-    const pending = donationRequests.filter(r => r.status === 'Pending').length;
-    const processed = donationRequests.filter(r => r.status === 'Processed').length;
-    const rejected = donationRequests.filter(r => r.status === 'Rejected').length;
-    const critical = donationRequests.filter(r => r.urgency === 'Critical' && r.status === 'Pending').length;
-    
-    return { total, pending, processed, rejected, critical };
+  const requestCounts = useMemo(() => {
+    const pending = donationRequests.filter(
+      (req) => req.status === "Pending"
+    ).length;
+    const processed = donationRequests.filter(
+      (req) => req.status !== "Pending"
+    ).length;
+    return { pending, processed };
   }, [donationRequests]);
 
+  const paginatedRequests = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredRequests.slice(startIndex, startIndex + pageSize);
+  }, [filteredRequests, currentPage, pageSize]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchRequests();
+    setCurrentPage(1);
+    setActiveTab(activeTab);
+  };
+
+  const handleFilterChange = (key, value) =>
+    setFilters((prev) => ({ ...prev, [key]: value }));
+
+  const clearFilters = () => {
+    setFilters({ bloodType: "", componentType: "", date: "" });
+    setCurrentPage(1);
+  };
+
+  const handleApprove = async (id) => {
+    try {
+      setActionLoading(true);
+      await donationRequestService.approveDonationRequest(id);
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Approved" }
+            : request
+        )
+      );
+
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
+      message.success("Request approved successfully");
+
+      if (selectedRequest?.requestId === id) {
+        setSelectedRequest(null);
+      }
+    } catch (error) {
+      console.error("Approval error:", error);
+      message.error("Approval failed: " + (error.message || "Unknown error"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      setActionLoading(true);
+      await donationRequestService.rejectDonationRequest(id);
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Rejected" }
+            : request
+        )
+      );
+
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
+      message.success("Request rejected successfully");
+
+      if (selectedRequest?.requestId === id) {
+        setSelectedRequest(null);
+      }
+    } catch (error) {
+      console.error("Rejection error:", error);
+      message.error("Rejection failed: " + (error.message || "Unknown error"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (!selectedRequests.length) {
+      message.warning("Please select at least one request to approve");
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      await Promise.all(
+        selectedRequests.map((id) =>
+          donationRequestService.approveDonationRequest(id)
+        )
+      );
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Approved" }
+            : request
+        )
+      );
+
+      message.success(
+        `Approved ${selectedRequests.length} requests successfully`
+      );
+      setSelectedRequests([]);
+    } catch (error) {
+      console.error("Bulk approval error:", error);
+      message.error(
+        "Bulk approval failed: " + (error.message || "Unknown error")
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (!selectedRequests.length) {
+      message.warning("Please select at least one request to reject");
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      await Promise.all(
+        selectedRequests.map((id) =>
+          donationRequestService.rejectDonationRequest(id)
+        )
+      );
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Rejected" }
+            : request
+        )
+      );
+
+      message.success(
+        `Rejected ${selectedRequests.length} requests successfully`
+      );
+      setSelectedRequests([]);
+    } catch (error) {
+      console.error("Bulk rejection error:", error);
+      message.error(
+        "Bulk rejection failed: " + (error.message || "Unknown error")
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleSelectRequest = (id, checked) => {
+    if (checked) {
+      setSelectedRequests((prev) => [...prev, id]);
+    } else {
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+    }
+  };
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedRequests(paginatedRequests.map((req) => req.requestId));
+    } else {
+      setSelectedRequests([]);
+    }
+  };
+
+  const handlePageChange = (page, newPageSize) => {
+    setCurrentPage(page);
+    if (newPageSize) setPageSize(newPageSize);
+  };
+
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setCurrentPage(1);
+    setSelectedRequests([]);
+  };
+
+  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("vi-VN");
+  const formatTime = (dateStr) =>
+    new Date(dateStr).toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  const getComponentText = (type) =>
+    ({
+      Whole: "Whole Blood",
+      Plasma: "Plasma",
+      Platelets: "Platelets",
+    }[type] || type);
+
+  const getStatusTag = (status) => {
+    switch (status) {
+      case "Pending":
+        return (
+          <Tag icon={<ClockCircleOutlined />} color="gold">
+            Pending
+          </Tag>
+        );
+      case "Approved":
+        return (
+          <Tag icon={<CheckCircleOutlined />} color="green">
+            Approved
+          </Tag>
+        );
+      case "Rejected":
+        return (
+          <Tag icon={<StopOutlined />} color="red">
+            Rejected
+          </Tag>
+        );
+      default:
+        return <Tag color="gray">{status}</Tag>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-20 text-center">
+        <Spin size="large" />
+        <p>Loading donation requests...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 ml-72 p-20">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Blood Donation Requests Management</h2>
-        <div className="flex gap-3">
-          <button 
-            onClick={() => setShowFilters(!showFilters)}
-            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
+          Donation Requests
+        </Title>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleRefresh}
+            icon={<SyncOutlined spin={refreshing} />}
+            loading={refreshing}
+            type="primary"
+            className="flex items-center gap-2"
           >
-            Filters
-          </button>
-          <button 
-            onClick={handleExportReport}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+            Refresh
+          </Button>
+          <Button
+            onClick={clearFilters}
+            className="bg-green-500 hover:bg-green-600 text-white"
           >
-            Export Report
-          </button>
-          <button 
-            onClick={() => setShowAddForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Add Request
-          </button>
+            Reset Filters
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Requests</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-orange-600">{stats.pending}</div>
-          <div className="text-sm text-gray-600">Pending</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-green-600">{stats.processed}</div>
-          <div className="text-sm text-gray-600">Processed</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
-          <div className="text-sm text-gray-600">Rejected</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-4">
-          <div className="text-2xl font-bold text-red-700">{stats.critical}</div>
-          <div className="text-sm text-red-600">Critical Pending</div>
-        </div>
-      </div>
-
-      {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select 
-                value={filters.status}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Processed">Processed</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
-              <select 
-                value={filters.bloodType}
-                onChange={(e) => handleFilterChange('bloodType', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Blood Types</option>
-                {bloodTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
-              <select 
-                value={filters.urgency}
-                onChange={(e) => handleFilterChange('urgency', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">All Urgency</option>
-                {urgencyLevels.map(level => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
-            </div>
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Hospital</label>
-              <input 
-                type="text"
-                value={filters.hospital}
-                onChange={(e) => handleFilterChange('hospital', e.target.value)}
-                placeholder="Search hospital..."
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              />
-            </div> */}
-          </div>
-          <div className="mt-4 flex gap-2 items-center">
-            <button 
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-            >
-              Clear Filters
-            </button>
-            <span className="text-sm text-gray-600">
-              Showing {filteredRequests.length} of {donationRequests.length} requests
+      <Tabs
+        activeKey={activeTab}
+        onChange={handleTabChange}
+        className="custom-tabs"
+      >
+        <TabPane
+          tab={
+            <span className="flex items-center gap-2">
+              <ClockCircleOutlined className="text-amber-500" />
+              <span>Pending Requests</span>
+              <Tag className="ml-1 bg-amber-100 text-amber-600">
+                {requestCounts.pending}
+              </Tag>
             </span>
+          }
+          key="pending"
+        />
+        <TabPane
+          tab={
+            <span className="flex items-center gap-2">
+              <CheckCircleOutlined className="text-green-500" />
+              <span>Processed Requests</span>
+              <Tag className="ml-1 bg-green-100 text-green-600">
+                {requestCounts.processed}
+              </Tag>
+            </span>
+          }
+          key="processed"
+        />
+      </Tabs>
+
+      {activeTab === "pending" && selectedRequests.length > 0 && (
+        <div className="bg-blue-50 p-3 rounded-lg flex justify-between items-center">
+          <div className="text-blue-700">
+            {selectedRequests.length} request(s) selected
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleBulkApprove}
+              disabled={actionLoading}
+              type="text"
+              icon={<CheckOutlined className="text-green-500" />}
+              className="bg-green-50 text-green-600 hover:bg-green-100"
+            >
+              Approve Selected
+            </Button>
+            <Button
+              onClick={handleBulkReject}
+              disabled={actionLoading}
+              type="text"
+              icon={<CloseOutlined className="text-red-500" />}
+              className="bg-red-50 text-red-600 hover:bg-red-100"
+            >
+              Reject Selected
+            </Button>
           </div>
         </div>
       )}
-      
-      {/* Main Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-pink-100 overflow-hidden">
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Blood Type
+            </label>
+            <select
+              value={filters.bloodType}
+              onChange={(e) => handleFilterChange("bloodType", e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Blood Types</option>
+              {bloodTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Component Type
+            </label>
+            <select
+              value={filters.componentType}
+              onChange={(e) =>
+                handleFilterChange("componentType", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Types</option>
+              {componentTypes.map((type) => (
+                <option key={type} value={type}>
+                  {getComponentText(type)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date
+            </label>
+            <input
+              type="date"
+              value={filters.date}
+              onChange={(e) => handleFilterChange("date", e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-pink-50">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th> */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  <Checkbox
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    checked={
+                      selectedRequests.length > 0 &&
+                      selectedRequests.length === paginatedRequests.length
+                    }
+                    indeterminate={
+                      selectedRequests.length > 0 &&
+                      selectedRequests.length < paginatedRequests.length
+                    }
+                    disabled={activeTab !== "pending"}
+                  />
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  #
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Full Name
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Date
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Time
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Blood Type
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Type
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Amount
+                </th>
+                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{request.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.patientName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
-                      {request.bloodType}
-                    </span>
+              {paginatedRequests.map((req, i) => (
+                <tr key={req.requestId} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <Checkbox
+                      checked={selectedRequests.includes(req.requestId)}
+                      onChange={(e) =>
+                        handleSelectRequest(req.requestId, e.target.checked)
+                      }
+                      disabled={
+                        activeTab !== "pending" || req.status !== "Pending"
+                      }
+                    />
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.hospital}</td> */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(request.urgency)}`}>
-                      {request.urgency}
-                    </span>
+                  <td className="px-4 py-3 font-semibold text-gray-700">
+                    {(currentPage - 1) * pageSize + i + 1}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{request.unitsNeeded}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
-                      {request.status}
-                    </span>
+                  <td className="px-4 py-3">{req.requesterName}</td>
+                  <td className="px-4 py-3">{formatDate(req.requestTime)}</td>
+                  <td className="px-4 py-3">{formatTime(req.requestTime)}</td>
+                  <td className="px-4 py-3">
+                    <Tag color="blue" className="font-medium">
+                      {req.bloodType}
+                    </Tag>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center">
-                    <div className="text-center">
-                      {formatDate(request.requestDate)}
-                    </div>
+                  <td className="px-4 py-3">
+                    {getComponentText(req.componentType)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button 
-                        onClick={() => handleApprove(request.id)}
-                        disabled={request.status === 'Processed'}
-                        className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-green-200 disabled:border-gray-200"
-                      >
-                        Approve
-                      </button>
-                      <button 
-                        onClick={() => handleReject(request.id)}
-                        disabled={request.status === 'Rejected'}
-                        className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors border border-red-200 disabled:border-gray-200"
-                      >
-                        Reject
-                      </button>
-                      <button 
-                        onClick={() => handleViewDetails(request)}
-                        className="px-3 py-1"
-                      >
-                        <Eye/>
-                      </button>
+                  <td className="px-4 py-3">{req.amountBlood} unit(s)</td>
+                  <td className="px-4 py-3">{getStatusTag(req.status)}</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center gap-2">
+                      <Button
+                        icon={<EyeOutlined />}
+                        onClick={() => setSelectedRequest(req)}
+                        type="primary"
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        size="small"
+                      />
+                      {req.status === "Pending" && (
+                        <>
+                          <Button
+                            icon={<CheckOutlined />}
+                            onClick={() => handleApprove(req.requestId)}
+                            disabled={actionLoading}
+                            type="primary"
+                            className="bg-green-500 hover:bg-green-600 text-white"
+                            size="small"
+                          />
+                          <Button
+                            icon={<CloseOutlined />}
+                            onClick={() => handleReject(req.requestId)}
+                            disabled={actionLoading}
+                            danger
+                            type="primary"
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            size="small"
+                          />
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
               ))}
+              {filteredRequests.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    No {activeTab === "pending" ? "pending" : "processed"}{" "}
+                    requests found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Add New Request Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">Add New Request</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Patient Name</label>
-                <input 
-                  type="text"
-                  value={newRequest.patientName}
-                  onChange={(e) => setNewRequest({...newRequest, patientName: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
-                <select 
-                  value={newRequest.bloodType}
-                  onChange={(e) => setNewRequest({...newRequest, bloodType: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  <option value="">Select Blood Type</option>
-                  {bloodTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Hospital</label>
-                <select 
-                  value={newRequest.hospital}
-                  onChange={(e) => setNewRequest({...newRequest, hospital: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  <option value="">Select Hospital</option>
-                  {hospitals.map(hospital => (
-                    <option key={hospital} value={hospital}>{hospital}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
-                <select 
-                  value={newRequest.urgency}
-                  onChange={(e) => setNewRequest({...newRequest, urgency: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                >
-                  {urgencyLevels.map(level => (
-                    <option key={level} value={level}>{level}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Units Needed</label>
-                <input 
-                  type="number"
-                  min="1"
-                  value={newRequest.unitsNeeded}
-                  onChange={(e) => setNewRequest({...newRequest, unitsNeeded: parseInt(e.target.value)})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-                <input 
-                  type="tel"
-                  value={newRequest.contactPhone}
-                  onChange={(e) => setNewRequest({...newRequest, contactPhone: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea 
-                  value={newRequest.notes}
-                  onChange={(e) => setNewRequest({...newRequest, notes: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md h-20 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-6">
-              <button 
-                onClick={handleAddRequest}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-              >
-                Add Request
-              </button>
-              <button 
-                onClick={() => setShowAddForm(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Pagination */}
+      <div className="flex justify-center mt-6">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredRequests.length}
+          onChange={handlePageChange}
+          showSizeChanger
+          pageSizeOptions={["5", "10", "20", "50"]}
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${total} requests`
+          }
+          className="custom-pagination"
+        />
+      </div>
 
+      {/* Request details modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
             <h3 className="text-lg font-bold mb-4">Request Details</h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-medium text-gray-700">Patient:</span>
-                  <div className="text-gray-900">{selectedRequest.patientName}</div>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Blood Type:</span>
-                  <div>
-                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium border border-pink-200">
-                      {selectedRequest.bloodType}
-                    </span>
+                  <div className="text-sm text-gray-500">Full Name</div>
+                  <div className="font-medium">
+                    {selectedRequest.requesterName}
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Hospital:</span>
-                  <div className="text-gray-900">{selectedRequest.hospital}</div>
+                  <div className="text-sm text-gray-500">Blood Type</div>
+                  <div className="font-medium">{selectedRequest.bloodType}</div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Urgency:</span>
-                  <div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(selectedRequest.urgency)}`}>
-                      {selectedRequest.urgency}
-                    </span>
+                  <div className="text-sm text-gray-500">Date</div>
+                  <div className="font-medium">
+                    {formatDate(selectedRequest.requestTime)}
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Units Needed:</span>
-                  <div className="text-gray-900 font-medium">{selectedRequest.unitsNeeded}</div>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Status:</span>
-                  <div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedRequest.status)}`}>
-                      {selectedRequest.status}
-                    </span>
+                  <div className="text-sm text-gray-500">Time</div>
+                  <div className="font-medium">
+                    {formatTime(selectedRequest.requestTime)}
                   </div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Request Date:</span>
-                  <div className="text-gray-900">{formatDate(selectedRequest.requestDate)}</div>
+                  <div className="text-sm text-gray-500">Component Type</div>
+                  <div className="font-medium">
+                    {getComponentText(selectedRequest.componentType)}
+                  </div>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Contact:</span>
-                  <div className="text-gray-900">{selectedRequest.contactPhone}</div>
+                  <div className="text-sm text-gray-500">Amount</div>
+                  <div className="font-medium">
+                    {selectedRequest.amountBlood} unit(s)
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500">Status</div>
+                  <div className="font-medium">
+                    {getStatusTag(selectedRequest.status)}
+                  </div>
                 </div>
               </div>
-              <div>
-                <span className="font-medium text-gray-700">Notes:</span>
-                <div className="mt-1 p-3 bg-gray-50 rounded-md text-sm text-gray-900 border">{selectedRequest.notes}</div>
-              </div>
+              {selectedRequest.note && (
+                <div>
+                  <div className="text-sm text-gray-500">Notes</div>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-md">
+                    {selectedRequest.note}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex gap-2 mt-6">
-              {selectedRequest.status === 'Pending' && (
+              {selectedRequest.status === "Pending" && (
                 <>
-                  <button 
-                    onClick={() => {
-                      handleApprove(selectedRequest.id);
-                      setSelectedRequest(null);
-                    }}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                  <Button
+                    onClick={() => handleApprove(selectedRequest.requestId)}
+                    disabled={actionLoading}
+                    type="primary"
+                    icon={<CheckOutlined />}
+                    className="bg-green-600 hover:bg-green-700"
                   >
-                    Approve
-                  </button>
-                  <button 
-                    onClick={() => {
-                      handleReject(selectedRequest.id);
-                      setSelectedRequest(null);
-                    }}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                    {actionLoading ? "Processing..." : "Approve"}
+                  </Button>
+                  <Button
+                    onClick={() => handleReject(selectedRequest.requestId)}
+                    disabled={actionLoading}
+                    danger
+                    icon={<CloseOutlined />}
                   >
-                    Reject
-                  </button>
+                    {actionLoading ? "Processing..." : "Reject"}
+                  </Button>
                 </>
               )}
-              <button 
+              <Button
                 onClick={() => setSelectedRequest(null)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
+                icon={<CloseOutlined />}
+                className="bg-gray-100 hover:bg-gray-200"
               >
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -583,4 +690,4 @@ const DonationRequestsManager = () => {
   );
 };
 
-export default DonationRequestsManager;
+export default DonorRequestsManager;
