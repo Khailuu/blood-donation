@@ -13,22 +13,12 @@ export const blogService = {
           pageSize: 100
         }
       });
-      return response.data.data.items;
+      console.log({response});
+      
+      return response.data.data.items || [];
     } catch (error) {
       console.error("Error fetching blogs:", error);
       return [];
-    }
-  },
-
-  async getDonationRequestById(id) {
-    try {
-      const response = await api.get(
-        `/api/blogpost/get-blogpost/${id}`
-      );
-      return response.data;
-    } catch (error) {
-      this._handleRequestError(error, "Failed to fetch donation request");
-      throw error;
     }
   },
 
@@ -65,32 +55,5 @@ export const blogService = {
     }
   },
 
-  // Like blog
-  async likeBlog(blogId, userId) {
-    try {
-      const response = await api.post(`/api/blogpost/like/${blogId}`, { userId });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error liking blog:", error);
-      throw this._handleRequestError(error, "Failed to like blog");
-    }
-  },
-
-  // Unlike blog
-  async unlikeBlog(blogId, userId) {
-    try {
-      const response = await api.post(`/api/blogpost/unlike/${blogId}`, { userId });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error unliking blog:", error);
-      throw this._handleRequestError(error, "Failed to unlike blog");
-    }
-  },
-
-  // Xử lý lỗi chung
-  _handleRequestError(error, defaultMessage) {
-    const errorMessage = error.response?.data?.message || defaultMessage;
-    console.error(errorMessage, error);
-    return new Error(errorMessage);
-  }
+ 
 };

@@ -15,7 +15,7 @@ export const Navbar = () => {
   const unreadNotifications = 5;
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 mx-6 mt-3 rounded-[50px] mb-1">
+    <nav className="bg-[#fff] border-b border-gray-200 mx-6 mt-3 rounded-[50px] mb-2" style={{padding: "10px 24px",boxShadow: "1px 2px 10px 10px rgba(10, 10, 10, 0.116)"}}>
       <div className="px-6 ">
         <div className="flex justify-between items-center h-16">
           <div></div>

@@ -5,13 +5,47 @@ import { AdminSidebar } from "../ui/admin/AdminSidebar";
 import { SideBar } from "../ui/staff/SideBar";
 import { Navbar } from "../ui/staff/Navbar";
 import { BackgroundCloud } from "../ui/common/BackgroundCloud";
+import { useEffect, useState } from "react";
 
 export const DashboardLayout = () => {
-  const user = userService.getCurrentUser();
-  const role = user?.role;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const SidebarComponent = role === "admin" ? AdminSidebar : SideBar;
-  const HeaderComponent = role === "admin" ? AdminNavbar : Navbar;
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await userService.getCurrentUser();
+        console.log("Fetched user data:", userData); // Kiểm tra dữ liệu nhận được
+        setUser(userData);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading user data</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const role = user?.role;
+  console.log("Current user role:", role);
+
+  const SidebarComponent = role === "Admin" ? AdminSidebar : SideBar;
+  const HeaderComponent = role === "Admin" ? AdminNavbar : Navbar;
 
   return (
     <div className="flex h-screen" style={{ position: "relative" }}>

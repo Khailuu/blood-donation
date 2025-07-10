@@ -75,8 +75,8 @@ export const SideBar = () => {
   };
 
   return (
-    <div className="w-64 h-full bg-white shadow-lg border-r border-gray-200 flex flex-col ">
-      <div className="px-6 py-5 border-gray-200 border-b-2">
+    <div className="w-64 h-[100%] bg-[#fff]  border-r border-gray-200 flex flex-col " >
+      <div className="px-6 py-5 mt-3">
         <Link to="/app/staff/dashboard">
           <Title
             level={2}
@@ -93,7 +93,7 @@ export const SideBar = () => {
             HEMORA
           </Title>
 
-          <p className="text-gray-500 text-sm text-center mt-1">
+          <p className="text-gray-600 text-sm text-center mt-1">
             Blood Donation System 
           </p>
         </Link>
@@ -101,14 +101,14 @@ export const SideBar = () => {
 
       <div className="flex-1 overflow-y-auto py-2 mt-4 flex flex-col gap-2">
         {sidebarItems.map((item) => {
-          const IconComponent = item.icon; // Sử dụng icon từ lucide-react
+          const IconComponent = item.icon; 
           return (
             <Link
               key={item.id}
               to={item.path}
-              className={`flex items-center justify-between px-5 py-3  transition-all mx-3 my-1 rounded-lg
+              className={`flex items-center font-bold justify-between px-5 py-3  transition-all mx-3 my-1 rounded-lg
                 ${isActive(item.path) 
-                  ? "bg-gradient-to-r from-pink-50 to-pink-100 text-[#bd0026] font-semibold shadow-sm"
+                  ? "bg-gradient-to-r from-pink-50 to-pink-100 text-[#bd0026] font-bold shadow-sm"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 }`}
             >
