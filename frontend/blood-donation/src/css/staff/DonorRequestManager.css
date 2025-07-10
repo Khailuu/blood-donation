@@ -37,10 +37,9 @@
     }
   }
   
-  /* Ink bar chung - đặt màu mặc định */
   .ant-tabs-ink-bar {
     height: 3px;
-    background: #ff9500; /* Màu mặc định cho tab đầu tiên */
+    background: #ff9500;
   }
   
   /* Tab Pending */
@@ -78,29 +77,29 @@
   .ant-tabs-tab:nth-child(2) {
     &:hover {
       .anticon {
-        color: #00b894 !important;
+        color: #21c45d !important;
       }
       .ant-tag {
         background: #e8f8f5 !important;
-        color: #00b894 !important;
+        color: #21c45d !important;
       }
     }
     &.ant-tabs-tab-active {
       background: #e8f8f5;
       .ant-tabs-tab-btn {
-        color: #00b894;
+        color: #21c45d;
       }
       .anticon {
-        color: #00b894 !important;
+        color: #21c45d !important;
       }
       .ant-tag {
-        background: #00b894 !important;
+        background: #21c45d !important;
         color: white !important;
       }
       
       /* Quan trọng: target ink bar khi tab này active */
       & ~ .ant-tabs-ink-bar {
-        background: #00b894 !important;
+        background: #21c45d !important;
       }
     }
   }

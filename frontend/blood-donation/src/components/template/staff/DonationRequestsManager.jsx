@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from "react";
 import {
   message,
   Typography,
@@ -7,8 +7,8 @@ import {
   Button,
   Tabs,
   Tag,
-  Spin
-} from 'antd';
+  Spin,
+} from "antd";
 import {
   SyncOutlined,
   CheckCircleOutlined,
@@ -17,9 +17,12 @@ import {
   CheckOutlined,
   CloseOutlined,
   StopOutlined,
-  DownloadOutlined
-} from '@ant-design/icons';
-import { donationRequestService } from '../../../services/donationRequestService ';
+  DownloadOutlined,
+  FilterOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
+import { donationRequestService } from "../../../services/donationRequestService ";
+import "../../../css/staff/DonorRequestManager.css";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -32,7 +35,7 @@ const DonorRequestsManager = () => {
   const [filters, setFilters] = useState({
     bloodType: "",
     componentType: "",
-    date: ""
+    date: "",
   });
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,18 +50,20 @@ const DonorRequestsManager = () => {
     try {
       setLoading(true);
       const response = await donationRequestService.getAllDonationRequests();
-      
+
       let items = [];
       if (Array.isArray(response)) {
         items = response;
       } else if (response?.data) {
-        items = Array.isArray(response.data) ? response.data : response.data.items || [];
+        items = Array.isArray(response.data)
+          ? response.data
+          : response.data.items || [];
       } else if (response?.items) {
         items = response.items;
       }
-      
+
       setDonationRequests(items);
-      
+
       if (items.length === 0) {
         message.info("No donation requests found");
       }
@@ -84,19 +89,24 @@ const DonorRequestsManager = () => {
       const reqDate = new Date(req.requestTime).toISOString().split("T")[0];
       return (
         (!filters.bloodType || req.bloodType === filters.bloodType) &&
-        (!filters.componentType || req.componentType === filters.componentType) &&
+        (!filters.componentType ||
+          req.componentType === filters.componentType) &&
         (!filters.date || reqDate.includes(filters.date))
       );
     });
 
     return activeTab === "pending"
-      ? filtered.filter(req => req.status === "Pending")
-      : filtered.filter(req => req.status !== "Pending");
+      ? filtered.filter((req) => req.status === "Pending")
+      : filtered.filter((req) => req.status !== "Pending");
   }, [donationRequests, filters, activeTab]);
 
   const requestCounts = useMemo(() => {
-    const pending = donationRequests.filter(req => req.status === "Pending").length;
-    const processed = donationRequests.filter(req => req.status !== "Pending").length;
+    const pending = donationRequests.filter(
+      (req) => req.status === "Pending"
+    ).length;
+    const processed = donationRequests.filter(
+      (req) => req.status !== "Pending"
+    ).length;
     return { pending, processed };
   }, [donationRequests]);
 
@@ -123,7 +133,17 @@ const DonorRequestsManager = () => {
 
   const handleExport = () => {
     const csvContent = [
-      ['#', 'Donor', 'Date', 'Time', 'Blood Type', 'Component', 'Amount', 'Status', 'Note'],
+      [
+        "#",
+        "Donor",
+        "Date",
+        "Time",
+        "Blood Type",
+        "Component",
+        "Amount",
+        "Status",
+        "Note",
+      ],
       ...filteredRequests.map((request, index) => [
         index + 1,
         request.requesterName,
@@ -133,36 +153,42 @@ const DonorRequestsManager = () => {
         getComponentText(request.componentType),
         `${request.amountBlood} unit(s)`,
         request.status,
-        request.note || 'N/A'
-      ])
-    ].map(row => row.join(',')).join('\n');
+        request.note || "N/A",
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `donation_requests_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `donation_requests_${activeTab}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
-    
-    message.success('Report exported successfully');
+
+    message.success("Report exported successfully");
   };
 
   const handleApprove = async (id) => {
     try {
       setActionLoading(true);
       await donationRequestService.approveDonationRequest(id);
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          request.requestId === id ? { ...request, status: "Approved" } : request
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Approved" }
+            : request
         )
       );
-      
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
-      
+
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
       message.success("Request approved successfully");
-      
+
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -178,17 +204,19 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await donationRequestService.rejectDonationRequest(id);
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          request.requestId === id ? { ...request, status: "Rejected" } : request
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.requestId === id
+            ? { ...request, status: "Rejected" }
+            : request
         )
       );
-      
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
-      
+
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
+
       message.success("Request rejected successfully");
-      
+
       if (selectedRequest?.requestId === id) {
         setSelectedRequest(null);
       }
@@ -209,22 +237,28 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map(id => donationRequestService.approveDonationRequest(id))
+        selectedRequests.map((id) =>
+          donationRequestService.approveDonationRequest(id)
+        )
       );
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          selectedRequests.includes(request.requestId) 
-            ? { ...request, status: "Approved" } 
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Approved" }
             : request
         )
       );
-      
-      message.success(`Approved ${selectedRequests.length} requests successfully`);
+
+      message.success(
+        `Approved ${selectedRequests.length} requests successfully`
+      );
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk approval error:", error);
-      message.error("Bulk approval failed: " + (error.message || "Unknown error"));
+      message.error(
+        "Bulk approval failed: " + (error.message || "Unknown error")
+      );
     } finally {
       setActionLoading(false);
     }
@@ -239,22 +273,28 @@ const DonorRequestsManager = () => {
     try {
       setActionLoading(true);
       await Promise.all(
-        selectedRequests.map(id => donationRequestService.rejectDonationRequest(id))
+        selectedRequests.map((id) =>
+          donationRequestService.rejectDonationRequest(id)
+        )
       );
-      
-      setDonationRequests(prevRequests =>
-        prevRequests.map(request =>
-          selectedRequests.includes(request.requestId) 
-            ? { ...request, status: "Rejected" } 
+
+      setDonationRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          selectedRequests.includes(request.requestId)
+            ? { ...request, status: "Rejected" }
             : request
         )
       );
-      
-      message.success(`Rejected ${selectedRequests.length} requests successfully`);
+
+      message.success(
+        `Rejected ${selectedRequests.length} requests successfully`
+      );
       setSelectedRequests([]);
     } catch (error) {
       console.error("Bulk rejection error:", error);
-      message.error("Bulk rejection failed: " + (error.message || "Unknown error"));
+      message.error(
+        "Bulk rejection failed: " + (error.message || "Unknown error")
+      );
     } finally {
       setActionLoading(false);
     }
@@ -262,15 +302,15 @@ const DonorRequestsManager = () => {
 
   const handleSelectRequest = (id, checked) => {
     if (checked) {
-      setSelectedRequests(prev => [...prev, id]);
+      setSelectedRequests((prev) => [...prev, id]);
     } else {
-      setSelectedRequests(prev => prev.filter(reqId => reqId !== id));
+      setSelectedRequests((prev) => prev.filter((reqId) => reqId !== id));
     }
   };
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRequests(paginatedRequests.map(req => req.requestId));
+      setSelectedRequests(paginatedRequests.map((req) => req.requestId));
     } else {
       setSelectedRequests([]);
     }
@@ -299,7 +339,7 @@ const DonorRequestsManager = () => {
     ({
       Whole: "Whole Blood",
       Plasma: "Plasma",
-      Platelets: "Platelets"
+      Platelets: "Platelets",
     }[type] || type);
 
   const getStatusTag = (status) => {
@@ -339,29 +379,86 @@ const DonorRequestsManager = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
-          Donation Requests
-        </Title>
+        <div className="mb-6">
+          <Title
+            className="text-2xl font-bold"
+            style={{ fontFamily: "Raleway" }}
+          >
+            Donation Requests
+          </Title>
+          <p className="text-gray-600 mt-2">
+            Display all donation requests and manage them efficiently
+          </p>
+        </div>
+
         <div className="flex gap-2">
           <Button
             onClick={handleRefresh}
             icon={<SyncOutlined spin={refreshing} />}
             loading={refreshing}
             type="primary"
-            className="flex items-center gap-2"
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#fff",
+              color: "#bd0026",
+              border: "1px solid #bd0026",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Refresh
           </Button>
           <Button
             onClick={clearFilters}
-            className="bg-green-500 hover:bg-green-600 text-white"
+            icon={<FilterOutlined />}
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#fff",
+              color: "#bd0026",
+              border: "1px solid #bd0026",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Reset Filters
           </Button>
           <Button
             onClick={handleExport}
             icon={<DownloadOutlined />}
-            className="bg-blue-500 hover:bg-blue-600 text-white"
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#bd0026",
+              color: "#fff",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Export Report
           </Button>
@@ -388,9 +485,9 @@ const DonorRequestsManager = () => {
         <TabPane
           tab={
             <span className="flex items-center gap-2">
-              <CheckCircleOutlined className="text-green-500" />
+              <CheckCircleOutlined />
               <span>Processed Requests</span>
-              <Tag className="ml-1 bg-green-100 text-green-600">
+              <Tag className="ml-1 bg-green-100 ">
                 {requestCounts.processed}
               </Tag>
             </span>
@@ -571,8 +668,8 @@ const DonorRequestsManager = () => {
                           <Button
                             icon={<CheckOutlined />}
                             onClick={() => handleApprove(req.requestId)}
+                            
                             disabled={actionLoading}
-                            type="primary"
                             className="bg-green-500 hover:bg-green-600 text-white"
                             size="small"
                           />
@@ -595,10 +692,17 @@ const DonorRequestsManager = () => {
                 <tr>
                   <td
                     colSpan="10"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-8 text-center text-gray-500"
                   >
-                    No {activeTab === "pending" ? "pending" : "processed"}{" "}
-                    requests found
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <FrownOutlined
+                        style={{ fontSize: "36px", color: "#999" }}
+                      />
+                      <span className="text-base font-medium">
+                        No {activeTab === "pending" ? "pending" : "processed"}{" "}
+                        requests found
+                      </span>
+                    </div>
                   </td>
                 </tr>
               )}

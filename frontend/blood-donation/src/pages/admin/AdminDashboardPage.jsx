@@ -1,7 +1,7 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React from 'react'
+import { Outlet } from 'react-router-dom'
 
-export const StaffDashboard = () => {
+export const AdminDashboardPage = () => {
   return (
     <div className="flex-1" style={{ position: "relative" }}>
       <main className="py-4" >
@@ -10,5 +10,5 @@ export const StaffDashboard = () => {
         </div>
       </main>
     </div>
-  );
-};
+  )
+}

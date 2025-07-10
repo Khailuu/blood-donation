@@ -7,8 +7,6 @@ import DonatePage from "../pages/guest/DonatePage";
 import BlogPage from "../pages/guest/BlogPage";
 import ContactsPage from "../pages/guest/ContactsPage";
 
-import { AdminDashboard } from "../pages/admin/AdminDashboard";
-import { MemberPage } from "../pages/member/MemberPage";
 import { StaffDashboard } from "../pages/staff/StaffDashboard";
 import ProtectedRoute from "../components/layouts/ProtectedRoute";
 import RoleRoute from "../components/layouts/RoleRoute";
@@ -35,6 +33,10 @@ import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
 import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
 import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
+import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
+import { AdminDashboard } from "../components/template/admin/AdminDashboard";
+import ManageUser from "../components/template/admin/ManageUser";
+import ManageBlog from "../components/template/admin/ManageBlog";
 
 const router = [
   {
@@ -114,12 +116,14 @@ const router = [
       {
         path: "admin",
         element: <RoleRoute allowedRoles={["admin"]}>
-          <AdminDashboard />
+          <AdminDashboardPage />
         </RoleRoute>,
         children: [
-          { index: true, element: <AdminDashboard /> },
-          { path: "settings", element: <div>Admin Settings</div> },
-          { path: "users", element: <div>User Management</div> },
+          
+          { path: "dashboard", element: <AdminDashboard /> },
+          { path: "manage-users", element: <ManageUser/> },
+          { path: "manage-blogs", element: <ManageBlog/> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
         ],
       },
     ],
