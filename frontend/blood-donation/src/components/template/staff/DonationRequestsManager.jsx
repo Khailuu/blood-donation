@@ -8,6 +8,7 @@ import {
   Tabs,
   Tag,
   Spin,
+  DatePicker,
 } from "antd";
 import {
   SyncOutlined,
@@ -26,6 +27,7 @@ import "../../../css/staff/DonorRequestManager.css";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
+const { RangePicker } = DatePicker;
 
 const DonorRequestsManager = () => {
   const [donationRequests, setDonationRequests] = useState([]);
@@ -533,7 +535,7 @@ const DonorRequestsManager = () => {
             <select
               value={filters.bloodType}
               onChange={(e) => handleFilterChange("bloodType", e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 "
             >
               <option value="">All Blood Types</option>
               {bloodTypes.map((type) => (
@@ -552,7 +554,7 @@ const DonorRequestsManager = () => {
               onChange={(e) =>
                 handleFilterChange("componentType", e.target.value)
               }
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-300"
             >
               <option value="">All Types</option>
               {componentTypes.map((type) => (
@@ -564,13 +566,16 @@ const DonorRequestsManager = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date
+              Date Range
             </label>
-            <input
-              type="date"
-              value={filters.date}
-              onChange={(e) => handleFilterChange("date", e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            <RangePicker
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-300"
+              onChange={(dates) =>
+                handleFilterChange(
+                  "date",
+                  dates ? dates.map((d) => d.format("DD-MM-YYYY")).join(",") : ""
+                )
+              }
             />
           </div>
         </div>
