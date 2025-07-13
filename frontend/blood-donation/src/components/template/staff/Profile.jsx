@@ -4,6 +4,7 @@ import { User, Edit, Save, X, Heart, Users, Activity, ArrowLeft, Search, Filter 
 const UserManagement = () => {
   const [currentView, setCurrentView] = useState('list');
   const [selectedUser, setSelectedUser] = useState(null);
+  
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBloodType, setFilterBloodType] = useState('');
@@ -21,54 +22,7 @@ const UserManagement = () => {
       lastDonation: '2024-05-15',
       status: 'active'
     },
-    {
-      id: 2,
-      name: 'Tran Thi Minh',
-      email: 'minh.tran@bloodbank.vn',
-      phone: '0987 654 321',
-      bloodType: 'A+',
-      birthDate: '22/08/1985',
-      address: 'District 3, Ho Chi Minh City',
-      donationCount: 8,
-      lastDonation: '2024-04-20',
-      status: 'active'
-    },
-    {
-      id: 3,
-      name: 'Le Van Dung',
-      email: 'dung.le@bloodbank.vn',
-      phone: '0369 258 147',
-      bloodType: 'B+',
-      birthDate: '10/12/1992',
-      address: 'District 7, Ho Chi Minh City',
-      donationCount: 15,
-      lastDonation: '2024-06-01',
-      status: 'active'
-    },
-    {
-      id: 4,
-      name: 'Pham Thi Lan',
-      email: 'lan.pham@bloodbank.vn',
-      phone: '0456 789 123',
-      bloodType: 'AB+',
-      birthDate: '05/07/1988',
-      address: 'District 2, Ho Chi Minh City',
-      donationCount: 6,
-      lastDonation: '2024-03-15',
-      status: 'inactive'
-    },
-    {
-      id: 5,
-      name: 'Hoang Van Nam',
-      email: 'nam.hoang@bloodbank.vn',
-      phone: '0741 852 963',
-      bloodType: 'O-',
-      birthDate: '18/11/1991',
-      address: 'District 5, Ho Chi Minh City',
-      donationCount: 20,
-      lastDonation: '2024-05-28',
-      status: 'active'
-    }
+
   ]);
 
   const [tempProfileData, setTempProfileData] = useState({});
@@ -79,6 +33,7 @@ const UserManagement = () => {
     const matchesBloodType = filterBloodType === '' || user.bloodType === filterBloodType;
     return matchesSearch && matchesBloodType;
   });
+  
 
   const handleViewProfile = (user) => {
     setSelectedUser(user);
@@ -184,7 +139,6 @@ const UserManagement = () => {
           </div>
         </div>
 
-        {/* Users Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUsers.map((user) => (
             <div key={user.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">

@@ -1,7 +1,7 @@
 import { useRoutes, Navigate } from "react-router-dom";
 import { MainLayout } from "../components/layouts/MainLayout";
 import { MainLayoutGuest } from "../components/layouts/MainLayoutGuest";
-import { DashboardLayout } from "../components/layouts/DashboardLayout"; // Layout mới cho staff/admin
+import { DashboardLayout } from "../components/layouts/DashboardLayout"; 
 import { HomePage } from "../pages/guest/HomePage";
 import DonatePage from "../pages/guest/DonatePage";
 import BlogPage from "../pages/guest/BlogPage";
@@ -18,7 +18,7 @@ import BloodRequests from "../components/template/staff/BloodRequests";
 import DonationSchedule from "../components/template/staff/DonationSchedule";
 import DonationRequestsManager from "../components/template/staff/DonationRequestsManager";
 import InventoryManagement from "../components/template/staff/InventoryManagement";
-import Notifications from "../components/template/staff/Notifications";
+// import Notifications from "../components/template/staff/Notifications";
 import Profile from "../components/template/staff/Profile";
 import UpdateProfile from "../components/template/staff/UpdateProfile";
 import { MemberDonate } from "../pages/member/MemberDonate";
@@ -107,7 +107,7 @@ const router = [
           { path: "donation-requests", element: <DonationRequestsManager /> },
           { path: "inventory", element: <InventoryManagement /> },
           { path: "profile", element: <Profile /> },
-          { path: "notifications", element: <Notifications /> },
+          // { path: "notifications", element: <Notifications /> },
           { path: "update-profile", element: <ProfileMember /> },
           { index: true, element: <Navigate to="dashboard" replace /> },
         ],
