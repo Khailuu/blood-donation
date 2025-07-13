@@ -236,7 +236,8 @@ public class UserController : ControllerBase
         var command = new VerifyUserCommand(request.Token);
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
-    }[Authorize]
+    }
+    [Authorize]
     [HttpGet("user/get-current-user-blogposts")]
     public async Task<IResult> GetCurrentUserBlogPosts([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
