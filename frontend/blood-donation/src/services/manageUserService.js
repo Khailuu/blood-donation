@@ -57,4 +57,14 @@ export const userService = {
       throw error;
     }
   },
+
+  async updateBloodStored(data) {
+    try {
+      const response = await api.put("/api/blood/update-blood-stored", data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating blood stored:", error);
+      throw error;
+    }
+  },
 };

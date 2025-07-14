@@ -11,7 +11,8 @@ import {
   Input,
   Progress,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { userService } from "../../../services/manageUserService";
 const { Title, Text } = Typography;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -25,6 +26,27 @@ const BloodRequests = () => {
     notes: "",
     contact: "",
   });
+  const [inventory, setInventory] = useState([]);
+  const [bloodTypes, setBloodTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [inventoryData, bloodTypesData] = await Promise.all([
+          userService.getBloodStored(),
+          userService.getBloodTypes(),
+        ]);
+        setInventory(inventoryData);
+        setBloodTypes(bloodTypesData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        message.error("Failed to load required data");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const bloodCompatibility = {
     "A+": ["A+", "A-", "O+", "O-"],
@@ -37,16 +59,63 @@ const BloodRequests = () => {
     "O-": ["O-"],
   };
 
-  // Mock blood inventory data
-  const mockInventory = {
-    "A+": { units: 5 },
-    "A-": { units: 2 },
-    "B+": { units: 0 },
-    "O+": { units: 10 },
+  const getBloodTypeId = (bloodTypeName) => {
+    const type = bloodTypes.find((t) => t.name === bloodTypeName);
+    return type ? type.bloodTypeId : null;
+  };
+
+  const getInventoryForType = (bloodTypeName) => {
+    const typeId = getBloodTypeId(bloodTypeName);
+
+    if (!typeId) return { units: 0 };
+
+    const item = inventory.find((i) => i.bloodTypeId === typeId);
+    return item ? { units: item.quantity } : { units: 0 };
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const re = /^\+?[\d\s-]{10,}$/;
+    return re.test(phone);
+  };
+
+  const validateContact = (contact) => {
+    return validateEmail(contact) || validatePhone(contact);
+  };
+
+  const validateName = (name) => {
+    return name.length >= 3 && /^[a-zA-Z\s]*$/.test(name);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!formData.patientName.trim()) {
+      message.error("Vui lòng nhập tên bệnh nhân");
+      return;
+    }
+
+    if (!validateName(formData.patientName)) {
+      message.error(
+        "Tên bệnh nhân phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt"
+      );
+      return;
+    }
+
+    if (!formData.contact.trim()) {
+      message.error("Vui lòng nhập thông tin liên hệ");
+      return;
+    }
+
+    if (!validateContact(formData.contact)) {
+      message.error("Vui lòng nhập số điện thoại hoặc email hợp lệ");
+      return;
+    }
+
     setCurrentStep(1);
   };
 
@@ -65,10 +134,52 @@ const BloodRequests = () => {
     setCurrentStep(0);
   };
 
-  // Filter compatible blood types and check inventory
+  const handleScheduleTransfusion = async (bloodType) => {
+    try {
+      setLoading(true);
+
+      const type = bloodTypes.find((t) => t.name === bloodType);
+      console.log({ type });
+
+      if (!type) {
+        throw new Error("Blood type not found");
+      }
+
+      const currentItem = inventory.find(
+        (item) => item.bloodTypeId === type.bloodTypeId
+      );
+      console.log({ currentItem });
+
+      if (!currentItem || currentItem.quantity <= 0) {
+        throw new Error("No inventory available for this blood type");
+      }
+
+      await userService.updateBloodStored({
+        bloodTypeName: type.name,
+        quantity: -1,
+      });
+
+      setInventory((prevInventory) =>
+        prevInventory.map((item) =>
+          item.bloodTypeId === type.bloodTypeId
+            ? { ...item, quantity: currentItem.quantity - 1 }
+            : item
+        )
+      );
+
+      message.success(`Blood transfusion scheduled for ${bloodType}`);
+      setCurrentStep(2);
+    } catch (error) {
+      console.error("Failed to schedule transfusion:", error);
+      message.error(error.message || "Failed to schedule transfusion");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const compatibleBloodTypes = bloodCompatibility[formData.bloodType] || [];
   const availableBloodTypes = compatibleBloodTypes.filter(
-    (type) => mockInventory[type]?.units > 0
+    (type) => getInventoryForType(type).units > 0
   );
   const isBloodAvailable = availableBloodTypes.length > 0;
 
@@ -131,6 +242,7 @@ const BloodRequests = () => {
                     placeholder="Enter patient name"
                     required
                     style={{ fontFamily: "Raleway" }}
+                    status={formData.patientName && !validateName(formData.patientName) ? "error" : ""}
                   />
                 </div>
 
@@ -248,6 +360,7 @@ const BloodRequests = () => {
                     placeholder="Phone number or email"
                     required
                     style={{ fontFamily: "Raleway" }}
+                     status={formData.contact && !validateContact(formData.contact) ? "error" : ""}
                   />
                 </div>
               </div>
@@ -383,7 +496,8 @@ const BloodRequests = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {availableBloodTypes.map((bloodType) => {
-                    const units = mockInventory[bloodType].units;
+                    const inventoryData = getInventoryForType(bloodType);
+                    const units = inventoryData.units;
                     const status =
                       units > 10 ? "High" : units > 5 ? "Moderate" : "Low";
 
@@ -449,12 +563,8 @@ const BloodRequests = () => {
                           type="primary"
                           block
                           size="large"
-                          onClick={() => {
-                            message.success(
-                              `Blood request submitted for ${bloodType}`
-                            );
-                            setCurrentStep(2);
-                          }}
+                          onClick={() => handleScheduleTransfusion(bloodType)}
+                          loading={loading}
                           style={{
                             fontFamily: "Raleway",
                             fontWeight: 600,
