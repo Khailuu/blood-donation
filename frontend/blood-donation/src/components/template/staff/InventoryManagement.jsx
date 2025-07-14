@@ -226,6 +226,10 @@ const InventoryManagement = () => {
     link.click();
   };
 
+  const handleTableChange = (pagination) => {
+    setPagination(pagination);
+  };
+
   const renderStats = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
@@ -304,17 +308,25 @@ const InventoryManagement = () => {
 
       {renderStats()}
 
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden mb-4">
         <Table
           columns={columns}
           dataSource={inventory}
           rowKey="id"
           loading={loading}
-          pagination={{
-            pageSize: pagination.pageSize,
-            showSizeChanger: true,
-            pageSizeOptions: ["8", "16", "24", "32"],
-          }}
+          pagination={false}
+        />
+      </div>
+
+      <div className="flex justify-center">
+        <Pagination
+          current={pagination.current}
+          pageSize={pagination.pageSize}
+          total={pagination.total}
+          onChange={(page, pageSize) => handleTableChange({ current: page, pageSize })}
+          showSizeChanger
+          pageSizeOptions={["8", "16", "24", "32"]}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
         />
       </div>
     </div>
