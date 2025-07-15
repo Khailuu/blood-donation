@@ -1,9 +1,10 @@
 ﻿using BloodDonation.Domain.Bloods;
+using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Users;
 
 namespace BloodDonation.Domain.Donations;
 
-public class DonationRequest
+public class DonationRequest : Entity
 {
     public Guid RequestId { get; set; }
     public Guid BloodTypeId { get; set; }
@@ -13,7 +14,6 @@ public class DonationRequest
     public DateTime RequestTime { get; set; }
     public DateTime? Deadline { get; set; }
     public bool IsEmergency { get; set; }
-    public UrgencyLevel UrgencyLevel { get; set; }
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public DonationRequestStatus Status { get; set; }

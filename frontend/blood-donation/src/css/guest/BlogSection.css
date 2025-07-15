@@ -1,0 +1,21 @@
+/* Màu cho số trang hiện tại */
+.ant-pagination-item-active {
+  background-color: #bd0026 !important;
+  border-color: #bd0026 !important;
+}
+
+.ant-pagination-item-active a {
+  color: white !important;
+}
+
+/* Hover các số trang thường */
+.ant-pagination-item a:hover {
+  color: #bd0026 !important;
+}
+
+/* Nút điều hướng */
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+  color: #bd0026;
+  border-color: #bd0026;
+}

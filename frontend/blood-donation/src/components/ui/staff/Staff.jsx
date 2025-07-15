@@ -8,7 +8,7 @@ export const Staff = () => {
   return (
     <div>
       <Navbar />
-      <SideBar />
+      {/* <SideBar /> */}
     </div>
   );
 };

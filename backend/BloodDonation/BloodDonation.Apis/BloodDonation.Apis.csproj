@@ -9,12 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\BloodDonation.Application\BloodDonation.Application.csproj" />
       <ProjectReference Include="..\BloodDonation.Domain\BloodDonation.Domain.csproj" />
       <ProjectReference Include="..\BloodDonation.Infrastructure\BloodDonation.Infrastructure.csproj" />
@@ -24,6 +18,8 @@
       <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
       <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
       <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+      <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
+      <PackageReference Include="MailKit" Version="4.13.0" />
       <PackageReference Include="MediatR" Version="12.5.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
@@ -42,6 +38,14 @@
       <None Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="appsettings.Production.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\avatars\" />
+      <Folder Include="wwwroot\blog-images\" />
     </ItemGroup>
 
 </Project>

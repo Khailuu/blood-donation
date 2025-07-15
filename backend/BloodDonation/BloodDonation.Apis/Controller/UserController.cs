@@ -1,16 +1,24 @@
 ﻿using System.Security.Claims;
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
+using BloodDonation.Application.Abstraction.Authentication;
+using BloodDonation.Application.Users.ChangePassword;
 using BloodDonation.Application.Users.CreateHealthForm;
 using BloodDonation.Application.Users.GetHealthForm;
 using BloodDonation.Application.Users.CreateDonorInformation;
 using BloodDonation.Application.Users.CreateUser;
 using BloodDonation.Application.Users.DeleteHealthForm;
 using BloodDonation.Application.Users.GetCurrentUser;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPost;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostComment;
+using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostLike;
 using BloodDonation.Application.Users.GetDonorInformation;
 using BloodDonation.Application.Users.GetUser;
+using BloodDonation.Application.Users.UpdateCurrentUser;
 using BloodDonation.Application.Users.UpdateDonorInformation;
 using BloodDonation.Application.Users.UpdateUser;
+using BloodDonation.Application.Users.VerifyUser;
+using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,10 +32,14 @@ namespace BloodDonation.Apis.Controller;
 public class UserController : ControllerBase
 {
     private readonly ISender _mediator;
+    private readonly IImageUploader _imageUploader;
 
-    public UserController(ISender mediator)
+
+    public UserController(ISender mediator, IImageUploader imageUploader)
     {
         _mediator = mediator;
+        _imageUploader = imageUploader;
+
     }
     
     // [Authorize(Roles = "Staff")]
@@ -64,32 +76,33 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPut("user/update-current-user")]
-    public async Task<IResult> UpdateSelf([FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> UpdateMyProfile([FromForm] UpdateCurrentUserRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Results.Unauthorized();
-
-        var command = new UpdateUserCommand
+        string? imageUrl = null;
+        if (request.Image != null)
         {
-            UserId = Guid.Parse(userId),
-            FullName = request.FullName,
+            using var stream = request.Image.OpenReadStream();
+            imageUrl = await _imageUploader.UploadImageAsync(stream, request.Image.FileName, "avatars");
+        }
+        
+        var command = new UpdateCurrentUserCommand()
+        {
+             FullName = request.FullName,
             Email = request.Email,
-            Role = null,              
-            Status = null,
-            BloodType = null,
-            IsDonor = null,
             DateOfBirth = request.DateOfBirth,
             Gender = request.Gender,
             Address = request.Address,
-            Phone = request.Phone
+            Phone = request.Phone,
+            BloodTypeId = request.BloodTypeId,
+            ImageUrl = imageUrl // truyền ảnh mới nếu có
         };
-
+        
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
+    
     [Authorize]
-    [HttpPost("user/create-healthform")]
+    [HttpPost("user/create-health-form")]
     public async Task<IResult> CreateHealthForm([FromBody] CreateHealthFormRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateHealthFormCommand()
@@ -103,10 +116,10 @@ public class UserController : ControllerBase
         };
 
         var result = await _mediator.Send(command, cancellationToken);
-        return result.MatchCreated(id => $"/healthform/{id}");
+        return result.MatchCreated(id => $"/health-form/{id}");
     }
     [Authorize]
-    [HttpGet("user/get-current-user-healthform")]
+    [HttpGet("user/get-current-user-health-form")]
     public async Task<IResult> GetHealthForm([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetHealthFormQuery
@@ -118,7 +131,7 @@ public class UserController : ControllerBase
         return result.MatchOk();
     }
     [Authorize(Roles = "Member")]
-    [HttpDelete("user/delete-current-user-healthform")]
+    [HttpDelete("user/delete-current-user-health-form")]
     public async Task<IResult> DeleteHealthForm(CancellationToken cancellationToken)
     {
         var command = new DeleteHealthFormCommand();
@@ -138,7 +151,7 @@ public class UserController : ControllerBase
             Email = request.Email,
             Role = request.Role,
             Status = request.Status,
-            BloodType = request.BloodType,
+            BloodTypeId = request.BloodTypeId,
             IsDonor = request.IsDonor,
             DateOfBirth = request.DateOfBirth,
             Gender = request.Gender,
@@ -201,4 +214,69 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(command, cancellationToken);
         return result.MatchOk();
     }
+    
+    [Authorize]
+    [HttpPut("user/change-password")]
+    public async Task<IResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ChangePasswordCommand
+        {
+            CurrentPassword = request.CurrentPassword,
+            NewPassword = request.NewPassword
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.MatchOk();
+    }
+    
+    [HttpPut("user/verify")]
+    public async Task<IResult> VerifyUser([FromBody] VerifyUserRequest request, CancellationToken cancellationToken)
+    {
+        var command = new VerifyUserCommand(request.Token);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize]
+    [HttpGet("user/get-current-user-blogposts")]
+    public async Task<IResult> GetCurrentUserBlogPosts([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize]
+    [HttpGet("user/get-current-user-blogpost-comments")]
+    public async Task<IResult> GetCurrentUserBlogPostComments([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostCommentQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    [Authorize]
+    [HttpGet("user/get-current-user-blogpost-likes")]
+    public async Task<IResult> GetCurrentUserBlogPostLikes([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetCurrentBlogPostLikeQuery()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+
+
+
 }

@@ -6,10 +6,11 @@ namespace BloodDonation.Application.Users.GetCurrentUser
 {
     public sealed record GetCurrentUserResponse
     {
+        public string? ImageUrl { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
-        public string? BloodType { get; set; }
+        public string? BloodTypeName { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public UserGender Gender { get; set; }
         public string Address { get; set; }

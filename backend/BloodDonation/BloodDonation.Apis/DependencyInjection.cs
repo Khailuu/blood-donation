@@ -16,8 +16,8 @@ public static class DependencyInjection
         services.AddProblemDetails();
         services.AddCors(options =>
         {
-            options.AddDefaultPolicy(policy =>
-                policy.WithOrigins("http://localhost:3000")
+            options.AddPolicy("AllowLocalAndProdFE", policy =>
+                policy.WithOrigins("http://localhost:3000", "https://blood-donation-dvon.vercel.app")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());

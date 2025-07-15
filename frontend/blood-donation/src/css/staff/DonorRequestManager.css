@@ -1,0 +1,106 @@
+.custom-tabs {
+  position: relative;
+  
+  .ant-tabs-tab {
+    padding: 12px 16px;
+    margin: 0 4px !important;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #f5f5f5;
+      .ant-tabs-tab-btn {
+        color: #666;
+      }
+      .anticon {
+        color: #666 !important;
+      }
+      .ant-tag {
+        background: #f0f0f0 !important;
+        color: #666 !important;
+      }
+    }
+    
+    &.ant-tabs-tab-active {
+      background: #f8f8f8;
+      .ant-tabs-tab-btn {
+        color: #333;
+        font-weight: 500;
+      }
+      .anticon {
+        color: #333 !important;
+      }
+      .ant-tag {
+        background: #333 !important;
+        color: white !important;
+      }
+    }
+  }
+  
+  .ant-tabs-ink-bar {
+    height: 3px;
+    background: #ff9500;
+  }
+  
+  /* Tab Pending */
+  .ant-tabs-tab:nth-child(1) {
+    &:hover {
+      .anticon {
+        color: #ff9500 !important;
+      }
+      .ant-tag {
+        background: #fff4e6 !important;
+        color: #ff9500 !important;
+      }
+    }
+    &.ant-tabs-tab-active {
+      background: #fff4e6;
+      .ant-tabs-tab-btn {
+        color: #ff9500;
+      }
+      .anticon {
+        color: #ff9500 !important;
+      }
+      .ant-tag {
+        background: #ff9500 !important;
+        color: white !important;
+      }
+      
+      /* Quan trọng: target ink bar khi tab này active */
+      & ~ .ant-tabs-ink-bar {
+        background: #ff9500 !important;
+      }
+    }
+  }
+  
+  /* Tab Processed */
+  .ant-tabs-tab:nth-child(2) {
+    &:hover {
+      .anticon {
+        color: #21c45d !important;
+      }
+      .ant-tag {
+        background: #e8f8f5 !important;
+        color: #21c45d !important;
+      }
+    }
+    &.ant-tabs-tab-active {
+      background: #e8f8f5;
+      .ant-tabs-tab-btn {
+        color: #21c45d;
+      }
+      .anticon {
+        color: #21c45d !important;
+      }
+      .ant-tag {
+        background: #21c45d !important;
+        color: white !important;
+      }
+      
+      /* Quan trọng: target ink bar khi tab này active */
+      & ~ .ant-tabs-ink-bar {
+        background: #21c45d !important;
+      }
+    }
+  }
+}

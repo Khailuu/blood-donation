@@ -1,52 +1,158 @@
-import React, { useState } from "react";
-import { Card, Typography, Button, Row, Col } from "antd";
-import { ClockCircleOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { Card, Typography, Button, Row, Col, message, Tag, Modal } from "antd";
+import { ClockCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
+import { donationRequestService } from "../../../../services/donationRequestService ";
 
 const { Title, Text } = Typography;
 
 export const DonateSchedule = () => {
-  const currentUser = authService.getCurrentUser(); // giả sử có name
+  const currentUser = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("upcoming");
+  const [allAppointments, setAllAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const appointments = [
-    {
-      date: dayjs("2025-06-20"),
-      time: "14:15 - 14:30",
-      donationType: "Blood",
-      location: "Piazza Ospedale Maggiore, 3, 20162, Milano",
-      status: "pending",
-    },
-    {
-      date: dayjs("2025-06-24"),
-      time: "09:00 - 09:30",
-      donationType: "Plasma",
-      location: "Via della Salute, 12, 20100, Milano",
-      status: "pending",
-    },
-  ];
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await donationRequestService.getMyDonationRequests(
+          currentUser.userId
+        );
+        console.log(response);
+        
+        const allItems = response.items || response.data?.items || [];
+
+        const myItems = allItems.filter(
+          (item) => item.userId === currentUser.userId
+        );
+
+        console.log({allItems});
+        
+        const formatted = myItems.map((item) => ({
+          date: dayjs(item.requestTime),
+          time: dayjs(item.requestTime).format("HH:mm"),
+          donationType: item.componentType,
+          status: item.status,
+          statusLower: item.status.toLowerCase(),
+          id: item.requestId,
+        }));
+
+        console.log({formatted});
+        
+        setAllAppointments(formatted);
+      } catch (error) {
+        console.error(error);
+        message.error("Failed to fetch appointments");
+      }
+    };
+
+    fetchAppointments();
+  }, [currentUser.userId]);
+
+  const handleCancelBooking = async (appointmentId) => {
+  const shouldCancel = window.confirm("Bạn có chắc chắn muốn hủy cuộc hẹn này không?");
+  if (!shouldCancel) return;
+
+  setLoading(true);
+  try {
+    let apiResult;
+    let success = false;
+
+    // Thử gọi API từ service có sẵn
+    if (typeof donationRequestService.updateDonationRequestStatus === "function") {
+      apiResult = await donationRequestService.updateDonationRequestStatus(appointmentId, "rejected");
+    } else if (typeof donationRequestService.cancelDonationRequest === "function") {
+      apiResult = await donationRequestService.cancelDonationRequest(appointmentId);
+    } else if (typeof donationRequestService.updateRequest === "function") {
+      apiResult = await donationRequestService.updateRequest(appointmentId, { status: "rejected" });
+    }
+
+    // Kiểm tra phản hồi API có phải thành công không
+    if (apiResult?.success || apiResult?.status === "success") {
+      success = true;
+    }
+
+    // ✅ Luôn cập nhật giao diện, nhưng phân biệt rõ kết quả
+    setAllAppointments(prev =>
+      prev.map(appointment =>
+        appointment.id === appointmentId
+          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+          : appointment
+      )
+    );
+
+    if (success) {
+      message.success("Cuộc hẹn đã được hủy thành công!");
+    } else {
+      message.warning("Cuộc hẹn đã bị hủy trên giao diện nhưng chưa chắc đã lưu vào hệ thống.");
+    }
+
+    // Chuyển tab sau khi cập nhật
+    setTimeout(() => setActiveTab("archived"), 1000);
+
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+
+    // Vẫn cập nhật giao diện tạm thời nếu API thất bại
+    setAllAppointments(prev =>
+      prev.map(appointment =>
+        appointment.id === appointmentId
+          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+          : appointment
+      )
+    );
+
+    message.error("Không thể đồng bộ trạng thái hủy với hệ thống.");
+    setTimeout(() => setActiveTab("archived"), 1000);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // Filter appointments based on active tab
+  const filteredAppointments = allAppointments.filter((item) => {
+    if (activeTab === "upcoming") {
+      return item.statusLower === "pending";
+    } else  {
+      return item.statusLower !== "pending";
+    }
+  });
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "orange";
+      case "approved":
+        return "green";
+      case "rejected":
+        return "red";
+      case "cancelled":
+        return "gray";
+      default:
+        return "blue";
+    }
+  };
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "#fff2f2",
         padding: "48px 16px",
         fontFamily: "Raleway",
       }}
     >
       <Card
         style={{
-          maxWidth: 1100,
           margin: "0 auto",
           borderRadius: 20,
           padding: 24,
           boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
         }}
       >
-        <Title level={3} style={{ textAlign: "center", fontFamily: "Raleway" }}>
+        <Title level={3} style={{ textAlign: "center" }}>
           {currentUser.name}'s Donation Schedule
         </Title>
 
@@ -65,12 +171,14 @@ export const DonateSchedule = () => {
               padding: 4,
             }}
           >
-            {["upcoming", "archived"].map((key) => (
+            {[
+              { key: "upcoming", label: "Programmate" },
+              { key: "archived", label: "Archiviate" },
+            ].map(({ key, label }) => (
               <Button
                 key={key}
                 onClick={() => setActiveTab(key)}
                 style={{
-                  fontFamily: "Raleway",
                   border: "none",
                   backgroundColor:
                     activeTab === key ? "#bd0026" : "transparent",
@@ -79,21 +187,21 @@ export const DonateSchedule = () => {
                   borderRadius: 999,
                   fontWeight: activeTab === key ? "bold" : "normal",
                   cursor: "pointer",
-                  transition: "all 0.3s",
                 }}
               >
-                {key === "upcoming" ? "Programmate" : "Archiviate"}
+                {label}
               </Button>
             ))}
           </div>
         </div>
 
-        {activeTab === "upcoming" ? (
-          <Row gutter={[16, 16]}>
-            {appointments.map((item, idx) => (
-              <Col xs={24} md={12} key={idx}>
+        <Row gutter={[16, 16]}>
+          {filteredAppointments.length > 0 ? (
+            filteredAppointments.map((item, idx) => (
+              <Col key={idx} xs={24} sm={12} md={8} lg={6}>
                 <Card
                   style={{
+                    width: "100%",
                     borderRadius: 16,
                     backgroundColor: "#fff",
                     boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -108,6 +216,8 @@ export const DonateSchedule = () => {
                       borderTopRightRadius: 16,
                       padding: "12px 0",
                       textAlign: "center",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                   >
                     <img
@@ -130,7 +240,10 @@ export const DonateSchedule = () => {
                         marginBottom: 16,
                       }}
                     >
-                      <Title level={4} style={{ margin: 0, color: "#bd0026" }}>
+                      <Title
+                        level={4}
+                        style={{ margin: 0, color: "#bd0026" }}
+                      >
                         {item.date.format("DD")}
                       </Title>
                       <Text style={{ fontSize: 12 }}>
@@ -147,46 +260,53 @@ export const DonateSchedule = () => {
                     <Text style={{ display: "block", marginBottom: 4 }}>
                       <ClockCircleOutlined /> {item.time}
                     </Text>
-                    <Text style={{ display: "block", marginBottom: 12 }}>
-                      <EnvironmentOutlined /> {item.location}
-                    </Text>
 
-                    <Button
-                      type="default"
-                      style={{
-                        backgroundColor:
-                          item.status === "cancelled" ? "#f0f0f0" : "#bd0026",
-                        borderColor:
-                          item.status === "cancelled" ? "#ccc" : "#bd0026",
-                        color: item.status === "cancelled" ? "#444" : "#fff",
-                        width: "100%",
-                        borderRadius: "50px",
-                        height: "40px",
-                        fontWeight: "bold",
-                        fontSize: "14px",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = "scale(0.95)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                      }}
+                    <Tag
+                      color={getStatusColor(item.status)}
+                      style={{ marginBottom: 12, fontWeight: "bold" }}
                     >
-                      {item.status === "cancelled"
-                        ? "Cancelled"
-                        : "Cancel Booking"}
-                    </Button>
+                      {item.status}
+                    </Tag>
+
+                    {item.statusLower === "pending" && (
+                      <Button
+                        type="default"
+                        loading={loading}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log("Button clicked for item:", item.id);
+                          handleCancelBooking(item.id);
+                        }}
+                        style={{
+                          backgroundColor: "#bd0026",
+                          borderColor: "#bd0026",
+                          color: "#fff",
+                          width: "100%",
+                          borderRadius: "50px",
+                          height: "40px",
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          marginTop: 8,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Cancel Booking
+                      </Button>
+                    )}
                   </div>
                 </Card>
               </Col>
-            ))}
-          </Row>
-        ) : (
-          <div style={{ textAlign: "center", padding: 32 }}>
-            No archived appointments.
-          </div>
-        )}
+            ))
+          ) : (
+            <div style={{ width: "100%", textAlign: "center", padding: 32 }}>
+              {activeTab === "upcoming"
+                ? "No pending appointments found."
+                : "No archived appointments found."}
+            </div>
+          )}
+        </Row>
       </Card>
     </div>
   );

@@ -1,6 +1,8 @@
-﻿namespace BloodDonation.Domain.Bloods;
+﻿using BloodDonation.Domain.Common;
 
-public class BloodCompatibility
+namespace BloodDonation.Domain.Bloods;
+
+public class BloodCompatibility : Entity
 {
     public Guid Id { get; set; }
 

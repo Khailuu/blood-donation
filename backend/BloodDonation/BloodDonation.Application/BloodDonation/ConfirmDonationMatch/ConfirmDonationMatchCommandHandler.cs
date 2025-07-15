@@ -31,15 +31,13 @@ public class ConfirmDonationMatchCommandHandler(IDbContext context, IUserContext
         {
             var bloodStored = await context.BloodStored
                 .FirstOrDefaultAsync(b => b.BloodTypeId == match.Request.BloodTypeId, cancellationToken);
-            
+
             if (bloodStored == null)
-            {
                 return Result.Failure(BloodErrors.BloodTypeNotFound);
-            }
-            
+
             bloodStored.Quantity += match.Request.AmountBlood;
             bloodStored.LastUpdated = DateTime.UtcNow;
-                
+
             context.DonationsHistory.Add(new DonationHistory
             {
                 DonationId = Guid.NewGuid(),
@@ -50,7 +48,13 @@ public class ConfirmDonationMatchCommandHandler(IDbContext context, IUserContext
                 ConfirmedBy = userContext.UserId
             });
 
-            match.Request.Status = DonationRequestStatus.Fulfilled;
+            match.Request.Status = DonationRequestStatus.Completed;
+
+            // Xóa các match khác cùng request để tránh donor khác xác nhận tiếp
+            var otherMatches = await context.DonationMatches
+                .Where(m => m.RequestId == match.RequestId && m.MatchId != match.MatchId)
+                .ToListAsync(cancellationToken);
+            context.DonationMatches.RemoveRange(otherMatches);
         }
 
         await context.SaveChangesAsync(cancellationToken);

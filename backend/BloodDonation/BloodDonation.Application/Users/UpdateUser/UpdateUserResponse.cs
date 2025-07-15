@@ -15,6 +15,7 @@ public class UpdateUserResponse
     public string Address { get; init; }
     public string Phone { get; init; }
     public bool? IsDonor { get; init; }
+    public string? ImageUrl { get; init; }
 
     public UpdateUserResponse(User user)
     {
@@ -23,11 +24,12 @@ public class UpdateUserResponse
         Email = user.Email;
         Role = user.Role;
         Status = user.Status;
-        BloodType = user.BloodType;
+        BloodType = user.BloodType.Name;
         DateOfBirth = user.DateOfBirth;
         Gender = user.Gender;
         Address = user.Address;
         Phone = user.Phone;
         IsDonor = user.IsDonor;
+        ImageUrl = user.ImageUrl;
     }
 }

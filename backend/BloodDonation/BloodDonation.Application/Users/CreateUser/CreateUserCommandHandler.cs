@@ -4,6 +4,7 @@ using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Users;
 using BloodDonation.Domain.Users.Errors;
+using BloodDonation.Domain.Users.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace BloodDonation.Application.Users.CreateUser;
@@ -48,6 +49,9 @@ public class CreateUserCommandHandler (IDbContext context,
             IsDonor = false
         };
 
+        user.Raise(new UserCreatedDomainEvent(user.UserId));
+
+        
         context.Users.Add(user);
         await context.SaveChangesAsync(cancellationToken);
 

@@ -27,10 +27,10 @@ export const FooterComponent = () => {
 
 
   return (
-    <Row style={{ backgroundColor: "#f5f5f5", padding: "40px 20px" }}>
+    <Row style={{ backgroundColor: "#fff", padding: "40px 20px" }}>
       <Col xs={24} md={12} style={{ padding: "0 30px" }}>
         <img src={hemora_logo} style={{width: '10%'}}/>
-        <Paragraph style={{ color: "black", paddingTop: "20px" }}>
+        <Paragraph style={{ fontFamily:"raleway ", color: "black", paddingTop: "20px" }}>
           <strong>Ema Health Vietnam Co., Ltd</strong>
           <br />
           <strong>VAT number:</strong> 03133670640 <br />
@@ -40,7 +40,7 @@ export const FooterComponent = () => {
           45 Le Thanh Ton Street, Ben Nghe Ward, District 1, Ho Chi Minh City
         </Paragraph>
 
-        <Title level={5} style={{ color: "black", paddingTop: "20px" }}>
+        <Title level={5} style={{fontFamily:"raleway ", color: "black", paddingTop: "20px" }}>
           <span>ACCELERATED BY</span>
           <img src={logo_fpt} style={{ width: "20%", height: "auto", marginLeft: 10 }} />
         </Title>
@@ -98,8 +98,8 @@ export const FooterComponent = () => {
           textAlign: "center",
         }}
       >
-        <Title level={5} style={{ fontWeight: 600 }}>Contacts</Title>
-        <Paragraph style={{ marginBottom: 10 }}>
+        <Title level={5} style={{fontFamily:"raleway ", fontWeight: 600 }}>Contacts</Title>
+        <Paragraph style={{fontFamily:"raleway ", marginBottom: 10 }}>
           team6@gmail.com
         </Paragraph>
         <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
@@ -107,7 +107,7 @@ export const FooterComponent = () => {
           <SocialIcon icon={<InstagramOutlined />} />
           <SocialIcon icon={<TikTokOutlined />} />
         </div>
-        <Title level={5} style={{ fontWeight: 600 }}>Do you need help?</Title>
+        <Title level={5} style={{fontFamily:"raleway ", fontWeight: 600 }}>Do you need help?</Title>
         <Button
           type="default"
           icon={<WhatsAppOutlined />}

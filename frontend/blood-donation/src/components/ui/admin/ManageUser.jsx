@@ -11,6 +11,7 @@ import {
   Popconfirm,
   message,
   Tooltip,
+  Tag,
 } from "antd";
 import {
   EditOutlined,
@@ -29,6 +30,17 @@ const STATUS_MAP = { Active: 1, InActive: 2 };
 const ROLE_MAP_REVERSE = { 1: 'Admin', 2: 'Staff', 3: 'Member' };
 const GENDER_MAP_REVERSE = { 1: 'Male', 2: 'Female' };
 const STATUS_MAP_REVERSE = { 1: 'Active', 2: 'InActive' };
+
+const BLOOD_TYPE_COLOR = {
+  "A+": "red",
+  "A-": "volcano",
+  "B+": "geekblue",
+  "B-": "blue",
+  "AB+": "green",
+  "AB-": "cyan",
+  "O+": "magenta",
+  "O-": "purple",
+};
 
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
@@ -100,6 +112,14 @@ const ManageUser = () => {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Blood Type",
+      dataIndex: "bloodType",
+      key: "bloodType",
+      render: (bloodType) => (
+        <Tag color={BLOOD_TYPE_COLOR[bloodType] || "default"}>{bloodType}</Tag>
+      ),
+    },
     { title: "Role", dataIndex: "role", key: "role", render: (role) => ROLE_MAP_REVERSE[role] || 'Unknown' },
     { title: "Gender", dataIndex: "gender", key: "gender", render: (g) => GENDER_MAP_REVERSE[g] || 'Other' },
     { title: "Date of Birth", dataIndex: "dateOfBirth", key: "dateOfBirth" },

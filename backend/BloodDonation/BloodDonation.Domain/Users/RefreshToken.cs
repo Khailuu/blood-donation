@@ -1,6 +1,8 @@
+using BloodDonation.Domain.Common;
+
 namespace BloodDonation.Domain.Users;
 
-public class RefreshToken
+public class RefreshToken 
 {
     public Guid Id { get; set; }
     public string Token { get; set; }

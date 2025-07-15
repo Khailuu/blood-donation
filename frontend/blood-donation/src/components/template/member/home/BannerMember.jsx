@@ -4,6 +4,7 @@ import { SmileOutlined } from "@ant-design/icons";
 import { authService } from "../../../../services/authService";
 import { Droplet } from "lucide-react";
 import "../../../../css/member/BannerMember.css";
+import { BackgroundCloud } from "../../../ui/common/BackgroundCloud";
 
 const { Title, Text } = Typography;
 
@@ -26,13 +27,7 @@ export const BannerMember = () => {
   ];
 
   return (
-    <div style={{ position: "relative" }}>
-      {/* Background cloud layer */}
-      <ul className="background">
-        {[...Array(12)].map((_, i) => (
-          <li key={i} style={{ animationDelay: `${i * 10}s` }}></li>
-        ))}
-      </ul>
+    <div style={{ position:+ "relative" }}>
 
       {/* Content */}
       <Card
@@ -115,13 +110,13 @@ export const BannerMember = () => {
             alignItems: "center",
             gap: 8,
           }}
-        >
+        > 
           <SmileOutlined style={{ fontSize: 20, color: "#bd0026" }} />
           <Text style={{ color: "#555", fontSize: 15 }}>
-            Per aggiornare il conto alla rovescia,{" "}
+            To register to donate blood,{" "}
             <a href="">
               <span style={{ color: "#bd0026", fontWeight: "bold" }}>
-                fai il quiz!
+                please take the health survey!
               </span>
             </a>
           </Text>

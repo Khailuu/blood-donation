@@ -15,8 +15,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.Email).IsRequired();
         builder.Property(x => x.Password).IsRequired();
-        builder.Property(x => x.BloodType).HasMaxLength(10);
-
         builder.Property(x => x.Gender)
             .HasConversion<string>()
             .IsRequired();
@@ -27,6 +25,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Role)
             .HasConversion<string>()
             .IsRequired();
+        
+        builder.Property(x => x.ImageUrl)
+            .HasMaxLength(500);
 
         builder.Property(x => x.Status)
             .HasConversion<string>()
@@ -67,5 +68,20 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey<DonorInformation>(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        builder.HasOne(u => u.BloodType)
+            .WithMany()
+            .HasForeignKey(u => u.BloodTypeId)
+            .IsRequired(false);
+        
+        builder.HasMany(u => u.BlogPostLikes)
+            .WithOne(l => l.User)
+            .HasForeignKey(l => l.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.BlogPostComments)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

@@ -9,7 +9,7 @@ import { items } from "../../../../assets/text";
 
 export const WhyDonation = () => {
   return (
-    <div className="container">
+    <div className="container-layout" style={{backgroundColor: "white", borderBottomLeftRadius: "50px", borderBottomRightRadius: "50px"}}>
       <Title
         style={{
           color: "#bd0026",
@@ -38,7 +38,7 @@ export const WhyDonation = () => {
 
       <div
         className="listContainer"
-        style={{ marginTop: 80, backgroundColor: "#ffd8df", borderRadius: 50 }}
+        style={{ margin: "40px 60px", backgroundColor: "#ffd8df", borderRadius: 50 }}
       >
         <Row style={{ display: "flex", alignItems: "center" }}>
           <Col xs={0} md={10}>

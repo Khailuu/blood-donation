@@ -9,3 +9,16 @@ obj/
 *.sln.docstates
 appsettings.Development.json
 appsettings.Local.json
+
+
+# Ignore thư mục con cụ thể (blog-images)
+wwwroot/blog-images/*
+wwwroot/avatars/*
+
+!wwwroot/blog-images/.gitkeep
+
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

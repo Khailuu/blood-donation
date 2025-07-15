@@ -27,13 +27,8 @@ export const NavbarMember = () => {
   };
 
   return (
-    <div
-      className="navbar-wrapper"
-      style={{ borderBottom: "1px solid #ffebee" }}
-    >
-      <div
-        className="header"
-      >
+    <div className="navbar-wrapper">
+      <div className="header">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <img
             src={banner2}
@@ -149,24 +144,27 @@ export const NavbarMember = () => {
             </div>
           </Dropdown>
 
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "#bd0026",
-              borderRadius: 50,
-              height: 40,
-              fontWeight: 600,
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              transition: "all 0.3s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(0.95)")
-            }
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            onClick={() => navigate("/health-survey")}
-          >
-            Health Survey
-          </Button>
+          <Link to='/app/member/health-survey'>
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#bd0026",
+                borderRadius: 50,
+                height: 40,
+                fontWeight: 600,
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "all 0.3s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
+            >
+              Health Survey
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

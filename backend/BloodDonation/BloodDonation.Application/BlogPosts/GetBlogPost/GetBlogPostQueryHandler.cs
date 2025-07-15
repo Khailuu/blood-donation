@@ -10,7 +10,10 @@ public class GetBlogPostQueryHandler(IDbContext context) : IQueryHandler<GetBlog
 {
     public async Task<Result<Page<GetBlogPostResponse>>> Handle(GetBlogPostQuery request, CancellationToken cancellationToken)
     {
-        var query = context.BlogPosts.AsNoTracking();
+        var query = context.BlogPosts
+            .AsNoTracking()
+            .Include(bp => bp.Comments)
+            .Include(bp => bp.Likes);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -23,7 +26,21 @@ public class GetBlogPostQueryHandler(IDbContext context) : IQueryHandler<GetBlog
                 UserId = bp.UserId,
                 Title = bp.Title,
                 Content = bp.Content,
-                PublishedDate = bp.PublishedDate
+                PublishedDate = bp.PublishedDate,
+                ImageUrl = bp.ImageUrl,
+                Comments = bp.Comments.Select(c => new BlogPostCommentResponse
+                {
+                    BlogPostCommentId = c.BlogPostCommentId,
+                    UserId = c.UserId,
+                    Content = c.Content,
+                    CommentedAt = c.CommentedAt
+                }).ToList(),
+                Likes = bp.Likes.Select(l => new BlogPostLikeResponse
+                {
+                    BlogPostLikeId = l.BlogPostLikeId,
+                    UserId = l.UserId,
+                    LikedAt = l.LikedAt
+                }).ToList()
             })
             .ToListAsync(cancellationToken);
 
@@ -35,4 +52,5 @@ public class GetBlogPostQueryHandler(IDbContext context) : IQueryHandler<GetBlog
 
         return Result.Success(page);
     }
+
 }

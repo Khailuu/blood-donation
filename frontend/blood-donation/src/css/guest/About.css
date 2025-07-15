@@ -3,6 +3,10 @@
   padding: 60px 0;
   text-align: center;
   overflow: hidden;
+  background-color: #fff;
+  margin-top: 40px;
+  border-radius: 50px;
+  margin-bottom: 40px;
 }
 
 .section-title {

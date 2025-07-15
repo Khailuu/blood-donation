@@ -1,6 +1,8 @@
+using BloodDonation.Domain.Common;
+
 namespace BloodDonation.Domain.QuestionForm;
 
-public class HealthQuestion
+public class HealthQuestion : Entity
 {
     public Guid QuestionId { get; set; }
     public string Content { get; set; } = null!;

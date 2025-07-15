@@ -3,7 +3,8 @@
 public enum DonationRequestStatus
 {
     Pending = 1,
-    Approved = 2,
-    Fulfilled = 3,
-    Cancelled = 4
+    Scheduled = 2,
+    // WaitingForDonorToConfirm = 3,
+    Completed = 4,
+    Cancelled = 5
 }

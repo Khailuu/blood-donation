@@ -8,7 +8,7 @@ export const authService = {
   async login(email, password) {
     try {
       const response = await api.post("/api/auth/login", { email, password });
-      const { accessToken, refreshToken, role, name } = response.data.data;
+      const { accessToken, refreshToken, role, name, userId } = response.data.data;
 
       // Map role number to string
       let roleStr = "member";
@@ -24,6 +24,7 @@ export const authService = {
           role: roleStr,
           email,
           name: name || email.split("@")[0],
+          userId
         })
       );
 

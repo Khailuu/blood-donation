@@ -5,6 +5,7 @@ using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Domain.Common;
+using BloodDonation.Domain.Users.Errors;
 
 namespace BloodDonation.Application.Users.GetCurrentUser
 {
@@ -14,28 +15,39 @@ namespace BloodDonation.Application.Users.GetCurrentUser
         {
             var currentUserId = userContext.UserId;
 
-            var currentUser = await context.Users.Where(p => p.UserId == currentUserId).Select(p => new GetCurrentUserResponse{
-                FullName = p.Name,
-                Email = p.Email,
-                Role = p.Role.ToString(),
-                BloodType = p.BloodType.ToString(),
-                DateOfBirth = p.DateOfBirth,
-                Phone = p.Phone,
-                Address = p.Address,
-                Gender = p.Gender,
-                IsDonor = p.IsDonor,
-                LastDonationDate = p.LastDonationDate,
-                Status = p.Status,
-                DonorInformation = p.DonorInformation == null ? null : new DonorInformation
-                {
-                    Weight = p.DonorInformation.Weight,
-                    Height = p.DonorInformation.Height,
-                    MedicalStatus = p.DonorInformation.MedicalStatus.ToString(),
-                    LastChecked = p.DonorInformation.LastChecked
-                }
-            }).FirstOrDefaultAsync();   
+            var user = await context.Users
+                .Include(u => u.BloodType)
+                .Include(u => u.DonorInformation)
+                .FirstOrDefaultAsync(p => p.UserId == currentUserId, cancellationToken);
 
-            return currentUser;
+            if (user == null)
+                return Result.Failure<GetCurrentUserResponse>(UserErrors.NotFound(currentUserId));
+
+            var response = new GetCurrentUserResponse
+            {
+                ImageUrl = user.ImageUrl,
+                FullName = user.Name,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                BloodTypeName = user.BloodType != null ? user.BloodType.Name : null,
+                DateOfBirth = user.DateOfBirth,
+                Phone = user.Phone,
+                Address = user.Address,
+                Gender = user.Gender,
+                IsDonor = user.IsDonor,
+                LastDonationDate = user.LastDonationDate,
+                Status = user.Status,
+                DonorInformation = user.DonorInformation == null ? null : new DonorInformation
+                {
+                    Weight = user.DonorInformation.Weight,
+                    Height = user.DonorInformation.Height,
+                    MedicalStatus = user.DonorInformation.MedicalStatus.ToString() ?? "Unknown",
+                    LastChecked = user.DonorInformation.LastChecked
+                }
+            };
+
+            return response;
         }
+
     }
 }

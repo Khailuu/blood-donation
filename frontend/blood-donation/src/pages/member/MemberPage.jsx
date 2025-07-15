@@ -4,7 +4,7 @@ import { FooterComponent } from "../../components/ui/common/FooterComponent";
 
 export const MemberPage = () => {
   return (
-    <div className="">
+    <div className="" style={{zIndex: 2}}>
       <Outlet />
     </div>
   );

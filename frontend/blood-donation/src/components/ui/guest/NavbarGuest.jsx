@@ -1,11 +1,18 @@
 import { Button, Menu } from "antd";
 import Title from "antd/es/typography/Title";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../../css/guest/NavBarGuest.css";
 import { menuItems } from "../../../assets/menu";
 
 export const NavbarGuest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Hàm lấy key menu theo pathname
+  const getSelectedKey = () => {
+    const found = menuItems.find((item) => item.path === location.pathname);
+    return found ? [found.key] : [];
+  };
 
   const handleMenuClick = (e) => {
     const clicked = menuItems.find((item) => item.key === e.key);
@@ -13,25 +20,27 @@ export const NavbarGuest = () => {
   };
 
   return (
-    <div className="navbar-wrapper" style={{ borderBottom: "1px solid red" }}>
+    <div className="navbar-wrapper">
       <div className="header">
         <div className="logo-title">
-          <Title
-            level={2}
-            style={{
-              color: "#bd0026",
-              margin: 0,
-              fontFamily: "Oi",
-              fontWeight: "normal",
-            }}
-          >
-            HEMORA
-          </Title>
+          <Link to="/">
+            <Title
+              level={2}
+              style={{
+                color: "#bd0026",
+                margin: 0,
+                fontFamily: "Oi",
+                fontWeight: "normal",
+              }}
+            >
+              HEMORA
+            </Title>
+          </Link>
         </div>
 
         <Menu
           mode="horizontal"
-          defaultSelectedKeys={["home"]}
+          selectedKeys={getSelectedKey()}
           onClick={handleMenuClick}
           items={menuItems.map(({ key, label }) => ({ key, label }))}
           style={{ fontFamily: "raleway", fontWeight: "bold" }}

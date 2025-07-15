@@ -1,13 +1,93 @@
-import { Button, Card, Col, Row, Typography } from "antd";
-const { Title, Paragraph } = Typography;
-import React from "react";
+import { Button, Card, Col, message, Row, Typography, Tag } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
+const { Title, Paragraph, Text } = Typography;
+import React, { useEffect, useState } from "react";
 import { banner1, blood_bag } from "../../../../assets";
 import { Link } from "react-router-dom";
 import { BloodBagIcon } from "../../../../assets/CutomIcons";
 
+import { authService } from "../../../../services/authService";
+import dayjs from "dayjs";
+import { donationRequestService } from "../../../../services/donationRequestService ";
+
 export const DonateSpace = () => {
+  const currentUser = authService.getCurrentUser();
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser?.userId) return;
+
+    const fetchAppointments = async () => {
+      setLoading(true);
+      try {
+        const response = await donationRequestService.getMyDonationRequests(
+          currentUser.userId
+        );
+
+        const allItems = response?.items || response?.data?.items || [];
+        const myItems = allItems.filter(
+          (item) => item?.userId === currentUser.userId
+        );
+
+        console.log({ myItems });
+
+        const formatted = myItems
+          .filter((item) => item?.status?.toLowerCase() === "pending")
+          .map((item) => ({
+            date: item?.requestTime ? dayjs(item.requestTime) : dayjs(),
+            time: item?.requestTime
+              ? dayjs(item.requestTime).format("HH:mm")
+              : "00:00",
+            donationType: item?.componentType || "Unknown",
+            status: item?.status || "Unknown",
+            id: item?.requestId || "",
+          }));
+
+        setUpcomingAppointments(formatted);
+      } catch (error) {
+        console.error("Fetch appointments error:", error);
+        message.error("Failed to fetch appointments");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, [currentUser?.userId]);
+
+  const getStatusColor = (status) => {
+    if (!status) return "blue";
+
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "orange";
+      case "approved":
+        return "green";
+      case "rejected":
+        return "red";
+      case "cancelled":
+        return "gray";
+      default:
+        return "blue";
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <div style={{ margin: "50px 0", textAlign: "center" }}>
+        <Card>
+          <Title level={4}>Please login to view this content</Title>
+          <Button type="primary" href="/login">
+            Login
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="" style={{ margin: "50px" }}>
+    <div className="" style={{ margin: "50px 0" }}>
       <Card
         style={{
           backgroundColor: "#f5f5f5",
@@ -210,6 +290,7 @@ export const DonateSpace = () => {
           <div
             style={{
               display: "flex",
+
               justifyContent: "space-between",
               alignItems: "flex-start",
             }}
@@ -223,7 +304,7 @@ export const DonateSpace = () => {
               Your upcoming appointments
             </Title>
             <Link
-              href="#"
+              to="/app/member/schedule"
               style={{
                 color: "#bd0026",
                 fontWeight: 500,
@@ -234,18 +315,101 @@ export const DonateSpace = () => {
             </Link>
           </div>
 
-          <div
-            style={{
-              height: "300px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              fontSize: "20px",
-            }}
-          >
-            No bookings available
-          </div>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "50px 0" }}>
+              <Button type="text" loading />
+            </div>
+          ) : upcomingAppointments.length > 0 ? (
+            <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+              {upcomingAppointments.map((item, idx) => (
+                <Col key={idx} span={8}>
+                  <Card
+                    style={{
+                      width: "100%",
+                      borderRadius: 16,
+                      backgroundColor: "#fff",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                      padding: 0,
+                    }}
+                    bodyStyle={{ padding: 0 }}
+                  >
+                    <div
+                      style={{
+                        backgroundColor: "#ffd9df",
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        padding: "12px 0",
+                        textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <img
+                        src={blood_bag}
+                        alt="donation"
+                        style={{ height: 60, marginBottom: 4 }}
+                      />
+                    </div>
+
+                    <div style={{ padding: 16 }}>
+                      <div
+                        style={{
+                          backgroundColor: "#fff",
+                          width: 50,
+                          height: 60,
+                          textAlign: "center",
+                          borderRadius: 12,
+                          fontFamily: "Raleway",
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Title
+                          level={4}
+                          style={{ margin: 0, color: "#bd0026" }}
+                        >
+                          {item.date.format("DD")}
+                        </Title>
+                        <Text style={{ fontSize: 12 }}>
+                          {item.date.format("MMM").toUpperCase()}
+                        </Text>
+                      </div>
+
+                      <Title
+                        level={5}
+                        style={{ fontFamily: "Raleway", marginBottom: 8 }}
+                      >
+                        {item.donationType} Donation
+                      </Title>
+                      <Text style={{ display: "block", marginBottom: 4 }}>
+                        <ClockCircleOutlined /> {item.time}
+                      </Text>
+
+                      <Tag
+                        color={getStatusColor(item.status)}
+                        style={{ marginBottom: 12, fontWeight: "bold" }}
+                      >
+                        {item.status}
+                      </Tag>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <div
+              style={{
+                height: "300px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+                fontSize: "20px",
+              }}
+            >
+              No upcoming appointments
+            </div>
+          )}
         </Card>
       </Card>
     </div>
