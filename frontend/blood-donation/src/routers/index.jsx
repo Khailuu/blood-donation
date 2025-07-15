@@ -31,7 +31,6 @@ import { AdminLayout } from "../components/layouts/AdminLayout";
 import { element } from "prop-types";
 import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
 import ManageUser from "../components/ui/admin/ManageUser";
-import { AdminDashboard } from "../components/ui/admin/AdminDashboard";
 import Statistics from "../components/ui/admin/Statistics";
 import { HealthSurvey } from "../components/template/member/HealthSurvey";
 import { ProfileMember } from "../components/template/member/ProfileMember";
@@ -40,9 +39,8 @@ import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
 import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
 import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
-import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
 import { AdminDashboard } from "../components/template/admin/AdminDashboard";
-import ManageUser from "../components/template/admin/ManageUser";
+// import ManageUser from "../components/template/admin/ManageUser";
 import ManageBlog from "../components/template/admin/ManageBlog";
 
 const router = [

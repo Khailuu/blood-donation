@@ -194,13 +194,6 @@ export const Navbar = () => {
                 >
                   <User size={16} color="white" />
                 </div>
-<<<<<<< HEAD
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-800">
-                    {currentUser?.name}
-                  </span>
-                  <span className="text-xs text-[#bd0026] ">Staff</span>
-=======
                 <div>
                   <div
                     style={{
@@ -224,7 +217,6 @@ export const Navbar = () => {
                         currentUser.role.slice(1)
                       : "Member"}
                   </div>
->>>>>>> origin/main
                 </div>
               </div>
             </Dropdown>
