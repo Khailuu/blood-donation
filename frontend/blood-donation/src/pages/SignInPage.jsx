@@ -29,7 +29,7 @@ export const SignInPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [form] = Form.useForm();
   const [showSuccessLoading, setShowSuccessLoading] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -45,6 +45,8 @@ export const SignInPage = () => {
 
   const onFinish = async (values) => {
     setLoading(true);
+    setErrorMessage(null);
+    
     try {
       const { email, password } = values;
       if (rememberMe) {
@@ -74,28 +76,30 @@ export const SignInPage = () => {
       }, 2000);
     } catch (error) {
       console.error("Login error:", error);
-      // Xử lý thông báo lỗi cụ thể
-      if (error.response) {
-        const errorMessage =
-          error.response.data?.message || error.response.data?.error;
-
+      
+      let errorMsg = "Login failed. Please try again.";
+      
+      if (error.message === "Authentication error") {
+        errorMsg = "Incorrect email or password";
+      } 
+      else if (error.response) {
         if (error.response.status === 401) {
-          message.error("Sai mật khẩu. Vui lòng thử lại.");
+          errorMsg = "Wrong password. Please try again.";
         } else if (error.response.status === 404) {
-          message.error("Email không tồn tại trong hệ thống.");
+          errorMsg = "Email does not exist in the system.";
         } else {
-          message.error(
-            errorMessage || "Đăng nhập thất bại. Vui lòng thử lại sau."
-          );
+          errorMsg = error.response.data?.message || error.response.data?.error || errorMsg;
         }
-      } else if (error.request) {
-        message.error(
-          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
-        );
-      } else {
-        // Lỗi khác
-        message.error("Có lỗi xảy ra. Vui lòng thử lại.");
+      } 
+      else if (error.request) {
+        errorMsg = "Cannot connect to server. Please check your network connection.";
       }
+      else if (error.message) {
+        errorMsg = error.message;
+      }
+      
+      setErrorMessage(errorMsg);
+      message.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -140,7 +144,6 @@ export const SignInPage = () => {
             Welcome to Hemora
           </Title>
         </div>
-        ;
       </Modal>
 
       <Form form={form} className="loginForm" onFinish={onFinish}>
@@ -154,7 +157,7 @@ export const SignInPage = () => {
           level={3}
           style={{ textAlign: "center", marginTop: 0, marginBottom: 32 }}
         >
-          Sign-in
+          Sign In
         </Title>
 
         <Row>
@@ -211,6 +214,18 @@ export const SignInPage = () => {
             </Form.Item>
           </Col>
         </Row>
+
+        {errorMessage && (
+          <Row>
+            <Col xs={7}></Col>
+            <Col xs={1}></Col>
+            <Col xs={16}>
+              <div style={{ color: "#ff4d4f", marginBottom: 16 }}>
+                {errorMessage}
+              </div>
+            </Col>
+          </Row>
+        )}
 
         <Row justify="end" style={{ marginBottom: 16 }}>
           <Col>
@@ -284,7 +299,7 @@ export const SignInPage = () => {
                 color: "#bd0026",
               }}
             >
-              Sign up
+              Sign Up
             </a>
           </Text>
         </Form.Item>

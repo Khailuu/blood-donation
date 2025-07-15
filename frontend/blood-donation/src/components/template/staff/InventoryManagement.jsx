@@ -61,7 +61,9 @@ const InventoryManagement = () => {
 
   const getBloodTypeName = (bloodTypeId) => {
     const type = bloodTypes.find((t) => t.bloodTypeId === bloodTypeId);
-    return type ? type.bloodTypeName : `Unknown (ID: ${bloodTypeId})`;
+    console.log({type});
+    
+    return type ? type.name : `Unknown (ID: ${bloodTypeId})`;
   };
 
   const getStatus = (quantity) => {
