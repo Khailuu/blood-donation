@@ -1,19 +1,8 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "koi_frontEnd/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "koi_frontEnd/dist"
-      }
+      "source": "/(.*)",
+      "destination": "/"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "koi_frontEnd/$1"
-    }
-  ],
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./koi_frontEnd/"
+  ]
 }

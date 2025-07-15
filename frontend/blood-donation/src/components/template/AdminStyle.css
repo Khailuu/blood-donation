@@ -14,7 +14,7 @@
 
 .admin-template .ant-menu-item.ant-menu-item-selected,
 .admin-template .ant-layout-sider-trigger {
-    background-color: #eb1641 !important;
+    background-color: #ff738f !important;
 }
 
 .admin-template .ant-layout-sider,
@@ -43,4 +43,61 @@
 .admin-template .ant-pagination {
   flex-direction: row;
   justify-content: flex-end;
+}
+
+.admin-sidebar {
+  background: #fff !important;
+  box-shadow: 2px 0 8px #fce7ef;
+  padding-top: 24px;
+  border-right: 1px solid #f3f3f3;
+}
+
+.admin-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  margin: 10px 12px;
+  border-radius: 12px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  background: transparent;
+  position: relative;
+}
+
+.admin-sidebar-icon {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.admin-sidebar-item:hover {
+  background: #fff0f6;
+  color: #e11d48;
+}
+
+.admin-sidebar-item.active {
+  background: #fff0f6;
+  color: #e11d48;
+  box-shadow: 3px 0 0 #e11d48 inset;
+}
+
+.admin-sidebar-item.active .admin-sidebar-icon {
+  color: #e11d48 !important;
+}
+
+.admin-sidebar-item span:last-child {
+  font-weight: 700;
+}
+
+.admin-sidebar {
+  /* ...existing code... */
+  width: 300px !important;
+}
+
+.admin-template .ant-layout-sider,
+.admin-template aside {
+  width: 300px !important;
 }

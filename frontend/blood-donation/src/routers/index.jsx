@@ -31,6 +31,7 @@ import { element } from "prop-types";
 import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
 import ManageUser from "../components/ui/admin/ManageUser";
 import { AdminDashboard } from "../components/ui/admin/AdminDashboard";
+import Statistics from "../components/ui/admin/Statistics";
 
 const router = [
   {
@@ -117,6 +118,10 @@ const router = [
         path: "manage-user",
         element: <ManageUser />,
       },
+      {
+        path: "statistics",
+        element: <Statistics />
+      }
     ],
   },
   { path: "*", element: <Navigate to="/" replace /> },

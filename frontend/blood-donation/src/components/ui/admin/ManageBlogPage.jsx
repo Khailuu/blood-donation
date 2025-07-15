@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Button,
@@ -11,14 +11,17 @@ import {
   message,
   Tooltip,
   Tag,
+  Upload,
 } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   FileAddOutlined,
   FileTextOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { manageBlogService } from "../../../services/manageBlogService";
 
 const { Option } = Select;
 
@@ -33,35 +36,27 @@ const categoryColor = {
   Announcement: "gold",
 };
 
-const initialBlogs = [
-  {
-    id: 1,
-    title: "The Importance of Blood Donation",
-    author: "Admin",
-    date: "2024-06-15",
-    category: "Health",
-    status: "Public",
-  },
-  {
-    id: 2,
-    title: "How to Prepare Before Donating Blood",
-    author: "Dr. Lan",
-    date: "2024-06-10",
-    category: "Guideline",
-    status: "Hidden",
-  },
-];
-
 const ManageBlogPage = () => {
-  const [blogs, setBlogs] = useState(initialBlogs);
+  const [blogs, setBlogs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([]);
+
+  // Assume userLogin info is stored in localStorage as 'userLogin' (adjust if needed)
+  const userLogin = JSON.parse(localStorage.getItem('userLogin') || '{}');
+
+  useEffect(() => {
+    manageBlogService.getBlogs(1, 20).then(res => {
+      setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
+    });
+  }, []);
 
   const openAddModal = () => {
     setEditingBlog(null);
     form.resetFields();
     setIsModalOpen(true);
+    setFileList([]);
   };
 
   const openEditModal = (blog) => {
@@ -71,30 +66,42 @@ const ManageBlogPage = () => {
   };
 
   const handleDelete = (id) => {
-    setBlogs(blogs.filter((b) => b.id !== id));
-    message.success("Blog deleted successfully!");
+    manageBlogService.deleteBlog(id)
+      .then(() => {   
+        message.success("Blog deleted successfully!");
+        // Sau khi xóa, gọi lại API để lấy danh sách blog mới nhất
+        manageBlogService.getBlogs(1, 20).then(res => {
+          setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
+        });
+      })
+      .catch(() => message.error("Failed to delete blog!"));
   };
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      const newData = {
-        ...values,
-        date: values.date.format("YYYY-MM-DD"),
-      };
-
-      if (editingBlog) {
-        setBlogs(
-          blogs.map((b) => (b.id === editingBlog.id ? { ...newData, id: b.id } : b))
-        );
-        message.success("Blog updated successfully!");
-      } else {
-        const newId = Math.max(...blogs.map((b) => b.id)) + 1;
-        setBlogs([...blogs, { ...newData, id: newId }]);
-        message.success("New blog added successfully!");
+      // Chuẩn bị dữ liệu gửi đi
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("content", values.content);
+      if (fileList[0]) {
+        formData.append("image", fileList[0].originFileObj);
       }
-
-      setIsModalOpen(false);
-      form.resetFields();
+      // Set author and date
+      formData.append("author", userLogin.name || "");
+      formData.append("date", dayjs().format("YYYY-MM-DD"));
+      // Gọi API tạo blog
+      manageBlogService.createBlog(formData)
+        .then(() => {
+          message.success("New blog added successfully!");
+          setIsModalOpen(false);
+          form.resetFields();
+          setFileList([]);
+          // Reload blogs
+          manageBlogService.getBlogs(1, 20).then(res => {
+            setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
+          });
+        })
+        .catch(() => message.error("Failed to add blog!"));
     });
   };
 
@@ -103,34 +110,28 @@ const ManageBlogPage = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      render: (text) => (
-        <span>
-          <FileTextOutlined style={{ color: "#1677ff", marginRight: 6 }} />
-          {text}
-        </span>
-      ),
-    },
-    { title: "Author", dataIndex: "author", key: "author" },
-    { title: "Date", dataIndex: "date", key: "date" },
-    {
-      title: "Category",
-      dataIndex: "category",
-      key: "category",
-      render: (category) => (
-        <Tag color={categoryColor[category] || "default"} style={{ fontWeight: 500 }}>
-          {category}
-        </Tag>
-      ),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={statusColor[status] || "default"} style={{ fontWeight: 500 }}>
-          {status}
-        </Tag>
-      ),
+      title: "Content",
+      dataIndex: "content",
+      key: "content",
+      render: (text) => <span style={{ maxWidth: 300, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{text}</span>
+    },
+    {
+      title: "Image",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      render: (url) => url ? <img src={url} alt="blog" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6 }} /> : null
+    },
+    // {
+    //   title: "Author",
+    //   dataIndex: "author",
+    //   key: "author",
+    // },
+    {
+      title: "Date",
+      dataIndex: "publishedDate",
+      key: "publishedDate",
     },
     {
       title: "Actions",
@@ -147,7 +148,10 @@ const ManageBlogPage = () => {
           </Tooltip>
           <Popconfirm
             title="Are you sure to delete this blog?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => {
+              console.log(record);
+              handleDelete(record.postId)
+            }}
             okText="Yes"
             cancelText="No"
           >
@@ -168,7 +172,7 @@ const ManageBlogPage = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ fontSize: 22, margin: 0, fontWeight: 600 }}>Blog Management</h2>
         <Button
-          type="primary"
+          style={{ background: "#3388ff", color: "white" }}
           icon={<FileAddOutlined />}
           onClick={openAddModal}
         >
@@ -186,7 +190,7 @@ const ManageBlogPage = () => {
       <Modal
         title={editingBlog ? "Update Blog" : "Add New Blog"}
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => { setIsModalOpen(false); setFileList([]); }}
         onOk={handleSubmit}
         okText="Save"
         cancelText="Cancel"
@@ -196,24 +200,20 @@ const ManageBlogPage = () => {
           <Form.Item name="title" label="Title" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="author" label="Author" rules={[{ required: true }]}>
-            <Input />
+          <Form.Item name="content" label="Content" rules={[{ required: true }]}>
+            <Input.TextArea rows={4} />
           </Form.Item>
-          <Form.Item name="date" label="Date" rules={[{ required: true }]}>
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-            <Select placeholder="Select category">
-              <Option value="Health">Health</Option>
-              <Option value="Guideline">Guideline</Option>
-              <Option value="Announcement">Announcement</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="status" label="Status" rules={[{ required: true }]}>
-            <Select placeholder="Select status">
-              <Option value="Public">Public</Option>
-              <Option value="Hidden">Hidden</Option>
-            </Select>
+          <Form.Item label="Image" required>
+            <Upload
+              beforeUpload={() => false}
+              fileList={fileList}
+              onChange={({ fileList }) => setFileList(fileList)}
+              maxCount={1}
+              accept="image/*"
+              listType="picture"
+            >
+              <Button icon={<UploadOutlined />}>Select Image</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>

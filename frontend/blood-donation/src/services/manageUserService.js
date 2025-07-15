@@ -7,6 +7,9 @@ const api = apiInstance.create({
 
 export const manageUserService = {
    login: (payload) => api.post("/example", payload),
-   getUser: () => api.get('/get-user'),
-   updagteUser: (id,payload) => api.put(`/update-user/${id}`, payload)
+   getUsers: (pageNumber = 1, pageSize = 10) => api.get(`/api/admin/get-users?pageNumber=${pageNumber}&pageSize=${pageSize}`),
+   updateUser: (payload) => {
+    console.log(payload);
+    return api.put(`/api/admin/update-user`, payload)
+   }
 }
