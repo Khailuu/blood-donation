@@ -1,6 +1,7 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Abstraction.Authentication;
+using BloodDonation.Application.BlogPosts.DeleteBlogPostForAdmin;
 using BloodDonation.Application.Bloods.GetBloodStoredNoPaging;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateUser;
@@ -68,5 +69,16 @@ public class AdminController : ControllerBase
         var result = await _mediator.Send(query, cancellation);
         return result.MatchOk();
     }
-    
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("admin/delete-blogpost/{postId:guid}")]
+    public async Task<IResult> DeleteBlogPostForAdmin(Guid postId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteBlogPostForAdminCommand()
+        {
+            PostId = postId
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
 }
