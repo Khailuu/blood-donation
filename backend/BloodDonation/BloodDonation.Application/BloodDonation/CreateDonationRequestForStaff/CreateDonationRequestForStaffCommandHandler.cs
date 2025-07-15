@@ -4,6 +4,7 @@ using BloodDonation.Application.Abstraction.Messaging;
 using BloodDonation.Application.BloodDonation.CreateDonationMatch;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
+using BloodDonation.Domain.Users;
 using BloodDonation.Domain.Users.Errors;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,9 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
 {
     public async Task<Result<CreateDonationRequestForStaffResponse>> Handle(CreateDonationRequestForStaffCommand request, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+        var user = await context.Users
+            .Include(u => u.BloodType)
+            .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
 
         if (user == null)
             return Result.Failure<CreateDonationRequestForStaffResponse>(UserErrors.NotFound(request.UserId));
@@ -34,8 +37,21 @@ public class CreateDonationRequestForStaffCommandHandler(IDbContext context, IUs
             Note = request.Note,
             Status = DonationRequestStatus.Pending
         };
-
+        
         context.DonationRequests.Add(donationRequest);
+
+        var patient = new Patient
+        {
+            Id = Guid.NewGuid(),
+            UserId = request.UserId,
+            PatientName = request.EmergencyContactName,
+            PatientPhone = request.EmergencyContactPhone,
+            PatientEmail = user.Email,
+            PatientBloodType = user.BloodType.Name,
+            Notes = request.Note,
+        };
+        
+        context.Patients.Add(patient);
         await context.SaveChangesAsync(cancellationToken);
 
         var bloodStored = await context.BloodStored
