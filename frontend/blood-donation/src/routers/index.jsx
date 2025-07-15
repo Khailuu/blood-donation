@@ -7,6 +7,7 @@ import DonatePage from "../pages/guest/DonatePage";
 import BlogPage from "../pages/guest/BlogPage";
 import ContactsPage from "../pages/guest/ContactsPage";
 
+import { MemberPage } from "../pages/member/MemberPage";
 import { StaffDashboard } from "../pages/staff/StaffDashboard";
 import ProtectedRoute from "../components/layouts/ProtectedRoute";
 import RoleRoute from "../components/layouts/RoleRoute";
@@ -26,6 +27,11 @@ import { MemberDonate } from "../pages/member/MemberDonate";
 import { MemberHomePage } from "../pages/member/MemberHomePage";
 import { DoubtsSection } from "../components/template/guest/home/DoubtsSection";
 import { MemberSchedule } from "../pages/member/MemberSchedule";
+import { AdminLayout } from "../components/layouts/AdminLayout";
+import { element } from "prop-types";
+import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
+import ManageUser from "../components/ui/admin/ManageUser";
+import Statistics from "../components/ui/admin/Statistics";
 import { HealthSurvey } from "../components/template/member/HealthSurvey";
 import { ProfileMember } from "../components/template/member/ProfileMember";
 import { MemberBlogPage } from "../components/template/member/blog/MemberBlogPage";
@@ -33,9 +39,8 @@ import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
 import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
 import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
-import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
 import { AdminDashboard } from "../components/template/admin/AdminDashboard";
-import ManageUser from "../components/template/admin/ManageUser";
+// import ManageUser from "../components/template/admin/ManageUser";
 import ManageBlog from "../components/template/admin/ManageBlog";
 
 const router = [
@@ -96,6 +101,22 @@ const router = [
     ),
     children: [
       {
+        path: "member",
+        element: (
+          <RoleRoute allowedRoles={["member"]}>
+            <MemberPage />,
+          </RoleRoute>
+        ),
+        children: [
+          { index: true, element: <Navigate to="home" replace /> },
+          { path: "home", element: <MemberHomePage /> },
+          { path: "donate", element: <MemberDonate /> },
+          { path: "schedule", element: <MemberSchedule /> },
+          { path: "faq", element: <DoubtsSection /> },
+        ],
+      },
+
+      {
         path: "staff",
         element: <RoleRoute allowedRoles={["staff"]}>
           <StaffDashboard />
@@ -112,23 +133,35 @@ const router = [
           { index: true, element: <Navigate to="dashboard" replace /> },
         ],
       },
-
-      {
-        path: "admin",
-        element: <RoleRoute allowedRoles={["admin"]}>
-          <AdminDashboardPage />
-        </RoleRoute>,
-        children: [
-          
-          { path: "dashboard", element: <AdminDashboard /> },
-          { path: "manage-users", element: <ManageUser/> },
-          { path: "manage-blogs", element: <ManageBlog/> },
-          { index: true, element: <Navigate to="dashboard" replace /> },
-        ],
-      },
     ],
   },
 
+  {
+    path: "admin",
+    element: (
+      <RoleRoute allowedRoles={["admin"]}>
+        <AdminLayout />
+      </RoleRoute>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "manage-blog",
+        element: <ManageBlogPage />,
+      },
+      {
+        path: "manage-user",
+        element: <ManageUser />,
+      },
+      {
+        path: "statistics",
+        element: <Statistics />
+      }
+    ],
+  },
   { path: "*", element: <Navigate to="/" replace /> },
 ];
 

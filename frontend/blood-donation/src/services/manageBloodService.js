@@ -1,10 +1,10 @@
-import { BLOOD_API } from "../constants/api";
+import { ADMIN_API } from "../constants/api";
 import { apiInstance } from "../constants/apiInstance";
 
 const api = apiInstance.create({
-    baseURL: BLOOD_API
+    baseURL: ADMIN_API
 })
 
 export const manageBloodService = {
-    getAllBlood: () => api.get('/')
+    getAllBlood: () => api.get('')
 }
