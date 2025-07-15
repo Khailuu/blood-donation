@@ -3,6 +3,7 @@ using BloodDonation.Domain.BlogPost;
 using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.EmailTemplates;
+using BloodDonation.Domain.Q_A;
 using BloodDonation.Domain.QuestionForm;
 using BloodDonation.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,9 @@ public interface IDbContext
     DbSet<EmailTemplate> EmailTemplates { get; set; }
     DbSet<BlogPostLike> BlogPostLikes { get; set; }
     DbSet<BlogPostComment> BlogPostComments { get; set; }
+    DbSet<Patient> Patients { get; set; }
+    DbSet<QaQuestions> QaQuestions { get; set; }
+    DbSet<QaAnswer> QaAnswers { get; set; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -14,10 +14,10 @@ public class DonationRequest : Entity
     public DateTime RequestTime { get; set; }
     public DateTime? Deadline { get; set; }
     public bool IsEmergency { get; set; }
-    public string? EmergencyContactName { get; set; }
-    public string? EmergencyContactPhone { get; set; }
+    public string EmergencyContactName { get; set; }
+    public string EmergencyContactPhone { get; set; }
     public DonationRequestStatus Status { get; set; }
-    public string? Note { get; set; }
+    public string Note { get; set; }
     
     public User? User { get; set; }
     public BloodType? BloodType { get; set; }
