@@ -60,13 +60,13 @@ export const SideBar = () => {
       icon: User,
       color: "text-orange-500",
     },
-    {
-      id: "notifications",
-      path: "/app/staff/notifications",
-      label: "Notifications",
-      icon: Bell,
-      color: "text-yellow-500",
-    },
+    // {
+    //   id: "notifications",
+    //   path: "/app/staff/notifications",
+    //   label: "Notifications",
+    //   icon: Bell,
+    //   color: "text-yellow-500",
+    // },
   ];
 
   const isActive = (path) => {

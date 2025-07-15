@@ -61,7 +61,7 @@ const InventoryManagement = () => {
 
   const getBloodTypeName = (bloodTypeId) => {
     const type = bloodTypes.find((t) => t.bloodTypeId === bloodTypeId);
-    return type ? type.name : `Unknown (ID: ${bloodTypeId})`;
+    return type ? type.bloodTypeName : `Unknown (ID: ${bloodTypeId})`;
   };
 
   const getStatus = (quantity) => {
@@ -206,7 +206,7 @@ const InventoryManagement = () => {
       ...inventory.map((item) => {
         const type = bloodTypes.find((t) => t.bloodTypeId === item.bloodTypeId);
         return [
-          type?.name || `Unknown (${item.bloodTypeId})`,
+          type?.bloodTypeName || `Unknown (${item.bloodTypeId})`,
           type?.description || "N/A",
           item.quantity,
           getStatus(item.quantity),
@@ -224,6 +224,10 @@ const InventoryManagement = () => {
       new Date().toISOString().split("T")[0]
     }.csv`;
     link.click();
+  };
+
+  const handleTableChange = (pagination) => {
+    setPagination(pagination);
   };
 
   const renderStats = () => (
@@ -304,17 +308,25 @@ const InventoryManagement = () => {
 
       {renderStats()}
 
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden mb-4">
         <Table
           columns={columns}
           dataSource={inventory}
           rowKey="id"
           loading={loading}
-          pagination={{
-            pageSize: pagination.pageSize,
-            showSizeChanger: true,
-            pageSizeOptions: ["8", "16", "24", "32"],
-          }}
+          pagination={false}
+        />
+      </div>
+
+      <div className="flex justify-center">
+        <Pagination
+          current={pagination.current}
+          pageSize={pagination.pageSize}
+          total={pagination.total}
+          onChange={(page, pageSize) => handleTableChange({ current: page, pageSize })}
+          showSizeChanger
+          pageSizeOptions={["8", "16", "24", "32"]}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
         />
       </div>
     </div>
