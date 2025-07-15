@@ -13,6 +13,8 @@ export const userService = {
 
   async updateProfile(data) {
     const response = await api.put("/api/user/update-current-user", data);
+    console.log({response});
+    
     return response.data;
   },
 
