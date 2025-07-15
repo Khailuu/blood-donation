@@ -1,31 +1,33 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   message,
+  Typography,
+  Checkbox,
   Pagination,
-  Spin,
   Button,
   Tabs,
   Tag,
-  Checkbox,
-  Typography,
+  Spin,
 } from "antd";
 import {
   SyncOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
   CheckOutlined,
   CloseOutlined,
-  EyeOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
   StopOutlined,
+  DownloadOutlined,
+  FilterOutlined,
+  FrownOutlined,
 } from "@ant-design/icons";
 import { donationRequestService } from "../../../services/donationRequestService ";
 import "../../../css/staff/DonorRequestManager.css";
-const { Title } = Typography;
 
+const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const DonorRequestsManager = () => {
-  // State management
   const [donationRequests, setDonationRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -49,11 +51,24 @@ const DonorRequestsManager = () => {
       setLoading(true);
       const response = await donationRequestService.getAllDonationRequests();
 
-      const items = response.items || response.data?.items || [];
+      let items = [];
+      if (Array.isArray(response)) {
+        items = response;
+      } else if (response?.data) {
+        items = Array.isArray(response.data)
+          ? response.data
+          : response.data.items || [];
+      } else if (response?.items) {
+        items = response.items;
+      }
+
       setDonationRequests(items);
-      if (!items.length) message.info("No donation requests found");
+
+      if (items.length === 0) {
+        message.info("No donation requests found");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Fetch error:", error);
       message.error("Failed to load donation requests");
     } finally {
       setLoading(false);
@@ -62,6 +77,10 @@ const DonorRequestsManager = () => {
   };
 
   useEffect(() => {
+    const savedTab = localStorage.getItem("activeTab");
+    if (savedTab && ["pending", "processed"].includes(savedTab)) {
+      setActiveTab(savedTab);
+    }
     fetchRequests();
   }, []);
 
@@ -76,11 +95,9 @@ const DonorRequestsManager = () => {
       );
     });
 
-    if (activeTab === "pending") {
-      return filtered.filter((req) => req.status === "Pending");
-    } else {
-      return filtered.filter((req) => req.status !== "Pending");
-    }
+    return activeTab === "pending"
+      ? filtered.filter((req) => req.status === "Pending")
+      : filtered.filter((req) => req.status !== "Pending");
   }, [donationRequests, filters, activeTab]);
 
   const requestCounts = useMemo(() => {
@@ -100,9 +117,10 @@ const DonorRequestsManager = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchRequests();
-    setCurrentPage(1);
-    setActiveTab(activeTab);
+    fetchRequests().then(() => {
+      const savedTab = localStorage.getItem("activeTab") || activeTab;
+      setActiveTab(savedTab);
+    });
   };
 
   const handleFilterChange = (key, value) =>
@@ -111,6 +129,47 @@ const DonorRequestsManager = () => {
   const clearFilters = () => {
     setFilters({ bloodType: "", componentType: "", date: "" });
     setCurrentPage(1);
+  };
+
+  const handleExport = () => {
+    const csvContent = [
+      [
+        "#",
+        "Donor",
+        "Date",
+        "Time",
+        "Blood Type",
+        "Component",
+        "Amount",
+        "Status",
+        "Note",
+      ],
+      ...filteredRequests.map((request, index) => [
+        index + 1,
+        request.requesterName,
+        formatDate(request.requestTime),
+        formatTime(request.requestTime),
+        request.bloodType,
+        getComponentText(request.componentType),
+        `${request.amountBlood} unit(s)`,
+        request.status,
+        request.note || "N/A",
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `donation_requests_${activeTab}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    message.success("Report exported successfully");
   };
 
   const handleApprove = async (id) => {
@@ -264,6 +323,7 @@ const DonorRequestsManager = () => {
 
   const handleTabChange = (key) => {
     setActiveTab(key);
+    localStorage.setItem("activeTab", key);
     setCurrentPage(1);
     setSelectedRequests([]);
   };
@@ -319,24 +379,88 @@ const DonorRequestsManager = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
-          Donation Requests
-        </Title>
+        <div className="mb-6">
+          <Title
+            className="text-2xl font-bold"
+            style={{ fontFamily: "Raleway" }}
+          >
+            Donation Requests
+          </Title>
+          <p className="text-gray-600 mt-2">
+            Display all donation requests and manage them efficiently
+          </p>
+        </div>
+
         <div className="flex gap-2">
           <Button
             onClick={handleRefresh}
             icon={<SyncOutlined spin={refreshing} />}
             loading={refreshing}
             type="primary"
-            className="flex items-center gap-2"
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#fff",
+              color: "#bd0026",
+              border: "1px solid #bd0026",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Refresh
           </Button>
           <Button
             onClick={clearFilters}
-            className="bg-green-500 hover:bg-green-600 text-white"
+            icon={<FilterOutlined />}
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#fff",
+              color: "#bd0026",
+              border: "1px solid #bd0026",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Reset Filters
+          </Button>
+          <Button
+            onClick={handleExport}
+            icon={<DownloadOutlined />}
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#bd0026",
+              color: "#fff",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            Export Report
           </Button>
         </div>
       </div>
@@ -361,9 +485,9 @@ const DonorRequestsManager = () => {
         <TabPane
           tab={
             <span className="flex items-center gap-2">
-              <CheckCircleOutlined className="text-green-500" />
+              <CheckCircleOutlined />
               <span>Processed Requests</span>
-              <Tag className="ml-1 bg-green-100 text-green-600">
+              <Tag className="ml-1 bg-green-100 ">
                 {requestCounts.processed}
               </Tag>
             </span>
@@ -457,7 +581,7 @@ const DonorRequestsManager = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   <Checkbox
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     checked={
@@ -471,31 +595,31 @@ const DonorRequestsManager = () => {
                     disabled={activeTab !== "pending"}
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   #
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Full Name
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Date
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Time
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Blood Type
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Type
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Amount
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
                   Status
                 </th>
-                <th className="px-4 py-3 text-center font-bold text-gray-600 uppercase">
+                <th className="px-4 py-3 text-center font-bold text-gray-600 ">
                   Actions
                 </th>
               </tr>
@@ -544,8 +668,8 @@ const DonorRequestsManager = () => {
                           <Button
                             icon={<CheckOutlined />}
                             onClick={() => handleApprove(req.requestId)}
+                            
                             disabled={actionLoading}
-                            type="primary"
                             className="bg-green-500 hover:bg-green-600 text-white"
                             size="small"
                           />
@@ -568,10 +692,17 @@ const DonorRequestsManager = () => {
                 <tr>
                   <td
                     colSpan="10"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-8 text-center text-gray-500"
                   >
-                    No {activeTab === "pending" ? "pending" : "processed"}{" "}
-                    requests found
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <FrownOutlined
+                        style={{ fontSize: "36px", color: "#999" }}
+                      />
+                      <span className="text-base font-medium">
+                        No {activeTab === "pending" ? "pending" : "processed"}{" "}
+                        requests found
+                      </span>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -580,7 +711,6 @@ const DonorRequestsManager = () => {
         </div>
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-center mt-6">
         <Pagination
           current={currentPage}
@@ -596,7 +726,6 @@ const DonorRequestsManager = () => {
         />
       </div>
 
-      {/* Request details modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">

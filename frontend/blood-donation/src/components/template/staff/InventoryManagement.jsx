@@ -11,7 +11,7 @@ import {
   Eye,
   BarChart3,
 } from "lucide-react";
-import { message, Modal, Table, Pagination, Typography } from "antd";
+import { message, Modal, Table, Pagination, Typography, Button } from "antd";
 import { userService } from "../../../services/manageUserService";
 const { Title } = Typography;
 
@@ -278,13 +278,28 @@ const InventoryManagement = () => {
           </Title>
           <p className="text-gray-600">Track and manage blood stock levels</p>
         </div>
-        <button
+        <Button
           onClick={handleExport}
-          className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 flex items-center gap-2"
+          style={{
+            fontFamily: "Raleway",
+            fontWeight: 600,
+            backgroundColor: "#bd0026",
+            color: "#fff",
+            borderRadius: 50,
+            height: 40,
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = "scale(0.95)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
         >
           <Download className="h-4 w-4" />
           Export CSV
-        </button>
+        </Button>
       </div>
 
       {renderStats()}
