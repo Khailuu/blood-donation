@@ -6,6 +6,24 @@ const api = apiInstance.create({
 });
 
 export const userService = {
+
+  async getAllUser(){
+    try {
+      const response = await api.get("api/user/get-users", {
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
+      console.log({ response });
+
+      return response.data.data.items;
+    } catch (error) {
+      console.error("Error fetching blood types:", error);
+      return [];
+    }
+  },
+
   async getCurrentUser() {
     const response = await api.get("/api/user/get-current-users");
     return response.data.data;
