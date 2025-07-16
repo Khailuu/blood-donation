@@ -25,7 +25,7 @@ public class QAController : ControllerBase
     
     [Authorize(Roles = "Member")]
     [HttpPost("q&a/create-q&a-question")]
-    public async Task<IResult> CreateBlogPost([FromBody] CreateQaQuestionCommand request, CancellationToken cancellationToken)
+    public async Task<IResult> CreateQaQuestion([FromBody] CreateQaQuestionCommand request, CancellationToken cancellationToken)
     {
         var command = new CreateQaQuestionCommand
         {
@@ -37,7 +37,7 @@ public class QAController : ControllerBase
     }
     
     [HttpGet("q&a/get-q&a")]
-    public async Task<IResult> GetBlogPosts([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    public async Task<IResult> GetQa([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetQaQuery()
         {
@@ -64,7 +64,7 @@ public class QAController : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost("q&a/comment")]
-    public async Task<IResult> CreateBlogPostComment([FromBody] CreateQaAnswerCommand request, CancellationToken cancellationToken)
+    public async Task<IResult> CreateQaComment([FromBody] CreateQaAnswerCommand request, CancellationToken cancellationToken)
     {
         var command = new CreateQaAnswerCommand()
         {

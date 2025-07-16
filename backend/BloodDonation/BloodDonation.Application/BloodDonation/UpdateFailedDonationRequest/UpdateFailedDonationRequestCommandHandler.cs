@@ -1,7 +1,7 @@
 using BloodDonation.Application.Abstraction.Authentication;
 using BloodDonation.Application.Abstraction.Data;
 using BloodDonation.Application.Abstraction.Messaging;
-using BloodDonation.Domain.Bloods.Errors;
+using BloodDonation.Application.BloodDonation.CancelDonationRequest;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.Donations.Errors;
@@ -9,12 +9,11 @@ using BloodDonation.Domain.Donations.Events;
 using BloodDonation.Domain.Users.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace BloodDonation.Application.BloodDonation.CompleteDonationRequest;
+namespace BloodDonation.Application.BloodDonation.UpdateFailedDonationRequest;
 
-public class CompleteDonationRequestCommandHandler(IDbContext context, IUserContext userContext)
-    : ICommandHandler<CompleteDonationRequestCommand>
+public class UpdateFailedDonationRequestCommandHandler(IDbContext context, IUserContext userContext) : ICommandHandler<UpdateFailedDonationRequestCommand>
 {
-    public async Task<Result> Handle(CompleteDonationRequestCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateFailedDonationRequestCommand request, CancellationToken cancellationToken)
     {
         var donationRequest = await context.DonationRequests
             .FirstOrDefaultAsync(r => r.RequestId == request.RequestId, cancellationToken);
@@ -22,34 +21,15 @@ public class CompleteDonationRequestCommandHandler(IDbContext context, IUserCont
         if (donationRequest == null)
             return Result.Failure(DonationRequestErrors.RequestNotFound);
 
-        if (donationRequest.Status != DonationRequestStatus.Scheduled)
-            return Result.Failure(DonationRequestErrors.InvalidStatus);
-
         // if (donationRequest.UserId != userContext.UserId)
         //     return Result.Failure(DonationRequestErrors.NotDonor);
 
-        var bloodStored = await context.BloodStored
-            .FirstOrDefaultAsync(b => b.BloodTypeId == donationRequest.BloodTypeId, cancellationToken);
+        // if (donationRequest.Status != DonationRequestStatus.Pending && 
+        //     donationRequest.Status != DonationRequestStatus.Scheduled)
+        //     return Result.Failure(DonationRequestErrors.CannotCancel);
 
-        if (bloodStored == null)
-            return Result.Failure(BloodErrors.BloodTypeNotFound);
-        
-        donationRequest.AmountBlood = request.AmountBlood;
-
-        bloodStored.Quantity += donationRequest.AmountBlood;
-        bloodStored.LastUpdated = DateTime.UtcNow;
-
-        context.DonationsHistory.Add(new DonationHistory
-        {
-            DonationId = Guid.NewGuid(),
-            UserId = donationRequest.UserId,
-            RequestId = donationRequest.RequestId,
-            Date = DateTime.UtcNow,
-            Status = DonationHistoryStatus.Completed,
-            ConfirmedBy = userContext.UserId
-        });
-
-        donationRequest.Status = DonationRequestStatus.Completed;
+        donationRequest.Status = DonationRequestStatus.Failed;
+        donationRequest.Note = request.Reason;
         
         var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == donationRequest.UserId, cancellationToken);
         if (user is null) return Result.Failure(UserErrors.NotFound(user.UserId));
@@ -61,9 +41,10 @@ public class CompleteDonationRequestCommandHandler(IDbContext context, IUserCont
             user.Name ?? "User",
             donationRequest.Status.ToString()
         ));
-
-
+        
         await context.SaveChangesAsync(cancellationToken);
+
         return Result.Success();
     }
+    
 }
