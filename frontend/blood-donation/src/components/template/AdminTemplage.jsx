@@ -9,9 +9,10 @@ import {
   FileTextOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import "./AdminStyle.css";
 import { PATH } from "../../constants/config";
+import Title from "antd/es/typography/Title";
 
 const { Header, Sider, Content } = Layout;
 
@@ -67,11 +68,21 @@ const AdminTemplate = () => {
           }}
         >
           <div className="logo-admin" style={{ padding: 24, marginBottom: 12 }}>
-            <img
-              src="https://donarosso.it/wp-content/uploads/2024/10/Logo-Rosso-Orizzontale.png"
-              alt="Blood Bank Logo"
-              style={{ width: "100%", borderRadius: 12 }}
-            />
+          <div className="logo-title">
+          <Link to="/">
+            <Title
+              level={2}
+              style={{
+                color: "#bd0026",
+                margin: 0,
+                fontFamily: "Oi",
+                fontWeight: "normal",
+              }}
+            >
+              HEMORA
+            </Title>
+          </Link>
+        </div>
           </div>
           <nav>
             {adminSidebarItems.map((item) => {
@@ -119,7 +130,7 @@ const AdminTemplate = () => {
             <h2
               style={{
                 margin: 0,
-                fontSize: "20px",
+                fontSize: "24px",
                 fontWeight: "bold",
                 color: "#e11d48",
                 letterSpacing: 1,
