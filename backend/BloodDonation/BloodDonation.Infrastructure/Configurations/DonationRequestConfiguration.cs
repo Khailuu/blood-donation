@@ -24,9 +24,9 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
             .IsRequired()
             .HasDefaultValue(DonationRequestStatus.Pending);
 
-        builder.Property(x => x.EmergencyContactName).HasMaxLength(100);
-        builder.Property(x => x.EmergencyContactPhone).HasMaxLength(20);
-        builder.Property(x => x.Note).HasMaxLength(500);
+        builder.Property(x => x.EmergencyContactName).HasMaxLength(100).IsRequired(false);
+        builder.Property(x => x.EmergencyContactPhone).HasMaxLength(20).IsRequired(false);
+        builder.Property(x => x.Note).HasMaxLength(500).IsRequired(false);
 
         builder.HasOne(x => x.User)
             .WithMany(u => u.DonationRequests)
