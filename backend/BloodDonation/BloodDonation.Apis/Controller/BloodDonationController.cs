@@ -7,11 +7,13 @@ using BloodDonation.Application.BloodDonation.ConfirmDonationRequestForStaff;
 using BloodDonation.Application.BloodDonation.CreateDonationMatch;
 using BloodDonation.Application.BloodDonation.CreateDonationRequestForDonor;
 using BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
+using BloodDonation.Application.BloodDonation.GetAllDonationRequest;
 using BloodDonation.Application.BloodDonation.GetDonationHistory;
 using BloodDonation.Application.BloodDonation.GetDonationMatch;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToCancel;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToComplete;
+using BloodDonation.Application.BloodDonation.UpdateFailedDonationRequest;
 using BloodDonation.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -64,10 +66,28 @@ public class BloodDonationController : ControllerBase
     }
     
     [Authorize]
+    [HttpGet("blood-donation/get-all-requests")]
+    public async Task<IResult> GetAllRequests([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetAllDonationRequestQuery { PageNumber = pageNumber, PageSize = pageSize };
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
     [HttpGet("blood-donation/get-requests-to-approve")]
     public async Task<IResult> GetRequestsToApprove([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
         var query = new GetDonationRequestToApproveQuery { PageNumber = pageNumber, PageSize = pageSize };
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
+    [HttpGet("blood-donation/get-requests-to-complete")]
+    public async Task<IResult> GetRequestsToComplete([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetDonationRequestToCompleteQuery { PageNumber = pageNumber, PageSize = pageSize };
         var result = await _mediator.Send(query, cancellationToken);
         return result.MatchOk();
     }
@@ -106,6 +126,14 @@ public class BloodDonationController : ControllerBase
     }
     
     [Authorize]
+    [HttpPut("blood-donation/fail-request")]
+    public async Task<IResult> UpdateFailedDonationRequest([FromBody] UpdateFailedDonationRequestCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
     [HttpGet("blood-donation/get-donation-history")]
     public async Task<IResult> GetDonationHistory([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
@@ -123,13 +151,8 @@ public class BloodDonationController : ControllerBase
         return result.MatchOk();
     }
     
-    [Authorize]
-    [HttpGet("blood-donation/get-requests-to-complete")]
-    public async Task<IResult> GetRequestsToComplete([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
-    {
-        var query = new GetDonationRequestToCompleteQuery { PageNumber = pageNumber, PageSize = pageSize };
-        var result = await _mediator.Send(query, cancellationToken);
-        return result.MatchOk();
-    }
+    
+    
+  
     
 }

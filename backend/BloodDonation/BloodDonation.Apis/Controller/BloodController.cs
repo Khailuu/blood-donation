@@ -1,6 +1,7 @@
 using BloodDonation.Apis.Extensions;
 using BloodDonation.Apis.Requests;
 using BloodDonation.Application.Bloods.CheckBloodCompatibility;
+using BloodDonation.Application.Bloods.CreateBloodType;
 using BloodDonation.Application.Bloods.GetBloodStored;
 using BloodDonation.Application.Bloods.GetBloodType;
 using BloodDonation.Application.Bloods.UpdateBloodStored;
@@ -78,17 +79,17 @@ public class BloodController
         return result.MatchOk(); 
     }
     
-    // [HttpPost("blood/create-blood-stored")]
-    // public async Task<IResult> CreateBloodStored([FromBody] CreateBloodStoredRequest request, CancellationToken cancellationToken)
-    // {
-    //     CreateBloodStoredCommand command = new CreateBloodStoredCommand
-    //     {
-    //         Quantity = request.Quantity,
-    //         BloodTypeName = request.BloodTypeName
-    //     };
-    //     
-    //     Result<CreateBloodStoredResponse> result = await _mediator.Send(command, cancellationToken);
-    //     return result.MatchCreated(id => $"/bloodStored/{id}");
-    // }
+    [HttpPost("blood/create-blood-type")]
+    public async Task<IResult> CreateBloodType([FromBody] CreateBloodTypeCommand request, CancellationToken cancellationToken)
+    {
+        var command = new CreateBloodTypeCommand
+        {
+             Name= request.Name,
+             Description = request.Description
+        };
+        
+        var result = await _mediator.Send(command, cancellationToken);;
+        return result.MatchOk();
+    }
     
 }
