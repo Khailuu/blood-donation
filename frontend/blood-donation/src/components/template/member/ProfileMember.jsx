@@ -69,15 +69,19 @@ export const ProfileMember = () => {
         userService.getCurrentUser(),
         userService.getBloodTypes(),
       ]);
+      console.log({bloodTypesResponse});
+      
 
       const bloodTypeMap = {};
       bloodTypesResponse.forEach(type => {
         bloodTypeMap[type.name] = type.bloodTypeId;
       });
-
+      console.log({bloodTypeMap});
+      
       const userData = userResponse;
+      console.log({userData});
+      
       const transformedData = {
-        userId: userData.id || userData.userId || "",
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
@@ -89,13 +93,17 @@ export const ProfileMember = () => {
         role: userData.role ,
         isDonor: userData.isDonor || false
       };
+      console.log({transformedData});
 
       setProfileData(transformedData);
       form.setFieldsValue({
         ...transformedData,
         dateOfBirth: transformedData.dateOfBirth ? moment(transformedData.dateOfBirth) : null,
-        bloodType: transformedData.bloodTypeName 
+        bloodType: transformedData.bloodTypeName || transformedData.bloodType
       });
+
+      console.log({bloodTypesResponse});
+      
 
       setBloodTypes(bloodTypesResponse);
       localStorage.setItem('bloodTypeMap', JSON.stringify(bloodTypeMap));
@@ -144,36 +152,42 @@ export const ProfileMember = () => {
         dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null,
         gender: values.gender === "Male" ? 1 : values.gender === "Female" ? 0 : 2,
         address: values.address,
-        // bloodTypeId: bloodTypeId,
+        bloodTypeId: bloodTypeId,
         isDonor: true
       };
+      console.log({submitData});
+      
 
       if (bloodTypeId) {
         submitData.bloodTypeId = bloodTypeId;
+        
       }
 
       const response = await userService.updateProfile(submitData);
 
       if (response.isSuccess) {
-        const updatedUser = {
-          ...profileData,
-          fullName: values.fullName,
-          email: values.email,
-          phone: values.phone,
-          dateOfBirth: values.dateOfBirth,
-          gender: values.gender, 
-          address: values.address,
-          bloodTypeName: values.bloodType || null, 
-          bloodTypeId: bloodTypeId || null, 
-          role: profileData.role
-        };
+      // Sử dụng dữ liệu từ server thay vì tự tạo object
+      const updatedProfile = {
+        ...profileData,
+        ...response.data, // Giả sử server trả về updated user data
+        bloodTypeName: values.bloodType,
+        bloodTypeId: bloodTypeId
+      };
 
-        setProfileData(updatedUser);
-        form.setFieldsValue(updatedUser);
-        localStorage.setItem('userProfile', JSON.stringify(updatedUser));
-        
-        message.success("Profile updated successfully!");
-        setIsEditing(false);
+      console.log({updatedProfile});
+      
+
+      setProfileData(updatedProfile);
+      form.setFieldsValue({
+        ...updatedProfile,
+        dateOfBirth: updatedProfile.dateOfBirth ? moment(updatedProfile.dateOfBirth) : null
+      });
+
+      
+      
+      localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+      message.success("Profile updated successfully!");
+      setIsEditing(false);
         
         await fetchData();
       } else {

@@ -13,17 +13,12 @@ export const BannerMember = () => {
 
   const options = [
     {
-      key: "sangue",
-      label: "Sangue",
+      key: "total-donations",
+      label: "Total Blood Donation",
       icon: <Droplet size={20} color="#c41c33" />,
       backgroundColor: "#ffe6eb",
     },
-    {
-      key: "plasma",
-      label: "Plasma",
-      icon: <Droplet size={20} color="#e6b800" />,
-      backgroundColor: "#fff6d8",
-    },
+
   ];
 
   return (

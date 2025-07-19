@@ -1,14 +1,35 @@
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Modal } from "antd";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { banner2 } from "../../../assets";
 import { Settings, User, LogOut } from "lucide-react";
 import { authService } from "../../../services/authService";
 import { menuItemsMember } from "../../../assets/menu";
+import { useState, useEffect } from "react";
+import { userService } from "../../../services/manageUserService";
 
 export const NavbarMember = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentUser = authService.getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const user = await userService.getCurrentUser();
+        console.log({ user });
+
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const selectedKey =
     menuItemsMember.find(
@@ -17,14 +38,60 @@ export const NavbarMember = () => {
         location.pathname.startsWith(`${item.path}/`)
     )?.key || "home";
 
+  const calculateAge = (dateOfBirth) => {
+    if (!dateOfBirth) return 0;
+    const birthDate = new Date(dateOfBirth);
+    console.log({ birthDate, dateOfBirth });
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    console.log({ age });
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  };
+
   const handleMenuClick = (e) => {
     const clickedItem = menuItemsMember.find((item) => item.key === e.key);
-    if (clickedItem) navigate(clickedItem.path);
+
+    if (clickedItem) {
+      if (clickedItem.key === "donate") {
+        const age = calculateAge(currentUser?.dateOfBirth);
+        if (!currentUser?.dateOfBirth || age < 18) {
+          setModalVisible(true);
+          return;
+        }
+      }
+      navigate(clickedItem.path);
+    }
   };
 
   const handleLogout = () => {
     authService.logout();
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="navbar-wrapper">
@@ -38,7 +105,7 @@ export const NavbarMember = () => {
           />
         </div>
 
-        {/* Menu chính */}
+        {/* Main Menu */}
         <Menu
           mode="horizontal"
           selectedKeys={[selectedKey]}
@@ -125,7 +192,7 @@ export const NavbarMember = () => {
                     lineHeight: "20px",
                   }}
                 >
-                  {currentUser?.name || "User"}
+                  {currentUser?.fullName || "User"}
                 </div>
                 <div
                   style={{
@@ -144,7 +211,7 @@ export const NavbarMember = () => {
             </div>
           </Dropdown>
 
-          <Link to='/app/member/health-survey'>
+          <Link to="/app/member/health-survey">
             <Button
               type="primary"
               style={{
@@ -167,6 +234,67 @@ export const NavbarMember = () => {
           </Link>
         </div>
       </div>
+
+      <Modal
+        title="Age Verification Required"
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={[
+          <Button
+            key="back"
+            onClick={() => setModalVisible(false)}
+            style={{
+              backgroundColor: "#fff ",
+              color: "#bd0026",
+              border: "1px solid #bd0026",
+              borderRadius: 50,
+              height: 40,
+              fontWeight: 600,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(0.95)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            Cancel
+          </Button>,
+          <Button
+            key="update"
+            type="primary"
+            onClick={() => {
+              setModalVisible(false);
+              navigate("/app/member/profile");
+            }}
+            style={{
+              backgroundColor: "#bd0026",
+              borderRadius: 50,
+              height: 40,
+              fontWeight: 600,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(0.95)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            Update Profile
+          </Button>,
+        ]}
+        centered
+        style={{ textAlign: "center" }}
+      >
+        <div style={{ fontSize: 16, marginBottom: 16 }}>
+          <p>You must be at least 18 years old to access the donation page.</p>
+          {currentUser?.dayOfBirth && (
+            <p>
+              Your current age: {calculateAge(currentUser.dayOfBirth)} years old
+            </p>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
