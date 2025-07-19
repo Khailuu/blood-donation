@@ -26,7 +26,6 @@ export const userService = {
           pageSize: 100,
         },
       });
-      console.log({ response });
 
       return response.data.data.items;
     } catch (error) {
