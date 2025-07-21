@@ -17,6 +17,7 @@ import {
   FilterOutlined,
   DownloadOutlined,
   FrownOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import { donationRequestService } from "../../../services/donationRequestService ";
 import { userService } from "../../../services/manageUserService";
@@ -165,61 +166,55 @@ const DonationSchedule = () => {
   };
 
   const handleComplete = async (requestId) => {
-    try {
-      const confirmed = window.confirm(
-        "Are you sure you want to mark this donation as completed?"
-      );
-      if (!confirmed) return;
+  try {
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn muốn đánh dấu lịch hiến máu này là đã hoàn thành?"
+    );
+    if (!confirmed) return;
 
-      setActionLoading(true);
-      const donationResponse =
-        await donationRequestService.completeDonationRequest(requestId);
+    setActionLoading(true);
+    
 
-      if (donationResponse && donationResponse.data) {
-        const { bloodType, amountBlood } = donationResponse.data;
+    const requestToComplete = donationSchedules.find(
+      (req) => req.requestId === requestId
+    );
 
-        const bloodTypes = await userService.getBloodTypes();
-        const bloodTypeInfo = bloodTypes.find(
-          (type) => type.bloodType === bloodType
-        );
-
-        if (bloodTypeInfo) {
-          await userService.addBloodStored({
-            bloodTypeId: bloodTypeInfo.id,
-            quantity: amountBlood,
-          });
-        }
-      }
-
-      setDonationSchedules((prev) =>
-        prev.map((req) =>
-          req.requestId === requestId
-            ? {
-                ...req,
-                status: "Completed",
-                ...(donationResponse.data
-                  ? {
-                      bloodType: donationResponse.data.bloodType,
-                      amountBlood: donationResponse.data.amountBlood,
-                    }
-                  : {}),
-              }
-            : req
-        )
-      );
-
-      setSelectedSchedules((prev) => prev.filter((id) => id !== requestId));
-      setSelectedSchedule(null);
-      message.success("Donation completed successfully");
-    } catch (error) {
-      console.error("Failed to complete donation:", error);
-      message.error(
-        error.response?.data?.message || "Failed to complete donation"
-      );
-    } finally {
-      setActionLoading(false);
+    if (!requestToComplete) {
+      message.error("Không tìm thấy yêu cầu hiến máu");
+      return;
     }
-  };
+
+    const bloodStoredData = {
+      bloodTypeName: requestToComplete.bloodType,
+      quantity: requestToComplete.amountBlood 
+    };
+
+    console.log({bloodStoredData});
+    
+
+    const addBloodResponse = await userService.addBloodStored(bloodStoredData);
+    console.log("Kết quả cập nhật kho máu:", addBloodResponse);
+
+    setDonationSchedules((prev) =>
+      prev.map((req) =>
+        req.requestId === requestId
+          ? { ...req, status: "Completed" }
+          : req
+      )
+    );
+
+    setSelectedSchedules((prev) => prev.filter((id) => id !== requestId));
+    setSelectedSchedule(null);
+    message.success(`Đã hoàn thành hiến ${requestToComplete.amountBlood}ml máu nhóm ${requestToComplete.bloodType}`);
+  } catch (error) {
+    console.error("Lỗi khi hoàn thành hiến máu:", error);
+    message.error(
+      error.response?.data?.message || "Có lỗi xảy ra khi hoàn thành hiến máu"
+    );
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   const handleBulkComplete = async () => {
     if (selectedSchedules.length === 0) {
@@ -577,6 +572,13 @@ const DonationSchedule = () => {
                         onClick={() => setSelectedSchedule(schedule)}
                         type="primary"
                         className="bg-blue-500 hover:bg-blue-600 text-white"
+                        size="small"
+                      />
+                      <Button
+                        icon={<EditOutlined />}
+                        onClick={() => setSelectedSchedule(schedule)}
+                        // type="primary"
+                        className="bg-orange-500 hover:bg-orange-600 text-white"
                         size="small"
                       />
                       {schedule.status === "Scheduled" && (

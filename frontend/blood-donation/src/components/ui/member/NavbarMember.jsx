@@ -211,7 +211,7 @@ export const NavbarMember = () => {
             </div>
           </Dropdown>
 
-          <Link to="/app/member/health-survey">
+          {/* <Link to="/app/member/health-survey">
             <Button
               type="primary"
               style={{
@@ -231,7 +231,7 @@ export const NavbarMember = () => {
             >
               Health Survey
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

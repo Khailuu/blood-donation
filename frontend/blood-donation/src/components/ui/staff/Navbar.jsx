@@ -1,13 +1,37 @@
+
 import React, { useState } from "react";
 import { User, LogOut, Settings, Bell, Clock, AlertCircle, Users, Heart, Check, X } from "lucide-react";
+
 import { Dropdown, Badge } from "antd";
 import { authService } from "../../../services/authService";
 import { useNavigate } from "react-router-dom";
+import { userService } from "../../../services/manageUserService";
+
 
 export const Navbar = () => {
-  const currentUser = authService.getCurrentUser();
+    const [currentUser, setCurrentUser] = useState(null);
+    const [, setLoading] = useState(true);
+
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+      const fetchUserInfo = async () => {
+        try {
+          const user = await userService.getCurrentUser();
+          console.log({ user });
+  
+          setCurrentUser(user);
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUserInfo();
+    }, []);
+  
 
   const handleLogout = () => {
     authService.logout();
@@ -202,7 +226,7 @@ export const Navbar = () => {
                       lineHeight: "20px",
                     }}
                   >
-                    {currentUser?.name || "User"}
+                    {currentUser?.fullName || "User"}
                   </div>
                   <div
                     style={{
