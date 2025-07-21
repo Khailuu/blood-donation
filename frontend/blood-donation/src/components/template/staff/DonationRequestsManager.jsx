@@ -381,7 +381,7 @@ const DonorRequestsManager = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className=" p-6">
       <div className="flex justify-between items-center">
         <div className="mb-6">
           <Title
@@ -583,7 +583,7 @@ const DonorRequestsManager = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-4">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
@@ -734,7 +734,7 @@ const DonorRequestsManager = () => {
       </div>
 
       {selectedRequest && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
             <h3 className="text-lg font-bold mb-4">Request Details</h3>
             <div className="space-y-4">
