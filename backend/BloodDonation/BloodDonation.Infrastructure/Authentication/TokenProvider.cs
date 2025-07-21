@@ -44,4 +44,57 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
+    public string CreateDonationMatchConfirmToken(Guid matchId, TimeSpan? lifetime = null)
+    {
+        string secretKey = configuration["Jwt:Secret"]!;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim("matchId", matchId.ToString())
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: configuration["Jwt:Issuer"],
+            audience: configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.Add(lifetime ?? TimeSpan.FromHours(6)),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public Guid? ValidateDonationMatchConfirmToken(string token)
+    {
+        try
+        {
+            string secretKey = configuration["Jwt:Secret"]!;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+
+            var handler = new JwtSecurityTokenHandler();
+            var principal = handler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["Jwt:Issuer"],
+                ValidAudience = configuration["Jwt:Audience"],
+                IssuerSigningKey = key
+            }, out _);
+
+            var matchIdStr = principal.FindFirst("matchId")?.Value;
+            if (Guid.TryParse(matchIdStr, out var matchId))
+                return matchId;
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
 }

@@ -1,6 +1,8 @@
-﻿namespace BloodDonation.Domain.Bloods;
+﻿using BloodDonation.Domain.Common;
 
-public class BloodStored
+namespace BloodDonation.Domain.Bloods;
+
+public class BloodStored : Entity
 {
     public Guid StoredId { get; set; }
     public Guid BloodTypeId { get; set; }

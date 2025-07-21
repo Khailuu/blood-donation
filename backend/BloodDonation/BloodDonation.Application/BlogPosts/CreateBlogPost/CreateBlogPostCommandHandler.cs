@@ -30,7 +30,8 @@ public class CreateBlogPostCommandHandler(
             UserId = userId,
             Title = command.Title,
             Content = command.Content,
-            PublishedDate = DateTime.UtcNow
+            PublishedDate = DateTime.UtcNow,
+            ImageUrl = command.ImageUrl 
         };
 
         context.BlogPosts.Add(blogPost);
@@ -42,7 +43,8 @@ public class CreateBlogPostCommandHandler(
             UserId = blogPost.UserId,
             Title = blogPost.Title,
             Content = blogPost.Content,
-            PublishedDate = blogPost.PublishedDate
+            PublishedDate = blogPost.PublishedDate,
+            ImageUrl = command.ImageUrl 
         };
     }
 }

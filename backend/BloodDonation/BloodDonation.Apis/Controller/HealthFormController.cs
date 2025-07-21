@@ -57,18 +57,18 @@ public class HealthFormController : ControllerBase
         var result = await _mediator.Send(query, cancellationToken);
         return result.MatchOk();
     }
-    [Authorize(Roles = "Staff")]
-    [HttpPut("healthform/update-user-healthform/{formId:guid}")]
-    public async Task<IResult> UpdateHealthFormForStaff(Guid formId, [FromBody] UpdateHealthFormForStaffRequest request, CancellationToken cancellationToken)
-    {
-        var command = new UpdateHealthFormForStaffCommand()
-        {
-            FormId = formId,
-            Status = request.Status
-        };
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.MatchOk();
-    }
+    // [Authorize(Roles = "Staff")]
+    // [HttpPut("healthform/update-user-healthform/{formId:guid}")]
+    // public async Task<IResult> UpdateHealthFormForStaff(Guid formId, [FromBody] UpdateHealthFormForStaffRequest request, CancellationToken cancellationToken)
+    // {
+    //     var command = new UpdateHealthFormForStaffCommand()
+    //     {
+    //         FormId = formId,
+    //         Status = request.Status
+    //     };
+    //
+    //     var result = await _mediator.Send(command, cancellationToken);
+    //
+    //     return result.MatchOk();
+    // }
 }

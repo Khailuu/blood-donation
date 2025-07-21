@@ -27,9 +27,11 @@ public class UpdateBlogPostCommandHandler(
         }
 
         // Cập nhật nội dung và ngày xuất bản
-        blogPost.Title = command.Title;
-        blogPost.Content = command.Content;
+        blogPost.Title = command.Title ?? blogPost.Title;
+        blogPost.Content = command.Content ?? blogPost.Content;
         blogPost.PublishedDate = DateTime.UtcNow;
+        blogPost.ImageUrl = command.ImageUrl ?? blogPost.ImageUrl;;
+        
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -39,7 +41,8 @@ public class UpdateBlogPostCommandHandler(
             UserId = blogPost.UserId,
             Title = blogPost.Title,
             Content = blogPost.Content,
-            PublishedDate = blogPost.PublishedDate
+            PublishedDate = blogPost.PublishedDate,
+            ImageUrl = blogPost.ImageUrl
         };
     }
 }

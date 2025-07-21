@@ -14,7 +14,9 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
 
         builder.Property(x => x.AmountBlood).IsRequired();
         builder.Property(x => x.RequestTime).IsRequired();
-        builder.Property(x => x.Deadline).IsRequired();
+        builder.Property(x => x.Deadline)
+            .HasDefaultValueSql("NOW() + interval '7 days'")
+            .IsRequired();
         builder.Property(x => x.IsEmergency).HasDefaultValue(false);
         
         builder.Property(x => x.Status)
@@ -22,9 +24,9 @@ public class DonationRequestConfiguration : IEntityTypeConfiguration<DonationReq
             .IsRequired()
             .HasDefaultValue(DonationRequestStatus.Pending);
 
-        builder.Property(x => x.EmergencyContactName).HasMaxLength(100);
-        builder.Property(x => x.EmergencyContactPhone).HasMaxLength(20);
-        builder.Property(x => x.Note).HasMaxLength(500);
+        builder.Property(x => x.EmergencyContactName).HasMaxLength(100).IsRequired(false);
+        builder.Property(x => x.EmergencyContactPhone).HasMaxLength(20).IsRequired(false);
+        builder.Property(x => x.Note).HasMaxLength(500).IsRequired(false);
 
         builder.HasOne(x => x.User)
             .WithMany(u => u.DonationRequests)
