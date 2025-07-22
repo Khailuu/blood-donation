@@ -1,11 +1,11 @@
 // src/pages/DonateSchedule.js
 import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Row, Col, message, Tag } from "antd";
+import { Card, Typography, Button, Row, Col, message, Tag, Pagination } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
-import { donationRequestService } from "../../../../services/donationRequestService";
+import { donationRequestService } from "../../../../services/donationRequestService ";
 
 const { Title, Text } = Typography;
 
@@ -13,6 +13,8 @@ export const DonateSchedule = () => {
   const currentUser = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("upcoming");
   const [allAppointments, setAllAppointments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4; // Số lượng appointment trên mỗi trang
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -34,7 +36,7 @@ export const DonateSchedule = () => {
           date: dayjs(item.requestTime),
           time: dayjs(item.requestTime).format("HH:mm"),
           donationType: item.componentType,
-          donationAmount: item.donationAmount || "N/A", // Thêm donationAmount, mặc định "N/A" nếu không có
+          donationAmount: item.donationAmount || "N/A",
           status: item.status,
           statusLower: item.status.toLowerCase(),
           id: item.requestId,
@@ -43,6 +45,7 @@ export const DonateSchedule = () => {
         console.log("Formatted Appointments:", { formatted });
 
         setAllAppointments(formatted);
+        setCurrentPage(1); // Reset về trang 1 khi dữ liệu thay đổi
       } catch (error) {
         console.error("Error fetching appointments:", error);
         message.error("Failed to fetch appointments");
@@ -61,6 +64,12 @@ export const DonateSchedule = () => {
     }
   });
 
+  // Phân trang
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -78,17 +87,16 @@ export const DonateSchedule = () => {
 
   const handleCancelBooking = async (requestId) => {
     try {
-      await donationRequestService.cancelDonationRequest(requestId); // Giả sử có API này
+      await donationRequestService.rejectDonationRequest(requestId);
       message.success("Booking cancelled successfully!");
-      // Làm mới danh sách appointment
       const updatedAppointments = allAppointments.map((item) =>
         item.id === requestId ? { ...item, status: "cancelled", statusLower: "cancelled" } : item
       );
       setAllAppointments(updatedAppointments);
-      // Chuyển sang tab Archiviate nếu không còn appointment nào pending
       if (!updatedAppointments.some((item) => item.statusLower === "pending")) {
         setActiveTab("archived");
       }
+      setCurrentPage(1); // Reset về trang 1 sau khi hủy
     } catch (error) {
       console.error("Error cancelling booking:", error);
       message.error("Failed to cancel booking");
@@ -136,11 +144,13 @@ export const DonateSchedule = () => {
             ].map(({ key, label }) => (
               <Button
                 key={key}
-                onClick={() => setActiveTab(key)}
+                onClick={() => {
+                  setActiveTab(key);
+                  setCurrentPage(1); // Reset về trang 1 khi đổi tab
+                }}
                 style={{
                   border: "none",
-                  backgroundColor:
-                    activeTab === key ? "#bd0026" : "transparent",
+                  backgroundColor: activeTab === key ? "#bd0026" : "transparent",
                   color: activeTab === key ? "white" : "#444",
                   padding: "6px 20px",
                   borderRadius: 999,
@@ -155,8 +165,8 @@ export const DonateSchedule = () => {
         </div>
 
         <Row gutter={[16, 16]}>
-          {filteredAppointments.length > 0 ? (
-            filteredAppointments.map((item, idx) => (
+          {paginatedAppointments.length > 0 ? (
+            paginatedAppointments.map((item, idx) => (
               <Col key={idx} xs={24} sm={12} md={8} lg={6}>
                 <Card
                   style={{
@@ -262,6 +272,20 @@ export const DonateSchedule = () => {
             </div>
           )}
         </Row>
+
+        {/* Phân trang */}
+        {filteredAppointments.length > pageSize && (
+          <div style={{display:"flex", justifyContent: "center",textAlign: "center", marginTop: 24 }}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredAppointments.length}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              style={{ fontFamily: "Raleway" }}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );
