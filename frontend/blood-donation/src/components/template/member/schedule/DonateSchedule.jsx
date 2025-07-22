@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Row, Col, message, Tag, Modal } from "antd";
-import { ClockCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, Typography, Button, Row, Col, message, Tag } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
@@ -11,115 +11,141 @@ const { Title, Text } = Typography;
 export const DonateSchedule = () => {
   const currentUser = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("upcoming");
-  const [allAppointments, setAllAppointments] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [archivedAppointments, setArchivedAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const response = await donationRequestService.getMyDonationRequests(
-          currentUser.userId
-        );
-        console.log(response);
-        
-        const allItems = response.items || response.data?.items || [];
+  const fetchUpcomingAppointments = useCallback(async () => {
+    try {
+      const response = await donationRequestService.getMyDonationRequests(
+        currentUser.userId
+      );
 
-        const myItems = allItems.filter(
-          (item) => item.userId === currentUser.userId
-        );
+      const allItems = response.items || response.data?.items || [];
+      const myItems = allItems.filter(
+        (item) => item.userId === currentUser.userId
+      );
 
-        console.log({allItems});
-        
-        const formatted = myItems.map((item) => ({
-          date: dayjs(item.requestTime),
-          time: dayjs(item.requestTime).format("HH:mm"),
-          donationType: item.componentType,
-          status: item.status,
-          statusLower: item.status.toLowerCase(),
-          id: item.requestId,
-        }));
+      const formatted = myItems.map((item) => ({
+        date: dayjs(item.requestTime),
+        time: dayjs(item.requestTime).format("HH:mm"),
+        donationType: item.componentType,
+        status: item.status,
+        statusLower: item.status.toLowerCase(),
+        id: item.requestId,
+      }));
 
-        console.log({formatted});
-        
-        setAllAppointments(formatted);
-      } catch (error) {
-        console.error(error);
-        message.error("Failed to fetch appointments");
-      }
-    };
-
-    fetchAppointments();
+      setUpcomingAppointments(formatted);
+    } catch (error) {
+      console.error("Error fetching upcoming appointments:", error);
+      message.error("Failed to fetch upcoming appointments");
+    }
   }, [currentUser.userId]);
 
-  const handleCancelBooking = async (appointmentId) => {
-  const shouldCancel = window.confirm("Bạn có chắc chắn muốn hủy cuộc hẹn này không?");
-  if (!shouldCancel) return;
+  const fetchArchivedAppointments = useCallback(async () => {
+    try {
+      const response = await donationRequestService.getAllRequests();
 
-  setLoading(true);
-  try {
-    let apiResult;
-    let success = false;
+      const myArchivedItems = response.filter(
+        (item) => item.userId === currentUser.userId && item.status.toLowerCase() !== "pending"
+      );
 
-    // Thử gọi API từ service có sẵn
-    if (typeof donationRequestService.updateDonationRequestStatus === "function") {
-      apiResult = await donationRequestService.updateDonationRequestStatus(appointmentId, "rejected");
-    } else if (typeof donationRequestService.cancelDonationRequest === "function") {
-      apiResult = await donationRequestService.cancelDonationRequest(appointmentId);
-    } else if (typeof donationRequestService.updateRequest === "function") {
-      apiResult = await donationRequestService.updateRequest(appointmentId, { status: "rejected" });
+      const formatted = myArchivedItems.map((item) => ({
+        date: dayjs(item.requestTime),
+        time: dayjs(item.requestTime).format("HH:mm"),
+        donationType: item.componentType,
+        status: item.status,
+        statusLower: item.status.toLowerCase(),
+        id: item.requestId,
+      }));
+
+      setArchivedAppointments(formatted);
+    } catch (error) {
+      console.error("Error fetching archived appointments:", error);
+      message.error("Failed to fetch archived appointments");
     }
+  }, [currentUser.userId]);
 
-    // Kiểm tra phản hồi API có phải thành công không
-    if (apiResult?.success || apiResult?.status === "success") {
-      success = true;
-    }
-
-    // ✅ Luôn cập nhật giao diện, nhưng phân biệt rõ kết quả
-    setAllAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
-          : appointment
-      )
-    );
-
-    if (success) {
-      message.success("Cuộc hẹn đã được hủy thành công!");
-    } else {
-      message.warning("Cuộc hẹn đã bị hủy trên giao diện nhưng chưa chắc đã lưu vào hệ thống.");
-    }
-
-    // Chuyển tab sau khi cập nhật
-    setTimeout(() => setActiveTab("archived"), 1000);
-
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-
-    // Vẫn cập nhật giao diện tạm thời nếu API thất bại
-    setAllAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
-          : appointment
-      )
-    );
-
-    message.error("Không thể đồng bộ trạng thái hủy với hệ thống.");
-    setTimeout(() => setActiveTab("archived"), 1000);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  // Filter appointments based on active tab
-  const filteredAppointments = allAppointments.filter((item) => {
+  useEffect(() => {
     if (activeTab === "upcoming") {
-      return item.statusLower === "pending";
-    } else  {
-      return item.statusLower !== "pending";
+      fetchUpcomingAppointments();
+    } else if (activeTab === "archived") {
+      fetchArchivedAppointments();
     }
-  });
+  }, [activeTab, fetchUpcomingAppointments, fetchArchivedAppointments]);
+
+  const handleCancelBooking = async (appointmentId) => {
+    const shouldCancel = window.confirm("Bạn có chắc chắn muốn hủy cuộc hẹn này không?");
+    if (!shouldCancel) return;
+
+    setLoading(true);
+    try {
+      let apiResult;
+      let success = false;
+
+      if (typeof donationRequestService.updateDonationRequestStatus === "function") {
+        apiResult = await donationRequestService.updateDonationRequestStatus(appointmentId, "rejected");
+      } else if (typeof donationRequestService.cancelDonationRequest === "function") {
+        apiResult = await donationRequestService.cancelDonationRequest(appointmentId);
+      } else if (typeof donationRequestService.updateRequest === "function") {
+        apiResult = await donationRequestService.updateRequest(appointmentId, { status: "rejected" });
+      } else if (typeof donationRequestService.rejectDonationRequest === "function") {
+        apiResult = await donationRequestService.rejectDonationRequest(appointmentId);
+      }
+
+      if (apiResult?.success || apiResult?.status === "success") {
+        success = true;
+      }
+
+      setUpcomingAppointments(prev =>
+        prev.map(appointment =>
+          appointment.id === appointmentId
+            ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+            : appointment
+        )
+      );
+
+      if (success) {
+        message.success("Cuộc hẹn đã được hủy thành công!");
+      } else {
+        message.warning("Cuộc hẹn đã bị hủy trên giao diện nhưng chưa chắc đã lưu vào hệ thống.");
+      }
+
+      setTimeout(() => {
+        setActiveTab("archived");
+        fetchArchivedAppointments();
+      }, 1000);
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+
+      setUpcomingAppointments(prev =>
+        prev.map(appointment =>
+          appointment.id === appointmentId
+            ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+            : appointment
+        )
+      );
+
+      message.error("Không thể đồng bộ trạng thái hủy với hệ thống.");
+      setTimeout(() => {
+        setActiveTab("archived");
+        fetchArchivedAppointments();
+      }, 1000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCurrentAppointments = () => {
+    if (activeTab === "upcoming") {
+      return upcomingAppointments.filter(item => item.statusLower === "pending");
+    } else {
+      return archivedAppointments;
+    }
+  };
+
+  const filteredAppointments = getCurrentAppointments();
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -131,6 +157,8 @@ export const DonateSchedule = () => {
         return "red";
       case "cancelled":
         return "gray";
+      case "completed":
+        return "blue";
       default:
         return "blue";
     }
@@ -275,7 +303,6 @@ export const DonateSchedule = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log("Button clicked for item:", item.id);
                           handleCancelBooking(item.id);
                         }}
                         style={{
