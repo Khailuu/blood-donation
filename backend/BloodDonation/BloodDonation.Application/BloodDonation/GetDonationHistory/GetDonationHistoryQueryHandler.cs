@@ -27,6 +27,7 @@ public class GetDonationHistoryQueryHandler(IDbContext context)
                 RequestId = h.RequestId,
                 RequestNote = h.Request != null ? h.Request.Note : null,
                 Date = h.Date,
+                AmountBlood = h.Request.AmountBlood,
                 Status = h.Status.ToString(),
                 ConfirmedBy = h.ConfirmedBy
             })
