@@ -47,15 +47,9 @@ export const userService = {
   async getDonationHistory() {
     try {
       const response = await api.get(
-        "/api/blood-donation/get-donation-history",
-        {
-          params: {
-            pageNumber: 1,
-            pageSize: 100,
-          },
-        }
+        "/api/blood-donation/get-current-donation-history",
       );
-      return response.data.data.items;
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching blood donation history:", error);
       return [];

@@ -8,6 +8,7 @@ import {
   Tabs,
   Tag,
   Spin,
+  Modal,
 } from "antd";
 import {
   SyncOutlined,
@@ -18,6 +19,7 @@ import {
   DownloadOutlined,
   FrownOutlined,
   EditOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import { donationRequestService } from "../../../services/donationRequestService ";
 import { userService } from "../../../services/manageUserService";
@@ -36,6 +38,8 @@ const DonationSchedule = () => {
   const [pageSize, setPageSize] = useState(10);
   const [activeTab, setActiveTab] = useState("scheduled");
   const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [confirmRequestId, setConfirmRequestId] = useState(null);
 
   const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -126,12 +130,12 @@ const DonationSchedule = () => {
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("vi-VN");
+    return date.toLocaleDateString("en-US");
   };
 
   const formatTime = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleTimeString("vi-VN", {
+    return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -166,55 +170,65 @@ const DonationSchedule = () => {
   };
 
   const handleComplete = async (requestId) => {
-  try {
-    const confirmed = window.confirm(
-      "Bạn có chắc chắn muốn đánh dấu lịch hiến máu này là đã hoàn thành?"
-    );
-    if (!confirmed) return;
+    setConfirmRequestId(requestId);
+    setIsConfirmModalVisible(true);
+  };
 
-    setActionLoading(true);
-    
+  const handleConfirmComplete = async () => {
+    try {
+      setActionLoading(true);
+      const requestToComplete = donationSchedules.find(
+        (req) => req.requestId === confirmRequestId
+      );
 
-    const requestToComplete = donationSchedules.find(
-      (req) => req.requestId === requestId
-    );
+      if (!requestToComplete) {
+        message.error("Donation request not found");
+        return;
+      }
 
-    if (!requestToComplete) {
-      message.error("Không tìm thấy yêu cầu hiến máu");
-      return;
+      const completeResponse =
+        await donationRequestService.completeDonationRequest(confirmRequestId);
+      console.log("Completion result:", completeResponse);
+
+      const bloodStoredData = {
+        bloodTypeName: requestToComplete.bloodType,
+        quantity: requestToComplete.amountBlood,
+      };
+
+      console.log("Blood inventory update data:", bloodStoredData);
+
+      const addBloodResponse = await userService.addBloodStored(
+        bloodStoredData
+      );
+      console.log("Blood inventory update result:", addBloodResponse);
+
+      setDonationSchedules((prev) =>
+        prev.map((req) =>
+          req.requestId === confirmRequestId
+            ? { ...req, status: "Completed" }
+            : req
+        )
+      );
+
+      setSelectedSchedules((prev) =>
+        prev.filter((id) => id !== confirmRequestId)
+      );
+      setSelectedSchedule(null);
+      message.success(
+        `Successfully completed donation of ${requestToComplete.amountBlood}ml of ${requestToComplete.bloodType} blood`
+      );
+    } catch (error) {
+      console.error("Error completing donation:", error);
+      message.error(
+        error.response?.data?.message ||
+          "An error occurred while completing the donation"
+      );
+    } finally {
+      setActionLoading(false);
+      setIsConfirmModalVisible(false);
+      setConfirmRequestId(null);
     }
-
-    const bloodStoredData = {
-      bloodTypeName: requestToComplete.bloodType,
-      quantity: requestToComplete.amountBlood 
-    };
-
-    console.log({bloodStoredData});
-    
-
-    const addBloodResponse = await userService.addBloodStored(bloodStoredData);
-    console.log("Kết quả cập nhật kho máu:", addBloodResponse);
-
-    setDonationSchedules((prev) =>
-      prev.map((req) =>
-        req.requestId === requestId
-          ? { ...req, status: "Completed" }
-          : req
-      )
-    );
-
-    setSelectedSchedules((prev) => prev.filter((id) => id !== requestId));
-    setSelectedSchedule(null);
-    message.success(`Đã hoàn thành hiến ${requestToComplete.amountBlood}ml máu nhóm ${requestToComplete.bloodType}`);
-  } catch (error) {
-    console.error("Lỗi khi hoàn thành hiến máu:", error);
-    message.error(
-      error.response?.data?.message || "Có lỗi xảy ra khi hoàn thành hiến máu"
-    );
-  } finally {
-    setActionLoading(false);
-  }
-};
+  };
 
   const handleBulkComplete = async () => {
     if (selectedSchedules.length === 0) {
@@ -274,7 +288,7 @@ const DonationSchedule = () => {
         formatTime(schedule.requestTime),
         schedule.bloodType,
         getComponentText(schedule.componentType),
-        `${schedule.amountBlood} unit(s)`,
+        `${schedule.amountBlood} ml`,
         schedule.status,
       ]),
     ]
@@ -376,6 +390,7 @@ const DonationSchedule = () => {
               fontFamily: "Raleway",
               fontWeight: 600,
               backgroundColor: "#bd0026",
+              border: "1px solid #bd0026",
               color: "#fff",
               borderRadius: 50,
               height: 40,
@@ -434,13 +449,30 @@ const DonationSchedule = () => {
           <div className="text-blue-700">
             {selectedSchedules.length} schedule(s) selected
           </div>
-          <button
+          <Button
             onClick={handleBulkComplete}
             disabled={actionLoading}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            style={{
+              fontFamily: "Raleway",
+              fontWeight: 600,
+              backgroundColor: "#52c41a",
+              color: "#fff",
+              borderRadius: 50,
+              height: 40,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "scale(0.95)";
+              e.currentTarget.style.backgroundColor = "#73d13d";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.backgroundColor = "#52c41a";
+            }}
           >
             {actionLoading ? "Processing..." : "Complete Selected"}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -452,7 +484,7 @@ const DonationSchedule = () => {
               placeholder="Search by donor name or blood type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border focus:outline-none border-gray-300 rounded-lg focus:ring-2 focus:ring-red-300 focus:border-transparent"
+              className="flex-1 px-4 py-2 border focus:outline-none border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-transparent"
             />
             <div className="text-sm text-gray-600">
               Showing {paginatedSchedules.length} of {filteredSchedules.length}{" "}
@@ -468,7 +500,7 @@ const DonationSchedule = () => {
               <select
                 value={filterBloodType}
                 onChange={(e) => setFilterBloodType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:outline-none focus:ring-red-300"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:outline-none focus:ring-blue-300"
               >
                 <option value="All">All Blood Types</option>
                 {bloodTypes.map((type) => (
@@ -487,7 +519,7 @@ const DonationSchedule = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   <Checkbox
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     checked={
@@ -501,31 +533,31 @@ const DonationSchedule = () => {
                     disabled={activeTab !== "scheduled"}
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   #
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Donor
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Date
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Time
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Blood Type
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Component
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Amount
                 </th>
-                <th className="px-4 py-3 text-left font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-left font-bold text-gray-600">
                   Status
                 </th>
-                <th className="px-4 py-3 text-center font-bold text-gray-600 ">
+                <th className="px-4 py-3 text-center font-bold text-gray-600">
                   Actions
                 </th>
               </tr>
@@ -563,22 +595,48 @@ const DonationSchedule = () => {
                   <td className="px-4 py-3">
                     {getComponentText(schedule.componentType)}
                   </td>
-                  <td className="px-4 py-3">{schedule.amountBlood} unit(s)</td>
+                  <td className="px-4 py-3">{schedule.amountBlood}ml</td>
                   <td className="px-4 py-3">{getStatusTag(schedule.status)}</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <Button
                         icon={<EyeOutlined />}
                         onClick={() => setSelectedSchedule(schedule)}
-                        type="primary"
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        style={{
+                          backgroundColor: "#1890ff",
+                          color: "#fff",
+                          borderRadius: 8,
+                          border: "none",
+                          transition: "all 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = "scale(0.95)";
+                          e.currentTarget.style.backgroundColor = "#40a9ff";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.backgroundColor = "#1890ff";
+                        }}
                         size="small"
                       />
                       <Button
                         icon={<EditOutlined />}
                         onClick={() => setSelectedSchedule(schedule)}
-                        // type="primary"
-                        className="bg-orange-500 hover:bg-orange-600 text-white"
+                        style={{
+                          backgroundColor: "#fa8c16",
+                          color: "#fff",
+                          borderRadius: 8,
+                          border: "none",
+                          transition: "all 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = "scale(0.95)";
+                          e.currentTarget.style.backgroundColor = "#ff9c33";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.backgroundColor = "#fa8c16";
+                        }}
                         size="small"
                       />
                       {schedule.status === "Scheduled" && (
@@ -586,8 +644,21 @@ const DonationSchedule = () => {
                           icon={<CheckCircleOutlined />}
                           onClick={() => handleComplete(schedule.requestId)}
                           disabled={actionLoading}
-                          type="primary"
-                          className="bg-green-500 hover:bg-green-600 text-white"
+                          style={{
+                            backgroundColor: "#52c41a",
+                            color: "#fff",
+                            borderRadius: 8,
+                            border: "none",
+                            transition: "all 0.3s",
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.transform = "scale(0.95)";
+                            e.currentTarget.style.backgroundColor = "#73d13d";
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.backgroundColor = "#52c41a";
+                          }}
                           size="small"
                         />
                       )}
@@ -675,7 +746,7 @@ const DonationSchedule = () => {
                 <div>
                   <div className="text-sm text-gray-500">Amount</div>
                   <div className="font-medium">
-                    {selectedSchedule.amountBlood} unit(s)
+                    {selectedSchedule.amountBlood}ml
                   </div>
                 </div>
                 <div>
@@ -686,29 +757,127 @@ const DonationSchedule = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 mt-6">
+            <div className="flex float-end gap-2 mt-6">
+              <Button
+                onClick={() => setSelectedSchedule(null)}
+                style={{
+                  fontFamily: "Raleway",
+                  fontWeight: 600,
+                  backgroundColor: "#fff",
+                  color: "#bd0026",
+                  border: "1px solid #bd0026",
+                  borderRadius: 50,
+                  height: 40,
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  transition: "all 0.3s",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "scale(0.95)";
+
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+
+                }}
+              >
+                Close
+              </Button>
               {selectedSchedule.status === "Scheduled" && (
                 <Button
                   onClick={() => handleComplete(selectedSchedule.requestId)}
                   disabled={actionLoading}
-                  type="primary"
-                  icon={<CheckCircleOutlined />}
-                  className="bg-green-600 hover:bg-green-700"
+                  style={{
+                    fontFamily: "Raleway",
+                    fontWeight: 600,
+                    backgroundColor: "#bd0026",
+                    border:"1px solid #bd0026",
+                    color: "#fff",
+                    borderRadius: 50,
+                    height: 40,
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    transition: "all 0.3s",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "scale(0.95)";
+
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+
+                  }}
                 >
                   {actionLoading ? "Processing..." : "Mark as Completed"}
                 </Button>
               )}
-              <Button
-                onClick={() => setSelectedSchedule(null)}
-                icon={<CloseOutlined />}
-                className="bg-gray-100 hover:bg-gray-200"
-              >
-                Close
-              </Button>
+              
             </div>
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <CheckCircleOutlined className="text-green-500" />
+            <span>Confirm Completion</span>
+          </div>
+        }
+        open={isConfirmModalVisible}
+        onOk={handleConfirmComplete}
+        onCancel={() => {
+          setIsConfirmModalVisible(false);
+          setConfirmRequestId(null);
+        }}
+        okText="Confirm"
+        cancelText="Cancel"
+        okButtonProps={{
+          style: {
+            fontFamily: "Raleway",
+            fontWeight: 600,
+            backgroundColor: "#bd0026",
+            borderColor: "#bd0026",
+            color: "#fff",
+            borderRadius: 50,
+            height: 40,
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s",
+          },
+          onMouseOver: (e) => {
+            e.currentTarget.style.transform = "scale(0.95)";
+            e.currentTarget.style.backgroundColor = "#bd0026";
+          },
+          onMouseOut: (e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.backgroundColor = "#bd0026";
+          },
+        }}
+        cancelButtonProps={{
+          style: {
+            fontFamily: "Raleway",
+            fontWeight: 600,
+            backgroundColor: "#fff",
+            color: "#bd0026",
+            border: "1px solid #bd0026",
+            borderRadius: 50,
+            height: 40,
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s",
+          },
+          onMouseOver: (e) => {
+            e.currentTarget.style.transform = "scale(0.95)";
+          },
+          onMouseOut: (e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          },
+        }}
+        centered
+        className="confirm-modal"
+      >
+        <div style={{ fontFamily: "Raleway", fontSize: 16 }}>
+          Are you sure you want to mark this donation as completed?
+        </div>
+      </Modal>
     </div>
   );
 };

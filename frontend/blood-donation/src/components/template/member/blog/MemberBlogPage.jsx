@@ -100,8 +100,9 @@ export const MemberBlogPage = () => {
         title: values.title,
         content: values.content,
         imageUrl: values.imageUrl,
-        authorId: currentUserId,
       };
+      console.log({blogData});
+      
 
       if (editingArticle) {
         await blogService.updateBlog(editingArticle._id, blogData);

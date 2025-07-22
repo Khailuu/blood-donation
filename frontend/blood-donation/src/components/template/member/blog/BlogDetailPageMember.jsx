@@ -1,24 +1,23 @@
-import React from "react";
+// src/pages/BlogDetailPageMember.js
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Typography,
-  Tag,
   Button,
   Row,
   Col,
   Divider,
   List,
   Input,
+  message,
+  Spin,
+  Avatar,
 } from "antd";
-import Avatar from "antd/es/avatar";
 import { Comment } from '@ant-design/compatible';
-import { UserOutlined, MessageOutlined } from "@ant-design/icons";
-import { articles } from "../../../../assets/blog";
-import { banner2 } from "../../../../assets";
+import { MessageOutlined, UserOutlined } from "@ant-design/icons";
+import { blogService } from "../../../../services/blogService";
 
-const { Title, Paragraph, Text } = Typography;
-const { TextArea } = Input;
-
+// Mock comments since comment functionality is not supported
 const mockComments = [
   {
     author: "Nguyễn Văn A",
@@ -34,31 +33,75 @@ const mockComments = [
   },
 ];
 
+const { Title, Paragraph, Text } = Typography;
+const { TextArea } = Input;
+
 export const BlogDetailPageMember = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [comments, setComments] = React.useState(mockComments);
-  const [newComment, setNewComment] = React.useState("");
+  const [blog, setBlog] = useState(null);
+  const [comments] = useState(mockComments);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const blog = articles.find((item) => item.key === parseInt(id));
+  useEffect(() => {
+    fetchBlog();
+  }, [id]);
+
+  const fetchBlog = async () => {
+    setLoading(true);
+    try {
+      const data = await blogService.getAllBlog();
+      const processedData = data.map((item) => ({
+        _id: item.postId || Math.random().toString(),
+        title: item.title || "Untitled Blog",
+        content: item.content || "",
+        description: item.content
+          ? item.content.substring(0, 100) + "..."
+          : "No description",
+        imageUrl: item.imageUrl || "https://via.placeholder.com/400x200",
+        createdAt: item.publishedDate || new Date().toISOString(),
+        authorId: item.userId || "unknown",
+        authorName: item.authorName || "Anonymous",
+        likes: item.likes || [],
+        likedBy: item.likedBy || [],
+        comments: item.comments || [],
+        label: "General",
+      }));
+
+      const selectedBlog = processedData.find((item) => item._id === id);
+      if (!selectedBlog) {
+        message.error("Blog not found!");
+        navigate("/app/member/blogs");
+        return;
+      }
+
+      setBlog(selectedBlog);
+    } catch (error) {
+      console.error("Fetch error:", error);
+      message.error(error.message || "Failed to fetch blog");
+      navigate("/app/member/blogs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCommentSubmit = () => {
+    message.info("Comment feature not yet implemented");
+    setNewComment("");
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", padding: "100px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   if (!blog) {
     return <div>Blog not found!</div>;
   }
-
-  const handleCommentSubmit = () => {
-    if (newComment.trim() === "") return;
-
-    const comment = {
-      author: "User",
-      avatar: "https://joeschmoe.io/api/v1/random",
-      content: newComment,
-      datetime: new Date().toLocaleString(),
-    };
-
-    setComments([...comments, comment]);
-    setNewComment("");
-  };
 
   return (
     <div
@@ -70,10 +113,10 @@ export const BlogDetailPageMember = () => {
         fontFamily: "Raleway",
       }}
     >
-      <Col gutter={[32, 32]}>
-        <Row xs={24} md={14}>
+      <Row gutter={[32, 32]}>
+        <Col xs={24} md={14}>
           <img
-            src={blog.image}
+            src={blog.imageUrl}
             alt="blog-cover"
             style={{
               width: "100%",
@@ -83,71 +126,71 @@ export const BlogDetailPageMember = () => {
               objectFit: "cover",
             }}
           />
-        </Row>
-        <Row
-          xs={24}
-          md={10}
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <Col md={4}>
-            <img src={banner2} alt="" style={{ width: "40%" }} />
-            <Divider style={{ backgroundColor: "black" }}></Divider>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Title style={{ fontFamily: "Raleway", fontSize: "20px" }}>
-                Date
-              </Title>
-              <Paragraph type="secondary">
-                <Text type="secondary" style={{ fontFamily: "Raleway" }}>
-                  {" "}
-                  {blog.date}
-                </Text>
-              </Paragraph>
+        </Col>
+        <Col xs={24} md={10}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <Text style={{ fontFamily: "Raleway", fontSize: "16px" }}>
+                By {blog.authorName}
+              </Text>
+              <Divider style={{ backgroundColor: "black" }} />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Title style={{ fontFamily: "Raleway", fontSize: "20px" }}>
+                  Date
+                </Title>
+                <Paragraph type="secondary">
+                  <Text type="secondary" style={{ fontFamily: "Raleway" }}>
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </Text>
+                </Paragraph>
+              </div>
             </div>
-          </Col>
-          <Col md={17}>
-            <Title
-              level={1}
-              style={{ marginTop: 16, fontFamily: "Raleway", fontWeight: 600 }}
-            >
-              {blog.title}
-            </Title>
+          </div>
+          <Title
+            level={1}
+            style={{ marginTop: 16, fontFamily: "Raleway", fontWeight: 600 }}
+          >
+            {blog.title}
+          </Title>
+          <Paragraph style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}>
+            {blog.content}
+          </Paragraph>
+          <Row gutter={16} align="middle">
+            <Col>
+              <Button
+                type="text"
+                icon={<MessageOutlined style={{ color: "#555" }} />}
+                onClick={() => document.getElementById("comments")?.scrollIntoView()}
+              >
+                {comments.length} Comments
+              </Button>
+            </Col>
+          </Row>
+          <Button
+            type="link"
+            onClick={() => navigate("/app/member/blogs")}
+            style={{
+              textDecoration: "none",
+              color: "#fff",
+              fontSize: "15px",
+              backgroundColor: "#bd0026",
+              borderRadius: 50,
+              height: 40,
+              fontWeight: 600,
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s",
+              marginTop: "40px",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            Back to Blogs
+          </Button>
+        </Col>
+      </Row>
 
-            <Paragraph
-              style={{ marginTop: 24, fontSize: 16, lineHeight: 1.8 }}
-            >
-              {blog.description}
-            </Paragraph>
-
-            <Button
-              type="link"
-              onClick={() => navigate(-1)}
-              style={{
-                textDecoration: "none",
-                color: "#fff",
-                fontSize: "15px",
-                backgroundColor: "#bd0026",
-                borderRadius: 50,
-                height: 40,
-                fontWeight: 600,
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                transition: "all 0.3s",
-                marginTop: "40px",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(0.95)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-            >
-              Back to Blogs
-            </Button>
-          </Col>
-        </Row>
-      </Col>
-
-      {/* Comments Section */}
       <Divider
+        id="comments"
         orientation="left"
         style={{ fontSize: 24, fontWeight: 600, marginTop: 60 }}
       >

@@ -1020,11 +1020,7 @@ export const BookingDonate = () => {
         return (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <Badge
-              count={
-                <CheckCircleOutlined
-                  style={{ color: "#52c41a", fontSize: 24 }}
-                />
-              }
+              
               offset={[-20, 80]}
               style={{ backgroundColor: "transparent" }}
             >

@@ -39,9 +39,11 @@ export const BannerMember = () => {
         const donations = await userService.getDonationHistory();
         console.log({donations});
         
-        const completedDonations = donations.filter(
+        const completedDonations = donations.donationHistories.filter(
           donation => donation.status === "Completed"
         );
+        console.log({completedDonations});
+        
         setDonationCount(completedDonations.length);
         setError(null);
       } catch (err) {
