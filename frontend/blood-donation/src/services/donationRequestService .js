@@ -19,6 +19,27 @@ export const donationRequestService = {
     }
   },
 
+
+  async getAllRequests() {
+    try {
+      const response = await api.get(
+        "/api/blood-donation/get-all-requests",
+        {
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
+
+      return response.data.data.items;
+
+    } catch (error) {
+      this._handleRequestError(error, "Failed to fetch all requests");
+      throw error;
+    }
+  },
+
+
   async getAllDonationRequests() {
     try {
       const response = await api.get(

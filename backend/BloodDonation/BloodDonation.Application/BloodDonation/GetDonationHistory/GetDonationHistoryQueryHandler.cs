@@ -12,6 +12,7 @@ public class GetDonationHistoryQueryHandler(IDbContext context)
     {
         var query = context.DonationsHistory
             .Include(h => h.Request)
+            .ThenInclude(r => r.User)
             .OrderByDescending(h => h.Date);
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -21,6 +22,7 @@ public class GetDonationHistoryQueryHandler(IDbContext context)
             .Take(request.PageSize)
             .Select(h => new GetDonationHistoryResponse
             {
+                UserId = h.UserId,
                 DonationId = h.DonationId,
                 RequestId = h.RequestId,
                 RequestNote = h.Request != null ? h.Request.Note : null,

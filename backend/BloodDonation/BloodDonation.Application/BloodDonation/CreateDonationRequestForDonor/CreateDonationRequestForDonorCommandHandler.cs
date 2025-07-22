@@ -24,7 +24,7 @@ public class CreateDonationRequestForDonorCommandHandler(IDbContext context, IUs
         Console.WriteLine($"🔍 Found user: {user.UserId}, IsDonor = {user.IsDonor}, BloodTypeId = {user.BloodTypeId}");
 
 
-        if (user == null || user.IsDonor == false || user.BloodType == null)
+        if (user == null)
             return Result.Failure<CreateDonationRequestForDonorResponse>(UserErrors.NotFound(userContext.UserId));
 
         var bloodType = await context.BloodTypes.FirstOrDefaultAsync(b => b.Name == user.BloodType.Name, cancellationToken);

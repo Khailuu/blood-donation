@@ -17,6 +17,7 @@ public class CompleteDonationRequestCommandHandler(IDbContext context, IUserCont
     public async Task<Result> Handle(CompleteDonationRequestCommand request, CancellationToken cancellationToken)
     {
         var donationRequest = await context.DonationRequests
+            .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.RequestId == request.RequestId, cancellationToken);
 
         if (donationRequest == null)
@@ -50,6 +51,7 @@ public class CompleteDonationRequestCommandHandler(IDbContext context, IUserCont
         });
 
         donationRequest.Status = DonationRequestStatus.Completed;
+        donationRequest.User.IsDonor = true;
         
         var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == donationRequest.UserId, cancellationToken);
         if (user is null) return Result.Failure(UserErrors.NotFound(user.UserId));
