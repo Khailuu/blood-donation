@@ -1,7 +1,7 @@
 // src/pages/DonateSchedule.js
 import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Row, Col, message, Tag } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { Card, Typography, Button, Row, Col, message, Tag, Modal } from "antd";
+import { ClockCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
@@ -13,6 +13,7 @@ export const DonateSchedule = () => {
   const currentUser = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("upcoming");
   const [allAppointments, setAllAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -20,16 +21,26 @@ export const DonateSchedule = () => {
         const response = await donationRequestService.getMyDonationRequests(
           currentUser.userId
         );
+<<<<<<< HEAD
         console.log("API Response:", response);
 
+=======
+        console.log(response);
+        
+>>>>>>> 00e1e927ba833f7f067bab4d6aefd03e180a9854
         const allItems = response.items || response.data?.items || [];
 
         const myItems = allItems.filter(
           (item) => item.userId === currentUser.userId
         );
 
+<<<<<<< HEAD
         console.log("Filtered Items:", { allItems });
 
+=======
+        console.log({allItems});
+        
+>>>>>>> 00e1e927ba833f7f067bab4d6aefd03e180a9854
         const formatted = myItems.map((item) => ({
           date: dayjs(item.requestTime),
           time: dayjs(item.requestTime).format("HH:mm"),
@@ -40,8 +51,13 @@ export const DonateSchedule = () => {
           id: item.requestId,
         }));
 
+<<<<<<< HEAD
         console.log("Formatted Appointments:", { formatted });
 
+=======
+        console.log({formatted});
+        
+>>>>>>> 00e1e927ba833f7f067bab4d6aefd03e180a9854
         setAllAppointments(formatted);
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -51,6 +67,67 @@ export const DonateSchedule = () => {
 
     fetchAppointments();
   }, [currentUser.userId]);
+
+  const handleCancelBooking = async (appointmentId) => {
+  const shouldCancel = window.confirm("Bạn có chắc chắn muốn hủy cuộc hẹn này không?");
+  if (!shouldCancel) return;
+
+  setLoading(true);
+  try {
+    let apiResult;
+    let success = false;
+
+    // Thử gọi API từ service có sẵn
+    if (typeof donationRequestService.updateDonationRequestStatus === "function") {
+      apiResult = await donationRequestService.updateDonationRequestStatus(appointmentId, "rejected");
+    } else if (typeof donationRequestService.cancelDonationRequest === "function") {
+      apiResult = await donationRequestService.cancelDonationRequest(appointmentId);
+    } else if (typeof donationRequestService.updateRequest === "function") {
+      apiResult = await donationRequestService.updateRequest(appointmentId, { status: "rejected" });
+    }
+
+    // Kiểm tra phản hồi API có phải thành công không
+    if (apiResult?.success || apiResult?.status === "success") {
+      success = true;
+    }
+
+    // ✅ Luôn cập nhật giao diện, nhưng phân biệt rõ kết quả
+    setAllAppointments(prev =>
+      prev.map(appointment =>
+        appointment.id === appointmentId
+          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+          : appointment
+      )
+    );
+
+    if (success) {
+      message.success("Cuộc hẹn đã được hủy thành công!");
+    } else {
+      message.warning("Cuộc hẹn đã bị hủy trên giao diện nhưng chưa chắc đã lưu vào hệ thống.");
+    }
+
+    // Chuyển tab sau khi cập nhật
+    setTimeout(() => setActiveTab("archived"), 1000);
+
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+
+    // Vẫn cập nhật giao diện tạm thời nếu API thất bại
+    setAllAppointments(prev =>
+      prev.map(appointment =>
+        appointment.id === appointmentId
+          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
+          : appointment
+      )
+    );
+
+    message.error("Không thể đồng bộ trạng thái hủy với hệ thống.");
+    setTimeout(() => setActiveTab("archived"), 1000);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Filter appointments based on active tab
   const filteredAppointments = allAppointments.filter((item) => {
@@ -232,7 +309,17 @@ export const DonateSchedule = () => {
                     {item.statusLower === "pending" && (
                       <Button
                         type="default"
+<<<<<<< HEAD
                         onClick={() => handleCancelBooking(item.id)}
+=======
+                        loading={loading}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log("Button clicked for item:", item.id);
+                          handleCancelBooking(item.id);
+                        }}
+>>>>>>> 00e1e927ba833f7f067bab4d6aefd03e180a9854
                         style={{
                           backgroundColor: "#bd0026",
                           borderColor: "#bd0026",
@@ -244,6 +331,7 @@ export const DonateSchedule = () => {
                           fontSize: "14px",
                           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                           marginTop: 8,
+                          cursor: "pointer",
                         }}
                       >
                         Cancel Booking

@@ -1,10 +1,13 @@
-﻿using BloodDonation.Domain.Bloods;
+﻿using BloodDonation.Domain.BlogPost;
+using BloodDonation.Domain.Bloods;
+using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
+using BloodDonation.Domain.Q_A;
 using BloodDonation.Domain.QuestionForm;
 
 namespace BloodDonation.Domain.Users;
 
-public class User
+public class User : Entity
 {
     public Guid UserId { get; set; }
     public string Name { get; set; }
@@ -19,6 +22,7 @@ public class User
     public bool? IsDonor { get; set; }
     public DateTime? LastDonationDate { get; set; }
     public UserStatus Status { get; set; }
+    public string? ImageUrl { get; set; }
     public bool IsVerified { get; set; }
     
     // Các navigation property
@@ -36,6 +40,14 @@ public class User
     public ICollection<BlogPost.BlogPost> BlogPosts { get; set; } = new List<BlogPost.BlogPost>();
 
     public DonorInformation? DonorInformation { get; set; }
+    public Patient? Patient { get; set; }
     public ICollection<HealthForm> HealthForms { get; set; } = new List<HealthForm>();
+    
+    public ICollection<BlogPostLike> BlogPostLikes { get; set; } = new List<BlogPostLike>();
+    public ICollection<BlogPostComment> BlogPostComments { get; set; } = new List<BlogPostComment>();
+
+    public ICollection<QaQuestions> QaQuestions { get; set; } = new List<QaQuestions>();
+    public ICollection<QaAnswer> QaAnswer { get; set; } = new List<QaAnswer>();
+ 
 
 }

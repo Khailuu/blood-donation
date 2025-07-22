@@ -25,6 +25,7 @@ namespace BloodDonation.Application.Users.GetCurrentUser
 
             var response = new GetCurrentUserResponse
             {
+                ImageUrl = user.ImageUrl,
                 FullName = user.Name,
                 Email = user.Email,
                 Role = user.Role.ToString(),

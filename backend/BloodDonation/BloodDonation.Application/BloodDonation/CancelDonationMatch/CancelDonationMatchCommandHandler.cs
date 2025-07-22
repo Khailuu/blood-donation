@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BloodDonation.Application.BloodDonation.CancelDonationMatch;
 
-public class CancelDonationMatchCommandHandler(IDbContext context, IUserContext userContext)
+public class CancelDonationMatchCommandHandler(IDbContext context, IUserContext userContext, ITokenProvider tokenProvider)
     : ICommandHandler<CancelDonationMatchCommand>
 {
     public async Task<Result> Handle(CancelDonationMatchCommand request, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class CancelDonationMatchCommandHandler(IDbContext context, IUserContext 
         match.ConfirmedTime = DateTime.UtcNow;
 
         // Match lại các donor khác nếu cần
-        var matcher = new AutoMatchDonorsForRequestHandler(context);
+        var matcher = new AutoMatchDonorsForRequestHandler(context, tokenProvider);
         await matcher.MatchDonorsAsync(match.Request, cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);

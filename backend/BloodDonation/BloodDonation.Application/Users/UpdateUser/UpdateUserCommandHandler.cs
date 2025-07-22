@@ -36,11 +36,19 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
         user.Phone = request.Phone ?? user.Phone;
 
         // if (isStaff)
-        // {
+        // 
             user.Role = request.Role ?? user.Role;
             user.Status = request.Status ?? user.Status;
             user.IsDonor = request.IsDonor ?? user.IsDonor;
-            user.BloodType.Name = request.BloodType ?? user.BloodType.Name;
+            if (request.BloodTypeId.HasValue)
+            {
+                var bloodType = await context.BloodTypes
+                    .FirstOrDefaultAsync(b => b.BloodTypeId == request.BloodTypeId, cancellationToken);
+                if (bloodType != null)
+                {
+                    user.BloodType = bloodType;
+                }
+            }
         // }
 
         await context.SaveChangesAsync(cancellationToken);
