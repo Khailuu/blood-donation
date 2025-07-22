@@ -23,7 +23,7 @@ public class QAController : ControllerBase
         _mediator = mediator;
     }
     
-    [Authorize(Roles = "Member")]
+    [Authorize]
     [HttpPost("q&a/create-q&a-question")]
     public async Task<IResult> CreateQaQuestion([FromBody] CreateQaQuestionCommand request, CancellationToken cancellationToken)
     {

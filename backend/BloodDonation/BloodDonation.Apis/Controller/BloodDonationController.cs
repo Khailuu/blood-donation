@@ -8,6 +8,7 @@ using BloodDonation.Application.BloodDonation.CreateDonationMatch;
 using BloodDonation.Application.BloodDonation.CreateDonationRequestForDonor;
 using BloodDonation.Application.BloodDonation.CreateDonationRequestForStaff;
 using BloodDonation.Application.BloodDonation.GetAllDonationRequest;
+using BloodDonation.Application.BloodDonation.GetCurrentDonationHistory;
 using BloodDonation.Application.BloodDonation.GetDonationHistory;
 using BloodDonation.Application.BloodDonation.GetDonationMatch;
 using BloodDonation.Application.BloodDonation.GetDonationRequestToApprove;
@@ -139,6 +140,15 @@ public class BloodDonationController : ControllerBase
     {
         var query = new GetDonationHistoryQuery { PageNumber = pageNumber, PageSize = pageSize };
         var result = await _mediator.Send(query, cancellationToken);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
+    [HttpGet("blood-donation/get-current-donation-history")]
+    public async Task<IResult> GetCurrentDonationHistory( CancellationToken cancellation)
+    {
+        var query = new GetCurrentDonationHistoryQuery();
+        var result = await _mediator.Send(query, cancellation);
         return result.MatchOk();
     }
     
