@@ -13,9 +13,8 @@ namespace BloodDonation.Application.BloodDonation.GetCurrentDonationHistory
 
     public class DonationHistoryResponse
     {
-        public Guid DonationId { get; set; }
         public Guid RequestId { get; set; }
-        public Guid UserId { get; set; }
+        public int AmountBlood { get; set; }
         public string? RequestNote { get; set; }
         public DateTime Date { get; set; }
         public string Status { get; set; } = default!;

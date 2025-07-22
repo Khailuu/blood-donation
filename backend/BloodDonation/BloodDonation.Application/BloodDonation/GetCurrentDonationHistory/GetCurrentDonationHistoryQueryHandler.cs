@@ -32,6 +32,7 @@ namespace BloodDonation.Application.BloodDonation.GetCurrentDonationHistory
                         RequestId = h.RequestId,
                         RequestNote = h.Request?.Note,
                         Date = h.Date,
+                        AmountBlood = h.Request.AmountBlood,
                         Status = h.Status.ToString(),
                         ConfirmedBy = h.ConfirmedBy
                     }).ToList() ?? new List<DonationHistoryResponse>()
