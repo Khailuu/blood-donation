@@ -1,3 +1,4 @@
+// src/pages/DonateSchedule.js
 import React, { useState, useEffect } from "react";
 import { Card, Typography, Button, Row, Col, message, Tag } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
@@ -5,8 +6,6 @@ import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
 import { donationRequestService } from "../../../../services/donationRequestService ";
-
-
 
 const { Title, Text } = Typography;
 
@@ -21,8 +20,7 @@ export const DonateSchedule = () => {
         const response = await donationRequestService.getMyDonationRequests(
           currentUser.userId
         );
-        console.log(response);
-        
+        console.log("API Response:", response);
 
         const allItems = response.items || response.data?.items || [];
 
@@ -30,24 +28,23 @@ export const DonateSchedule = () => {
           (item) => item.userId === currentUser.userId
         );
 
-        console.log({allItems});
-        
+        console.log("Filtered Items:", { allItems });
 
         const formatted = myItems.map((item) => ({
           date: dayjs(item.requestTime),
           time: dayjs(item.requestTime).format("HH:mm"),
           donationType: item.componentType,
+          donationAmount: item.amountBlood || "N/A", 
           status: item.status,
           statusLower: item.status.toLowerCase(),
           id: item.requestId,
         }));
 
-        console.log({formatted});
-        
+        console.log("Formatted Appointments:", { formatted });
 
         setAllAppointments(formatted);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching appointments:", error);
         message.error("Failed to fetch appointments");
       }
     };
@@ -59,7 +56,7 @@ export const DonateSchedule = () => {
   const filteredAppointments = allAppointments.filter((item) => {
     if (activeTab === "upcoming") {
       return item.statusLower === "pending";
-    } else  {
+    } else {
       return item.statusLower !== "pending";
     }
   });
@@ -76,6 +73,24 @@ export const DonateSchedule = () => {
         return "gray";
       default:
         return "blue";
+    }
+  };
+
+  const handleCancelBooking = async (requestId) => {
+    try {
+      await donationRequestService.rejectDonationRequest(requestId); 
+      message.success("Booking cancelled successfully!");
+      const updatedAppointments = allAppointments.map((item) =>
+        item.id === requestId ? { ...item, status: "Cancelled", statusLower: "cancelled" } : item
+      );
+      
+      setAllAppointments(updatedAppointments);
+      if (!updatedAppointments.some((item) => item.statusLower === "pending")) {
+        setActiveTab("archived");
+      }
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      message.error("Failed to cancel booking");
     }
   };
 
@@ -201,6 +216,9 @@ export const DonateSchedule = () => {
                       {item.donationType} Donation
                     </Title>
                     <Text style={{ display: "block", marginBottom: 4 }}>
+                      Amount: {item.donationAmount} mL
+                    </Text>
+                    <Text style={{ display: "block", marginBottom: 4 }}>
                       <ClockCircleOutlined /> {item.time}
                     </Text>
 
@@ -214,6 +232,7 @@ export const DonateSchedule = () => {
                     {item.statusLower === "pending" && (
                       <Button
                         type="default"
+                        onClick={() => handleCancelBooking(item.id)}
                         style={{
                           backgroundColor: "#bd0026",
                           borderColor: "#bd0026",
