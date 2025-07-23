@@ -218,5 +218,4 @@ export const donationRequestService = {
   },
 };
 
-// Initialize interceptors
 donationRequestService._setupInterceptors();
