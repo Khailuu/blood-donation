@@ -67,7 +67,7 @@ export const SignInPage = () => {
 
       setTimeout(() => {
         if (role === "admin") {
-          navigate("/admin");
+          navigate("/app/admin");
         } else if (role === "staff") {
           navigate("/app/staff");
         } else {

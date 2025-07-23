@@ -1,3 +1,4 @@
+// src/pages/MemberBlogPage.js
 import React, { useState, useEffect } from "react";
 import {
   Button,
@@ -14,12 +15,14 @@ import {
   Pagination,
   Spin,
   Image,
+  Upload,
 } from "antd";
 import {
   HeartOutlined,
   HeartFilled,
   MessageOutlined,
   PlusOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { blogService } from "../../../../services/blogService";
@@ -54,7 +57,7 @@ export const MemberBlogPage = () => {
       }
 
       const processedData = data.map((item) => ({
-        _id: item._id || item.id || item.postId, 
+        _id: item._id || item.id || item.postId,
         title: item.title || "Untitled Blog",
         content: item.content || "",
         description:
@@ -65,7 +68,7 @@ export const MemberBlogPage = () => {
         imageUrl:
           item.imageUrl || item.image || "https://via.placeholder.com/400x200",
         createdAt: item.publishedDate || new Date().toISOString(),
-        authorId: item.authorId || item.userId || "unknown", 
+        authorId: item.authorId || item.userId || "unknown",
         likes: item.likes || [],
         likedBy: item.likedBy || [],
         comments: item.comments || [],
@@ -96,19 +99,18 @@ export const MemberBlogPage = () => {
   const handleCreateOrEdit = async (values) => {
     try {
       setLoading(true);
-      const blogData = {
-        title: values.title,
-        content: values.content,
-        imageUrl: values.imageUrl,
-      };
-      console.log({blogData});
-      
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("content", values.content);
+      if (values.image && values.image.file) {
+        formData.append("image", values.image.file.originFileObj);
+      }
 
       if (editingArticle) {
-        await blogService.updateBlog(editingArticle._id, blogData);
+        await blogService.updateBlog(editingArticle._id, formData);
         message.success("Blog updated successfully!");
       } else {
-        await blogService.createBlog(blogData);
+        await blogService.createBlog(formData);
         message.success("Blog created successfully!");
       }
 
@@ -139,7 +141,6 @@ export const MemberBlogPage = () => {
     form.setFieldsValue({
       title: article.title,
       content: article.content,
-      imageUrl: article.imageUrl,
     });
     setModalOpen(true);
   };
@@ -422,14 +423,21 @@ export const MemberBlogPage = () => {
           </Form.Item>
 
           <Form.Item
-            name="imageUrl"
-            label="Image URL"
-            rules={[
-              { required: true, message: "Please input image URL!" },
-              { type: "url", message: "Please enter a valid URL" },
-            ]}
+            name="image"
+            label="Upload Image"
+            valuePropName="file"
+            getValueFromEvent={(e) => e.file}
+            rules={[{ required: !editingArticle, message: "Please upload an image!" }]}
           >
-            <Input placeholder="https://example.com/image.jpg" />
+            <Upload
+              name="image"
+              listType="picture-card"
+              showUploadList={{ showPreviewIcon: false }}
+              beforeUpload={() => false} 
+              maxCount={1}
+            >
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>

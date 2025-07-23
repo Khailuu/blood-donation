@@ -9,7 +9,6 @@ import {
   Select,
   DatePicker,
   Popconfirm,
-  message,
   Tooltip,
   Tag,
 } from "antd";
@@ -104,6 +103,7 @@ const ManageUser = () => {
       toast.success('Updated successfully!');
       setIsModalOpen(false);
       form.resetFields();
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error('Update failed!');
     }
