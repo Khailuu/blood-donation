@@ -41,6 +41,13 @@ export const AdminSidebar = () => {
       icon: Notebook,
       color: "text-blue-500",
     },
+    {
+      id: "statistics",
+      path: "/app/admin/statistics",
+      label: "Statistics",
+      icon: Notebook,
+      color: "text-green-500",
+    },
     
   ];
 

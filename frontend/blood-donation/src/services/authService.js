@@ -8,6 +8,8 @@ export const authService = {
   async login(email, password) {
     try {
       const response = await api.post("/api/auth/login", { email, password });
+      console.log({response});
+      
       const { accessToken, refreshToken, role, name, userId } = response.data.data;
 
       // Map role number to string
@@ -28,7 +30,7 @@ export const authService = {
         })
       );
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       this._handleAuthError(error);
       throw error;

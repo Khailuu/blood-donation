@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { User, LogOut, Settings, Bell } from "lucide-react";
 import { Dropdown, Badge } from "antd";
 import { authService } from "../../../services/authService";
 import { useNavigate } from "react-router-dom";
+import { userService } from "../../../services/manageUserService";
 
 export const AdminNavbar = () => {
-  const currentUser = authService.getCurrentUser();
+      const [currentUser, setCurrentUser] = useState(null);
+      const [, setLoading] = useState(true);
   const navigate = useNavigate();
+
+   useEffect(() => {
+        const fetchUserInfo = async () => {
+          try {
+            const user = await userService.getCurrentUser();
+            console.log({ user });
+    
+            setCurrentUser(user);
+          } catch (error) {
+            console.error("Failed to fetch user info:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchUserInfo();
+      }, []);
 
   const handleLogout = () => {
     authService.logout();
@@ -15,7 +34,7 @@ export const AdminNavbar = () => {
   const unreadNotifications = 5;
 
   return (
-    <nav className="bg-[#fff] border-b border-gray-200 mx-6 mt-3 rounded-[50px] mb-2" style={{padding: "10px 24px",boxShadow: "1px 2px 10px 10px rgba(10, 10, 10, 0.116)"}}>
+    <nav className="bg-[#fff] border-b border-gray-200 mx-6 mt-3 rounded-[50px] mb-2 relative" style={{padding: "10px 24px",boxShadow: "1px 2px 10px 10px rgba(10, 10, 10, 0.116)"}}>
       <div className="px-6 ">
         <div className="flex justify-between items-center h-16">
           <div></div>
@@ -96,7 +115,7 @@ export const AdminNavbar = () => {
                       lineHeight: "20px",
                     }}
                   >
-                    {currentUser?.name || "User"}
+                    {currentUser?.fullName || "User"}
                   </div>
                   <div
                     style={{

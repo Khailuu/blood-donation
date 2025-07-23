@@ -22,10 +22,11 @@ const BloodRequests = () => {
   const [formData, setFormData] = useState({
     patientName: "",
     bloodType: "A+",
+    componentType: "Whole Blood", // New field for component type
     urgency: "Urgent",
     notes: "",
     contact: "",
-    bloodAmount: "350", // New field for blood amount
+    bloodAmount: "350",
   });
   const [inventory, setInventory] = useState([]);
   const [bloodTypes, setBloodTypes] = useState([]);
@@ -126,6 +127,7 @@ const BloodRequests = () => {
     setFormData({
       patientName: "",
       bloodType: "A+",
+      componentType: "Whole Blood", // Reset new field
       urgency: "Urgent",
       notes: "",
       contact: "",
@@ -151,10 +153,7 @@ const BloodRequests = () => {
         throw new Error("No inventory available for this blood type");
       }
 
-      
       const unitsToDeduct = formData.bloodAmount === "350" ? 350 : 250;
-      console.log({unitsToDeduct});
-      
 
       if (currentItem.quantity < unitsToDeduct) {
         throw new Error("Insufficient blood quantity available");
@@ -162,6 +161,7 @@ const BloodRequests = () => {
 
       await userService.updateBloodStored({
         bloodTypeName: type.name,
+        componentType: formData.componentType, // Include component type in update
         quantity: -unitsToDeduct,
       });
 
@@ -173,7 +173,7 @@ const BloodRequests = () => {
         )
       );
 
-      message.success(`Blood transfusion scheduled for ${bloodType} (${formData.bloodAmount}ml)`);
+      message.success(`Blood transfusion scheduled for ${bloodType} (${formData.componentType}, ${formData.bloodAmount}ml)`);
       setCurrentStep(2);
     } catch (error) {
       console.error("Failed to schedule transfusion:", error);
@@ -274,6 +274,26 @@ const BloodRequests = () => {
                       { value: "AB-", label: "AB-" },
                       { value: "O+", label: "O+" },
                       { value: "O-", label: "O-" },
+                    ]}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    className="block text-sm font-medium text-gray-600 mb-1"
+                    style={{ fontFamily: "Raleway", fontWeight: 600 }}
+                  >
+                    Component Type <span className="text-red-500">*</span>
+                  </label>
+                  <Select
+                    size="large"
+                    value={formData.componentType}
+                    onChange={(value) => handleInputChange("componentType", value)}
+                    className="w-full"
+                    style={{ fontFamily: "Raleway" }}
+                    options={[
+                      { value: "Whole Blood", label: "Whole Blood" },
+                      { value: "Plasma", label: "Plasma" },
                     ]}
                   />
                 </div>
@@ -514,6 +534,22 @@ const BloodRequests = () => {
                     className="text-gray-500 mr-2"
                     style={{ fontFamily: "Raleway" }}
                   >
+                    Component:
+                  </Text>
+                  <Tag
+                    color="#bd0026"
+                    className="text-base font-medium px-3 py-1"
+                    style={{ fontFamily: "Raleway", color: "white" }}
+                  >
+                    {formData.componentType}
+                  </Tag>
+                </div>
+                <div className="flex items-center">
+                  <Text
+                    type="secondary"
+                    className="text-gray-500 mr-2"
+                    style={{ fontFamily: "Raleway" }}
+                  >
                     Amount:
                   </Text>
                   <Tag
@@ -531,7 +567,7 @@ const BloodRequests = () => {
               <>
                 <Alert
                   message="Compatible Blood Available!"
-                  description={`We found ${availableBloodTypes.length} compatible blood type(s) in stock for ${formData.bloodAmount}ml.`}
+                  description={`We found ${availableBloodTypes.length} compatible blood type(s) in stock for ${formData.componentType}, ${formData.bloodAmount}ml.`}
                   type="success"
                   showIcon
                   className="mb-6 rounded-lg"
@@ -626,7 +662,7 @@ const BloodRequests = () => {
                             e.currentTarget.style.transform = "scale(1)";
                           }}
                         >
-                          Schedule Transfusion ({formData.bloodAmount}ml)
+                          Schedule Transfusion ({formData.componentType}, {formData.bloodAmount}ml)
                         </Button>
                       </Card>
                     );
@@ -637,7 +673,7 @@ const BloodRequests = () => {
               <>
                 <Alert
                   message="No Compatible Blood in Stock"
-                  description={`We currently don't have ${formData.bloodType} blood available for ${formData.bloodAmount}ml.`}
+                  description={`We currently don't have ${formData.bloodType} ${formData.componentType} available for ${formData.bloodAmount}ml.`}
                   type="warning"
                   showIcon
                   className="mb-6 rounded-lg"
@@ -684,7 +720,7 @@ const BloodRequests = () => {
                       </Text>
                       <div className="mt-2">
                         <Tag color="red" style={{ fontFamily: "Raleway" }}>
-                          {formData.bloodType} ({formData.bloodAmount}ml)
+                          {formData.bloodType} ({formData.componentType}, {formData.bloodAmount}ml)
                         </Tag>
                         <Text
                           style={{ fontFamily: "Raleway" }}
@@ -715,7 +751,7 @@ const BloodRequests = () => {
                     size="large"
                     onClick={() => {
                       message.success(
-                        `Donor request sent for ${formData.bloodType} blood (${formData.bloodAmount}ml)`
+                        `Donor request sent for ${formData.bloodType} ${formData.componentType} (${formData.bloodAmount}ml)`
                       );
                       setCurrentStep(2);
                     }}
@@ -831,6 +867,10 @@ const BloodRequests = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Blood Type:</span>
                     <span className="font-medium">{formData.bloodType}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Component Type:</span>
+                    <span className="font-medium">{formData.componentType}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Amount:</span>

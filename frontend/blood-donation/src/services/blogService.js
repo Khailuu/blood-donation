@@ -25,11 +25,8 @@ export const blogService = {
 
   async createBlog(blogData) {
     try {
-      const response = await api.post('/api/blogpost/create-blogpost', {
-        title: blogData.title,
-        content: blogData.content,
-        imageUrl: blogData.imageUrl,
-      });
+      const response = await api.post('/api/blogpost/create-blogpost', blogData)
+
       console.log("createBlog response:", response);
       return response.data;
     } catch (error) {
