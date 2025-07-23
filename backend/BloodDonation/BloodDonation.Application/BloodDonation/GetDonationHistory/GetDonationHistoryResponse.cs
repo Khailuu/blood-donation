@@ -7,6 +7,7 @@ public class GetDonationHistoryResponse
     public Guid UserId { get; set; }
     public string? RequestNote { get; set; }
     public DateTime Date { get; set; }
+    public int AmountBlood { get; set; }
     public string Status { get; set; } = default!;
     public Guid ConfirmedBy { get; set; }
 }
