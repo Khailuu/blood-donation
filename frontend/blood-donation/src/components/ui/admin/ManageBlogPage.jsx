@@ -52,12 +52,12 @@ const ManageBlogPage = () => {
     });
   }, []);
 
-  const openAddModal = () => {
-    setEditingBlog(null);
-    form.resetFields();
-    setIsModalOpen(true);
-    setFileList([]);
-  };
+  // const openAddModal = () => {
+  //   setEditingBlog(null);
+  //   form.resetFields();
+  //   setIsModalOpen(true);
+  //   setFileList([]);
+  // };
 
   const openEditModal = (blog) => {
     setEditingBlog(blog);
@@ -171,13 +171,13 @@ const ManageBlogPage = () => {
     <div style={{ background: "#fff", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px #f0f1f2" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ fontSize: 22, margin: 0, fontWeight: 600 }}>Blog Management</h2>
-        <Button
+        {/* <Button
           style={{ background: "#3388ff", color: "white" }}
           icon={<FileAddOutlined />}
           onClick={openAddModal}
         >
           Add Blog
-        </Button>
+        </Button> */}
       </div>
       <Table
         dataSource={blogs}

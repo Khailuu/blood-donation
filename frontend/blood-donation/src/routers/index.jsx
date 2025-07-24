@@ -42,6 +42,8 @@ import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
 import { AdminDashboard } from "../components/template/admin/AdminDashboard";
 // import ManageUser from "../components/template/admin/ManageUser";
 import ManageBlog from "../components/template/admin/ManageBlog";
+import { AdminDashboardPage } from "../components/ui/admin/AdminDashboardPage";
+import ManageQA from "../components/template/admin/manageQA";
 
 const router = [
   {
@@ -140,13 +142,13 @@ const router = [
     path: "admin",
     element: (
       <RoleRoute allowedRoles={["admin"]}>
-        <AdminLayout />
+        <DashboardLayout />
       </RoleRoute>
     ),
     children: [
       {
         path: "dashboard",
-        element: <AdminDashboard />,
+        element: <AdminDashboardPage />,
       },
       {
         path: "manage-blog",
@@ -155,6 +157,10 @@ const router = [
       {
         path: "manage-user",
         element: <ManageUser />,
+      },
+      {
+        path: "question-answer",
+        element: <ManageQA />,
       },
       {
         path: "statistics",
