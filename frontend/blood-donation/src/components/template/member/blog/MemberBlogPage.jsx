@@ -98,12 +98,14 @@ export const MemberBlogPage = () => {
 
   const handleCreateOrEdit = async (values) => {
     try {
+      console.log({values});
+      
       setLoading(true);
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("content", values.content);
-      if (values.image && values.image.file) {
-        formData.append("image", values.image.file.originFileObj);
+      if (values.imageUrl && values.imageUrl.file) {
+        formData.append("image", values.imageUrl.file.originFileObj);
       }
 
       if (editingArticle) {
