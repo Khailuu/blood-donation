@@ -3,5 +3,4 @@
 **/bin
 .env
 
-wwwroot/blog-images/*
-wwwroot/avatars/*
+

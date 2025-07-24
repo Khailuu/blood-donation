@@ -25,13 +25,13 @@ export const blogService = {
 
   async createBlog(blogData) {
     try {
-      const response = await api.post('/api/blogpost/create-blogpost', blogData);
-      console.log({response});
-      
+      const response = await api.post('/api/blogpost/create-blogpost', blogData)
+
+      console.log("createBlog response:", response);
       return response.data;
     } catch (error) {
-      console.error("Error creating blog:", error);
-      throw this._handleRequestError(error, "Failed to create blog");
+      console.error("Error creating blog:", error.response || error);
+      throw new Error(error.response?.data?.message || "Failed to create blog");
     }
   },
 

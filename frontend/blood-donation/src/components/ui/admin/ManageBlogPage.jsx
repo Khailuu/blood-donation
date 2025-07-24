@@ -25,16 +25,16 @@ import { manageBlogService } from "../../../services/manageBlogService";
 
 const { Option } = Select;
 
-const statusColor = {
-  Public: "green",
-  Hidden: "volcano",
-};
+// const statusColor = {
+//   Public: "green",
+//   Hidden: "volcano",
+// };
 
-const categoryColor = {
-  Health: "blue",
-  Guideline: "purple",
-  Announcement: "gold",
-};
+// const categoryColor = {
+//   Health: "blue",
+//   Guideline: "purple",
+//   Announcement: "gold",
+// };
 
 const ManageBlogPage = () => {
   const [blogs, setBlogs] = useState([]);

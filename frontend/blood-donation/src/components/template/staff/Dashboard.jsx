@@ -164,6 +164,7 @@ const Dashboard = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedInventory, setSelectedInventory] = useState(null);
   const [donationRequests, setDonationRequests] = useState([]);
+  const [scheduledRequests, setScheduledRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState({
     requests: true,
@@ -181,30 +182,52 @@ const Dashboard = () => {
       try {
         setLoading({ requests: true, inventory: true });
 
+        // Fetch donation requests
         const requestsResponse =
           await donationRequestService.getAllDonationRequests();
+        const scheduledRequest = await donationRequestService.getApprovedDonationRequests();
+        console.log({scheduledRequest});
+        
+        console.log("requestsResponse:", requestsResponse);
+
+        // Ensure requestsData is an array
         const requestsData = Array.isArray(requestsResponse.data)
           ? requestsResponse.data
           : requestsResponse.data?.items || requestsResponse.data?.data || [];
+        console.log("requestsData:", requestsData);
 
-
+        // Fetch inventory
         const inventoryResponse = await userService.getBloodStored();
-        console.log({ inventoryResponse });
+        console.log("inventoryResponse:", inventoryResponse);
 
-        const inventoryData = inventoryResponse || [];
+        // Ensure inventoryData is an array
+        const inventoryData = Array.isArray(inventoryResponse)
+          ? inventoryResponse
+          : inventoryResponse.data || [];
+        console.log("inventoryData:", inventoryData);
 
-
+        // Calculate low inventory count
         const lowInventoryCount = inventoryData.filter((item) => {
           const status = getStatus(item.quantity);
           return status !== "Sufficient";
         }).length;
 
-
-        setDonationRequests(requestsData);
+        // Update states
+        setDonationRequests(requestsResponse);
+        setScheduledRequests(scheduledRequest);
         setInventory(inventoryData);
         setStats({
-          totalRequests: requestsData.length,
-          scheduledDonations: requestsData.filter(
+          totalRequests: requestsResponse.length,
+          scheduledDonations: scheduledRequest.filter(
+            (req) => req.status === "Scheduled"
+          ).length,
+          lowInventory: lowInventoryCount,
+          newAnnouncements: 0,
+        });
+
+        console.log("Updated stats:", {
+          totalRequests: requestsResponse.length,
+          scheduledDonations: scheduledRequest.filter(
             (req) => req.status === "Scheduled"
           ).length,
           lowInventory: lowInventoryCount,
@@ -257,7 +280,6 @@ const Dashboard = () => {
 
   const openRequestDetails = (request) => {
     setSelectedRequest(request);
-
   };
 
   const closeRequestDetails = () => {
@@ -275,7 +297,6 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 p-10 min-h-screen relative">
       <div className="mb-6 text-center">
-
         <Title className="text-2xl font-bold" style={{ fontFamily: "Raleway" }}>
           Blood Donation Management Dashboard
         </Title>
@@ -375,24 +396,20 @@ const Dashboard = () => {
           ) : (
             <div className="space-y-3">
               {donationRequests.slice(0, 5).map((req) => (
-                
                 <div
-                  key={req.id}
+                  key={req.requestId}
                   className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400 hover:bg-blue-100 transition-colors"
                 >
                   <div className="flex-1">
                     <p className="font-medium text-gray-800">
                       {req.requesterName || "Anonymous Donor"}
                     </p>
-                    <p className="text-sm text-gray-600">
-                      {req.bloodType} 
-                    </p>
+                    <p className="text-sm text-gray-600">{req.bloodType}</p>
                     <p className="text-xs text-gray-500 mt-1">
                       Status: {req.status}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                   
                     <button
                       onClick={() => openRequestDetails(req)}
                       className="text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -475,12 +492,15 @@ const Dashboard = () => {
           Blood Inventory Overview
         </h3>
         {loading.inventory ? (
-          console.log({inventory}),
-          
-          <div className="text-center py-8">
-            <Spin size="large" />
-            <p className="mt-2 text-gray-600">Loading inventory overview...</p>
-          </div>
+          (console.log({ inventory }),
+          (
+            <div className="text-center py-8">
+              <Spin size="large" />
+              <p className="mt-2 text-gray-600">
+                Loading inventory overview...
+              </p>
+            </div>
+          ))
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {inventory.map((item) => (
@@ -802,8 +822,6 @@ const Dashboard = () => {
                 </div>
               </div>
 
-            
-
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <Phone className="h-5 w-5 text-purple-600" />
@@ -866,7 +884,6 @@ const Dashboard = () => {
                   >
                     {selectedRequest.status || "Pending"}
                   </span>
-                  
                 </div>
               </div>
 

@@ -4,6 +4,7 @@ using BloodDonation.Domain.Bloods;
 using BloodDonation.Domain.Common;
 using BloodDonation.Domain.Donations;
 using BloodDonation.Domain.EmailTemplates;
+using BloodDonation.Domain.Q_A;
 using BloodDonation.Domain.QuestionForm;
 using BloodDonation.Domain.Users;
 using BloodDonation.Infrastructure.Database;
@@ -33,6 +34,9 @@ public sealed class ApplicationDbContext(
     public DbSet<EmailTemplate> EmailTemplates { get; set; }
     public DbSet<BlogPostLike> BlogPostLikes { get; set; }
     public DbSet<BlogPostComment> BlogPostComments { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    public DbSet<QaQuestions> QaQuestions { get; set; }
+    public DbSet<QaAnswer> QaAnswers { get; set; }
 
 
 

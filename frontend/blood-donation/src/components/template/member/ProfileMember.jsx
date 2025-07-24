@@ -24,9 +24,11 @@ import {
   message,
   Spin,
   Form,
+  Upload,
 } from "antd";
 import moment from "moment";
 import { userService } from "../../../services/manageUserService";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -45,13 +47,21 @@ const inputStyle = {
   padding: "10px 12px",
 };
 
+const selectStyle = {
+  width: "100%",
+  borderRadius: "6px",
+  height: "40px",
+};
+
 const buttonStyle = {
   backgroundColor: "#b8002b",
   borderColor: "#b8002b",
+  color: "#fff",
   borderRadius: "6px",
   fontWeight: 500,
   padding: "0 20px",
   height: "36px",
+  transition: "all 0.3s",
 };
 
 export const ProfileMember = () => {
@@ -60,6 +70,7 @@ export const ProfileMember = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [bloodTypes, setBloodTypes] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
   const [form] = Form.useForm();
 
   const fetchData = async () => {
@@ -70,14 +81,16 @@ export const ProfileMember = () => {
         userService.getBloodTypes(),
       ]);
 
+      console.log("Fetched user data:", userResponse);
+      console.log("Fetched blood types:", bloodTypesResponse);
+
       const bloodTypeMap = {};
-      bloodTypesResponse.forEach(type => {
+      bloodTypesResponse.forEach((type) => {
         bloodTypeMap[type.name] = type.bloodTypeId;
       });
 
       const userData = userResponse;
       const transformedData = {
-        userId: userData.id || userData.userId || "",
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
@@ -86,39 +99,21 @@ export const ProfileMember = () => {
         address: userData.address || "",
         bloodTypeName: userData.bloodTypeName || "",
         bloodTypeId: bloodTypeMap[userData.bloodTypeName] || null,
-        role: userData.role ,
-        isDonor: userData.isDonor || false
+        role: userData.role,
+        isDonor: userData.isDonor || false,
+        imageUrl: userData.imageUrl || null,
       };
 
       setProfileData(transformedData);
       form.setFieldsValue({
         ...transformedData,
         dateOfBirth: transformedData.dateOfBirth ? moment(transformedData.dateOfBirth) : null,
-        bloodType: transformedData.bloodTypeName 
+        bloodType: transformedData.bloodTypeName || null,
       });
 
       setBloodTypes(bloodTypesResponse);
-      localStorage.setItem('bloodTypeMap', JSON.stringify(bloodTypeMap));
-      localStorage.setItem('userProfile', JSON.stringify(transformedData));
     } catch (error) {
       console.error("Error fetching data:", error);
-      
-      const cachedProfile = localStorage.getItem('userProfile');
-      const cachedBloodTypes = localStorage.getItem('bloodTypeMap');
-      
-      if (cachedProfile) {
-        const parsedData = JSON.parse(cachedProfile);
-        setProfileData(parsedData);
-        form.setFieldsValue({
-          ...parsedData,
-          dateOfBirth: parsedData.dateOfBirth ? moment(parsedData.dateOfBirth) : null,
-        });
-      }
-      
-      if (cachedBloodTypes) {
-        // No need to set bloodTypes from cache since we need fresh data
-      }
-      
       message.error("Failed to load profile information");
     } finally {
       setLoading(false);
@@ -134,57 +129,70 @@ export const ProfileMember = () => {
       setUpdating(true);
       const values = await form.validateFields();
 
-      const bloodTypeMap = JSON.parse(localStorage.getItem('bloodTypeMap')) || {};
-      const bloodTypeId = bloodTypeMap[values.bloodType];
-
-      const submitData = {
-        fullName: values.fullName,
-        email: values.email,
-        phone: values.phone,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null,
-        gender: values.gender === "Male" ? 1 : values.gender === "Female" ? 0 : 2,
-        address: values.address,
-        // bloodTypeId: bloodTypeId,
-        isDonor: true
-      };
-
-      if (bloodTypeId) {
-        submitData.bloodTypeId = bloodTypeId;
+      const bloodType = bloodTypes.find((type) => type.name === values.bloodType);
+      if (!bloodType) {
+        message.error("Invalid blood type selected");
+        return;
       }
 
-      const response = await userService.updateProfile(submitData);
+      const formData = new FormData();
+      formData.append("fullName", values.fullName);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+      formData.append("dateOfBirth", values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null);
+      formData.append("gender", values.gender === "Male" ? 1 : values.gender === "Female" ? 0 : 2);
+      formData.append("address", values.address);
+      formData.append("bloodTypeId", bloodType.bloodTypeId);
+      formData.append("isDonor", true);
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
 
-      if (response.isSuccess) {
-        const updatedUser = {
+      console.log("Submitting data to updateProfile:", Object.fromEntries(formData));
+
+      const response = await userService.updateProfile(formData);
+      console.log("Update response:", response);
+
+      if (response?.success || response?.isSuccess || response?.status === 200 || response?.data) {
+        const updatedProfile = {
           ...profileData,
-          fullName: values.fullName,
-          email: values.email,
-          phone: values.phone,
-          dateOfBirth: values.dateOfBirth,
-          gender: values.gender, 
-          address: values.address,
-          bloodTypeName: values.bloodType || null, 
-          bloodTypeId: bloodTypeId || null, 
-          role: profileData.role
+          ...values,
+          bloodTypeName: values.bloodType,
+          bloodTypeId: bloodType.bloodTypeId,
+          role: profileData.role,
+          imageUrl: response.data?.imageUrl || profileData.imageUrl,
         };
 
-        setProfileData(updatedUser);
-        form.setFieldsValue(updatedUser);
-        localStorage.setItem('userProfile', JSON.stringify(updatedUser));
-        
+        setProfileData(updatedProfile);
+        form.setFieldsValue({
+          ...updatedProfile,
+          dateOfBirth: updatedProfile.dateOfBirth ? moment(updatedProfile.dateOfBirth) : null,
+          bloodType: updatedProfile.bloodTypeName,
+        });
+
         message.success("Profile updated successfully!");
-        setIsEditing(false);
-        
         await fetchData();
+        setIsEditing(false);
+        setImageFile(null); // Reset image file after successful upload
       } else {
-        message.error(response.message || "Failed to update profile");
+        console.error("Update failed, response:", response);
+        message.error(response?.message || "Failed to update profile in database");
       }
     } catch (error) {
       console.error("Update error:", error);
-      message.error(error.message || "Failed to update profile");
+      message.error(error?.response?.data?.message || "Failed to update profile in database");
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleImageUpload = (info) => {
+    if (info.file.status === "done") {
+      message.success(`${info.file.name} uploaded successfully`);
+    } else if (info.file.status === "error") {
+      message.error(`${info.file.name} upload failed.`);
+    }
+    setImageFile(info.file.originFileObj);
   };
 
   if (loading && !profileData) {
@@ -228,13 +236,18 @@ export const ProfileMember = () => {
                   Profile Information
                 </Title>
                 <Button
-                  type="primary"
                   icon={isEditing ? <SaveOutlined /> : <EditOutlined />}
-                  onClick={() =>
-                    isEditing ? handleSave() : setIsEditing(true)
-                  }
+                  onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
                   style={buttonStyle}
                   loading={updating}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "scale(0.95)";
+                    e.currentTarget.style.backgroundColor = "#b8002b";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.backgroundColor = "#b8002b";
+                  }}
                 >
                   {isEditing ? "Save Changes" : "Edit"}
                 </Button>
@@ -246,31 +259,50 @@ export const ProfileMember = () => {
                 <Col>
                   <Avatar
                     size={80}
-                    icon={<UserOutlined />}
+                    src={profileData?.imageUrl || undefined}
+                    icon={!profileData?.imageUrl && <UserOutlined />}
                     style={{
                       backgroundColor: "#f0f2f5",
                       color: "#8c8c8c",
                       fontSize: "32px",
                     }}
                   />
-                  <Button
-                    type="primary"
-                    shape="circle"
-                    icon={<CameraOutlined />}
-                    size="small"
-                    style={{
-                      position: "relative",
-                      top: -15,
-                      left: -20,
-                      backgroundColor: "#b8002b",
-                      borderColor: "#b8002b",
-                      width: "32px",
-                      height: "32px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  />
+                  {isEditing && (
+                    <Upload
+                      name="image"
+                      beforeUpload={() => false} // Prevent automatic upload
+                      onChange={handleImageUpload}
+                      showUploadList={false}
+                    >
+                      <Button
+                        type="primary"
+                        shape="circle"
+                        icon={<CameraOutlined />}
+                        size="small"
+                        style={{
+                          position: "relative",
+                          top: -15,
+                          left: -20,
+                          backgroundColor: "#b8002b",
+                          borderColor: "#b8002b",
+                          width: "32px",
+                          height: "32px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "all 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = "scale(0.95)";
+                          e.currentTarget.style.backgroundColor = "#b8002b";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.backgroundColor = "#b8002b";
+                        }}
+                      />
+                    </Upload>
+                  )}
                 </Col>
                 <Col>
                   <Title
@@ -306,7 +338,7 @@ export const ProfileMember = () => {
                     >
                       <UserOutlined
                         style={{
-                          color: "#b8002b",
+                          color: "#1890ff",
                           marginRight: "10px",
                           fontSize: "18px",
                         }}
@@ -363,13 +395,12 @@ export const ProfileMember = () => {
                         Gender
                       </Text>
                       {isEditing ? (
-                        <Item name="gender" initialValue={profileData?.gender}>
+                        <Item
+                          name="gender"
+                          rules={[{ required: true, message: "Please select your gender!" }]}
+                        >
                           <Select
-                            style={{
-                              width: "100%",
-                              ...inputStyle,
-                              marginBottom: "16px",
-                            }}
+                            style={{ ...selectStyle, marginBottom: "16px" }}
                           >
                             <Option value="Male">Male</Option>
                             <Option value="Female">Female</Option>
@@ -493,8 +524,7 @@ export const ProfileMember = () => {
                         <Item name="dateOfBirth">
                           <DatePicker
                             style={{
-                              width: "100%",
-                              ...inputStyle,
+                              ...selectStyle,
                               marginBottom: "16px",
                             }}
                             format="YYYY-MM-DD"
@@ -515,9 +545,7 @@ export const ProfileMember = () => {
                             style={{ marginRight: "8px", color: "#8c8c8c" }}
                           />
                           {profileData?.dateOfBirth
-                            ? moment(profileData.dateOfBirth).format(
-                                "DD/MM/YYYY"
-                              )
+                            ? moment(profileData.dateOfBirth).format("DD/MM/YYYY")
                             : "Not provided"}
                         </div>
                       )}
@@ -585,7 +613,7 @@ export const ProfileMember = () => {
                     >
                       <HeartOutlined
                         style={{
-                          color: "#b8002b",
+                          color: "#1890ff",
                           marginRight: "10px",
                           fontSize: "18px",
                         }}
@@ -610,13 +638,11 @@ export const ProfileMember = () => {
                       {isEditing ? (
                         <Item
                           name="bloodType"
-                          initialValue={profileData?.bloodTypeName || null}
-                          rules={[{ required: true, message: "Please select blood type" }]}
+                          rules={[{ required: true, message: "Please select blood type!" }]}
                         >
                           <Select
                             style={{
-                              width: "100%",
-                              ...inputStyle,
+                              ...selectStyle,
                               marginBottom: "16px",
                             }}
                             showSearch

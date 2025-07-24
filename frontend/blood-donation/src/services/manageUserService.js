@@ -39,7 +39,21 @@ export const userService = {
 
   async updateProfile(data) {
     const response = await api.put("/api/user/update-current-user", data);
+    console.log({ response });
+
     return response.data;
+  },
+
+  async getDonationHistory() {
+    try {
+      const response = await api.get(
+        "/api/blood-donation/get-current-donation-history",
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching blood donation history:", error);
+      return [];
+    }
   },
 
   async getBloodTypes() {
@@ -50,7 +64,6 @@ export const userService = {
           pageSize: 100,
         },
       });
-      console.log({ response });
 
       return response.data.data.items;
     } catch (error) {
@@ -76,7 +89,7 @@ export const userService = {
 
   async addBloodStored(data) {
     try {
-      const response = await api.post("/api/blood/update-blood-stored", data);
+      const response = await api.put("/api/blood/update-blood-stored", data);
       return response.data;
     } catch (error) {
       console.error("Error adding blood stored:", error);

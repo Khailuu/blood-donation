@@ -23,7 +23,7 @@ public sealed class UpdateUserCommandHandler(IDbContext context, IUserContext us
             return Result.Failure<UpdateUserResponse>(UserErrors.NotFound(request.UserId));
         }
         
-        // var currentUserResult = await sender.Send(new GetCurrentUserQuery(), cancellationToken);
+        // var currentUserResult = await sender.Send(new GetCurrentDonationHistoryQuery(), cancellationToken);
         // var currentUser = currentUserResult.Value;
         // bool isStaff = currentUser.Role == UserRole.Staff.ToString();
         

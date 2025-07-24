@@ -16,7 +16,6 @@ export const DashboardLayout = () => {
     const fetchUser = async () => {
       try {
         const userData = await userService.getCurrentUser();
-        console.log("Fetched user data:", userData); // Kiểm tra dữ liệu nhận được
         setUser(userData);
       } catch (err) {
         console.error("Error fetching user:", err);
@@ -42,7 +41,6 @@ export const DashboardLayout = () => {
   }
 
   const role = user?.role;
-  console.log("Current user role:", role);
 
   const SidebarComponent = role === "Admin" ? AdminSidebar : SideBar;
   const HeaderComponent = role === "Admin" ? AdminNavbar : Navbar;

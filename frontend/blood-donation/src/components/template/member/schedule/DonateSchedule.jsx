@@ -1,6 +1,7 @@
+// src/pages/DonateSchedule.js
 import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Row, Col, message, Tag, Modal } from "antd";
-import { ClockCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Card, Typography, Button, Row, Col, message, Tag, Pagination } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { authService } from "../../../../services/authService";
 import { blood_bag } from "../../../../assets";
@@ -12,7 +13,8 @@ export const DonateSchedule = () => {
   const currentUser = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("upcoming");
   const [allAppointments, setAllAppointments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4; // Số lượng appointment trên mỗi trang
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -20,30 +22,32 @@ export const DonateSchedule = () => {
         const response = await donationRequestService.getMyDonationRequests(
           currentUser.userId
         );
-        console.log(response);
-        
+        console.log("API Response:", response);
+
         const allItems = response.items || response.data?.items || [];
 
         const myItems = allItems.filter(
           (item) => item.userId === currentUser.userId
         );
 
-        console.log({allItems});
-        
+        console.log("Filtered Items:", { allItems });
+
         const formatted = myItems.map((item) => ({
           date: dayjs(item.requestTime),
           time: dayjs(item.requestTime).format("HH:mm"),
           donationType: item.componentType,
+          donationAmount: item.donationAmount || "N/A",
           status: item.status,
           statusLower: item.status.toLowerCase(),
           id: item.requestId,
         }));
 
-        console.log({formatted});
-        
+        console.log("Formatted Appointments:", { formatted });
+
         setAllAppointments(formatted);
+        setCurrentPage(1); // Reset về trang 1 khi dữ liệu thay đổi
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching appointments:", error);
         message.error("Failed to fetch appointments");
       }
     };
@@ -51,75 +55,20 @@ export const DonateSchedule = () => {
     fetchAppointments();
   }, [currentUser.userId]);
 
-  const handleCancelBooking = async (appointmentId) => {
-  const shouldCancel = window.confirm("Bạn có chắc chắn muốn hủy cuộc hẹn này không?");
-  if (!shouldCancel) return;
-
-  setLoading(true);
-  try {
-    let apiResult;
-    let success = false;
-
-    // Thử gọi API từ service có sẵn
-    if (typeof donationRequestService.updateDonationRequestStatus === "function") {
-      apiResult = await donationRequestService.updateDonationRequestStatus(appointmentId, "rejected");
-    } else if (typeof donationRequestService.cancelDonationRequest === "function") {
-      apiResult = await donationRequestService.cancelDonationRequest(appointmentId);
-    } else if (typeof donationRequestService.updateRequest === "function") {
-      apiResult = await donationRequestService.updateRequest(appointmentId, { status: "rejected" });
-    }
-
-    // Kiểm tra phản hồi API có phải thành công không
-    if (apiResult?.success || apiResult?.status === "success") {
-      success = true;
-    }
-
-    // ✅ Luôn cập nhật giao diện, nhưng phân biệt rõ kết quả
-    setAllAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
-          : appointment
-      )
-    );
-
-    if (success) {
-      message.success("Cuộc hẹn đã được hủy thành công!");
-    } else {
-      message.warning("Cuộc hẹn đã bị hủy trên giao diện nhưng chưa chắc đã lưu vào hệ thống.");
-    }
-
-    // Chuyển tab sau khi cập nhật
-    setTimeout(() => setActiveTab("archived"), 1000);
-
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-
-    // Vẫn cập nhật giao diện tạm thời nếu API thất bại
-    setAllAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, status: "Rejected", statusLower: "rejected" }
-          : appointment
-      )
-    );
-
-    message.error("Không thể đồng bộ trạng thái hủy với hệ thống.");
-    setTimeout(() => setActiveTab("archived"), 1000);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
   // Filter appointments based on active tab
   const filteredAppointments = allAppointments.filter((item) => {
     if (activeTab === "upcoming") {
       return item.statusLower === "pending";
-    } else  {
+    } else {
       return item.statusLower !== "pending";
     }
   });
+
+  // Phân trang
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -133,6 +82,24 @@ export const DonateSchedule = () => {
         return "gray";
       default:
         return "blue";
+    }
+  };
+
+  const handleCancelBooking = async (requestId) => {
+    try {
+      await donationRequestService.rejectDonationRequest(requestId);
+      message.success("Booking cancelled successfully!");
+      const updatedAppointments = allAppointments.map((item) =>
+        item.id === requestId ? { ...item, status: "cancelled", statusLower: "cancelled" } : item
+      );
+      setAllAppointments(updatedAppointments);
+      if (!updatedAppointments.some((item) => item.statusLower === "pending")) {
+        setActiveTab("archived");
+      }
+      setCurrentPage(1); // Reset về trang 1 sau khi hủy
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      message.error("Failed to cancel booking");
     }
   };
 
@@ -177,11 +144,13 @@ export const DonateSchedule = () => {
             ].map(({ key, label }) => (
               <Button
                 key={key}
-                onClick={() => setActiveTab(key)}
+                onClick={() => {
+                  setActiveTab(key);
+                  setCurrentPage(1); // Reset về trang 1 khi đổi tab
+                }}
                 style={{
                   border: "none",
-                  backgroundColor:
-                    activeTab === key ? "#bd0026" : "transparent",
+                  backgroundColor: activeTab === key ? "#bd0026" : "transparent",
                   color: activeTab === key ? "white" : "#444",
                   padding: "6px 20px",
                   borderRadius: 999,
@@ -196,8 +165,8 @@ export const DonateSchedule = () => {
         </div>
 
         <Row gutter={[16, 16]}>
-          {filteredAppointments.length > 0 ? (
-            filteredAppointments.map((item, idx) => (
+          {paginatedAppointments.length > 0 ? (
+            paginatedAppointments.map((item, idx) => (
               <Col key={idx} xs={24} sm={12} md={8} lg={6}>
                 <Card
                   style={{
@@ -258,6 +227,9 @@ export const DonateSchedule = () => {
                       {item.donationType} Donation
                     </Title>
                     <Text style={{ display: "block", marginBottom: 4 }}>
+                      Amount: {item.donationAmount} mL
+                    </Text>
+                    <Text style={{ display: "block", marginBottom: 4 }}>
                       <ClockCircleOutlined /> {item.time}
                     </Text>
 
@@ -271,13 +243,7 @@ export const DonateSchedule = () => {
                     {item.statusLower === "pending" && (
                       <Button
                         type="default"
-                        loading={loading}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          console.log("Button clicked for item:", item.id);
-                          handleCancelBooking(item.id);
-                        }}
+                        onClick={() => handleCancelBooking(item.id)}
                         style={{
                           backgroundColor: "#bd0026",
                           borderColor: "#bd0026",
@@ -289,7 +255,6 @@ export const DonateSchedule = () => {
                           fontSize: "14px",
                           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                           marginTop: 8,
-                          cursor: "pointer",
                         }}
                       >
                         Cancel Booking
@@ -307,6 +272,20 @@ export const DonateSchedule = () => {
             </div>
           )}
         </Row>
+
+        {/* Phân trang */}
+        {filteredAppointments.length > pageSize && (
+          <div style={{display:"flex", justifyContent: "center",textAlign: "center", marginTop: 24 }}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredAppointments.length}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              style={{ fontFamily: "Raleway" }}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

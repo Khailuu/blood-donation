@@ -3,6 +3,8 @@ import { authService } from '../../services/authService';
 
 const RoleRoute = ({ children, allowedRoles }) => {
   const user = authService.getCurrentUser();
+  console.log({user});
+  
   
   if (!allowedRoles.includes(user?.role)) {
     return <Navigate to="/unauthorized" replace />;

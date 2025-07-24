@@ -19,19 +19,40 @@ export const donationRequestService = {
     }
   },
 
-  async getAllDonationRequests(params = {}) {
+
+  async getAllRequests() {
+    try {
+      const response = await api.get(
+        "/api/blood-donation/get-all-requests",
+        {
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
+
+      return response.data.data.items;
+
+    } catch (error) {
+      this._handleRequestError(error, "Failed to fetch all requests");
+      throw error;
+    }
+  },
+
+
+  async getAllDonationRequests() {
     try {
       const response = await api.get(
         "/api/blood-donation/get-requests-to-approve",
-        { params }
-      );
+        {
+        params: {
+          pageNumber: 1,
+          pageSize: 100,
+        },
+      });
 
-      return {
-        data: response.data.data,
-        total: response.data.total,
-        page: response.data.page,
-        limit: response.data.limit,
-      };
+      return response.data.data.items;
+
     } catch (error) {
       this._handleRequestError(error, "Failed to fetch donation requests");
       throw error;
@@ -59,6 +80,8 @@ export const donationRequestService = {
       const response = await api.get(
         `/api/blood-donation/get-requests-to-approve/${id}`
       );
+
+      
       return response.data;
     } catch (error) {
       this._handleRequestError(error, "Failed to fetch donation request");
@@ -126,6 +149,8 @@ export const donationRequestService = {
   async completeDonationRequest(requestId) {
     try {
       const response = await api.put(`/api/blood-donation/complete-request-for-staff`,{requestId});
+      console.log({ response });
+      
       return response.data;
     } catch (error) {
       this._handleRequestError(error, "Failed to complete donation request");

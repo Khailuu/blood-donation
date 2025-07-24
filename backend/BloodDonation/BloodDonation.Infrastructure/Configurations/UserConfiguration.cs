@@ -68,6 +68,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey<DonorInformation>(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        builder.HasOne(x => x.Patient)
+            .WithOne(u => u.User)
+            .HasForeignKey<Patient>(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         builder.HasOne(u => u.BloodType)
             .WithMany()
             .HasForeignKey(u => u.BloodTypeId)
@@ -81,6 +86,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.BlogPostComments)
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(u => u.QaQuestions)
+            .WithOne(q => q.User)
+            .HasForeignKey(q => q.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(x => x.QaAnswer)
+            .WithOne(a => a.User)
+            .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
     }

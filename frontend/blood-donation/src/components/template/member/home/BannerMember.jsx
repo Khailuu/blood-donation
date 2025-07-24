@@ -1,126 +1,125 @@
-import React from "react";
-import { Card, Typography } from "antd";
+import React, { useState, useEffect } from "react";
+import { Card, Typography, Spin } from "antd";
 import { SmileOutlined } from "@ant-design/icons";
-import { authService } from "../../../../services/authService";
 import { Droplet } from "lucide-react";
+import { userService } from "../../../../services/manageUserService";
 import "../../../../css/member/BannerMember.css";
-import { BackgroundCloud } from "../../../ui/common/BackgroundCloud";
 
 const { Title, Text } = Typography;
 
 export const BannerMember = () => {
-  const currentUser = authService.getCurrentUser();
 
-  const options = [
+  const [donationCount, setDonationCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+        const fetchUserInfo = async () => {
+          try {
+            const user = await userService.getCurrentUser();
+            console.log({ user });
+    
+            setCurrentUser(user);
+          } catch (error) {
+            console.error("Failed to fetch user info:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchUserInfo();
+      }, []);
+    
+
+  useEffect(() => {
+    const fetchDonationCount = async () => {
+      try {
+        setLoading(true);
+        const donations = await userService.getDonationHistory();
+        console.log({donations});
+        
+        const completedDonations = donations.donationHistories.filter(
+          donation => donation.status === "Completed"
+        );
+        console.log({completedDonations});
+        
+        setDonationCount(completedDonations.length);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch donation history:", err);
+        setError("Failed to load donation data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonationCount();
+  }, []);
+
+  const stats = [
     {
-      key: "sangue",
-      label: "Sangue",
-      icon: <Droplet size={20} color="#c41c33" />,
-      backgroundColor: "#ffe6eb",
-    },
-    {
-      key: "plasma",
-      label: "Plasma",
-      icon: <Droplet size={20} color="#e6b800" />,
-      backgroundColor: "#fff6d8",
+      key: "total-donations",
+      title: "Total Donations",
+      value: donationCount,
+      icon: <Droplet size={20} className="text-red-600" />,
+      color: "text-red-600",
+      bgColor: "bg-red-50",
     },
   ];
 
   return (
-    <div style={{ position:+ "relative" }}>
-
-      {/* Content */}
+    <div className="relative">
       <Card
-        style={{
-          width: "100%",
-          maxWidth: 640,
-          margin: "0 auto",
-          padding: "36px 24px",
-          textAlign: "center",
-          backgroundColor: "transparent", 
-          boxShadow: "none", 
-          position: "relative",
-          zIndex: 2, 
-          border: "none"
-        }}
+        className="w-full max-w-2xl mx-auto p-6 text-center bg-transparent shadow-none border-none"
       >
-
-        <div style={{ marginBottom: 32 }}>
+        <div className="mb-8">
           <Title level={3} style={{ color: "#bd0026", marginBottom: 4, fontFamily: "Raleway" }}>
             Welcome to Hemora
           </Title>
           <Text strong style={{ fontSize: 40, color: "#333" }}>
-            Hello, {currentUser?.name || "Guest"}
+            Hello, {currentUser?.fullName || "Guest"}
           </Text>
         </div>
-        
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-            marginBottom: 32,
-          }}
-        >
-          {options.map((opt) => (
+
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          {stats.map((stat) => (
             <div
-              key={opt.key}
-              style={{
-                flex: 1,
-                maxWidth: 180,
-                padding: "20px 12px",
-                borderRadius: 24,
-                backgroundColor: opt.backgroundColor,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                textAlign: "center",
-              }}
+              key={stat.key}
+              className={`flex-1 min-w-[180px] max-w-[200px] p-5 rounded-2xl ${stat.bgColor} shadow-sm`}
             >
-              <div
-                style={{
-                  display: "inline-block",
-                  borderRadius: "50%",
-                  padding: 8,
-                  marginBottom: 8,
-                }}
-              >
-                {opt.icon}
-              </div>
-              <div style={{ fontWeight: 600, fontSize: 16, color: "#444" }}>
-                {opt.label}
-              </div>
-              <div
-                style={{
-                  letterSpacing: 4,
-                  fontSize: 14,
-                  color: "#888",
-                  marginTop: 4,
-                }}
-              >
-                - - - -
+              <div className="flex flex-col items-center">
+                <div className="mb-2 p-2 rounded-full">
+                  {stat.icon}
+                </div>
+                <Text className="font-semibold text-gray-700" style={{fontSize: "15px",fontFamily: "Raleway"}}> 
+                  {stat.title}
+                </Text>
+                {loading ? (
+                  <Spin size="small" className="my-2" />
+                ) : error ? (
+                  <Text type="danger" className="mt-2">Error</Text>
+                ) : (
+                  <Text strong className={`text-2xl mt-2 ${stat.color}`}>
+                    {stat.value}
+                  </Text>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 8,
-          }}
-        > 
-          <SmileOutlined style={{ fontSize: 20, color: "#bd0026" }} />
-          <Text style={{ color: "#555", fontSize: 15 }}>
+        {/* <div className="flex justify-center items-center gap-2">
+          <SmileOutlined className="text-red-600" />
+          <Text className="text-gray-600">
             To register to donate blood,{" "}
-            <a href="">
-              <span style={{ color: "#bd0026", fontWeight: "bold" }}>
+            <a href="/survey">
+              <span className="text-red-600 font-bold">
                 please take the health survey!
               </span>
             </a>
           </Text>
-        </div>
+        </div> */}
       </Card>
     </div>
   );

@@ -20,8 +20,8 @@ public class CreateDonorInformationCommandHandler(IDbContext context, IUserConte
        if (user is null)
            return Result.Failure<CreateDonorInformationResponse>(UserErrors.NotFound(userId));
 
-       if (!(user.IsDonor ?? false))
-           return Result.Failure<CreateDonorInformationResponse>(UserErrors.IsNotDonor);
+       // if (!(user.IsDonor ?? false))
+       //     return Result.Failure<CreateDonorInformationResponse>(UserErrors.IsNotDonor);
 
        if (user.Role is UserRole.Admin or UserRole.Staff)
            return Result.Failure<CreateDonorInformationResponse>(UserErrors.IsNotMember);

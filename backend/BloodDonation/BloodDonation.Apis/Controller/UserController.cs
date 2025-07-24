@@ -13,6 +13,7 @@ using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPost;
 using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostComment;
 using BloodDonation.Application.Users.GetCurrentUserBlogPost.GetCurrentBlogPostLike;
 using BloodDonation.Application.Users.GetDonorInformation;
+using BloodDonation.Application.Users.GetPatients;
 using BloodDonation.Application.Users.GetUser;
 using BloodDonation.Application.Users.UpdateCurrentUser;
 using BloodDonation.Application.Users.UpdateDonorInformation;
@@ -62,11 +63,23 @@ public class UserController : ControllerBase
         return result.MatchCreated(id => $"/user/{id}");
     }
     
-    // [Authorize(Roles = "Staff")]
+    [Authorize]
     [HttpGet("user/get-users")]
     public async Task<IResult> GetUsers([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellation)
     {
         Result<Page<GetUsersResponse>> result = await _mediator.Send(new GetUsersQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+        }, cancellation);
+        return result.MatchOk();
+    }
+    
+    [Authorize]
+    [HttpGet("user/get-patients")]
+    public async Task<IResult> GetPatients([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellation)
+    {
+        Result<Page<GetPatientResponse>> result = await _mediator.Send(new GetPatientQuery
         {
             PageNumber = pageNumber,
             PageSize = pageSize,

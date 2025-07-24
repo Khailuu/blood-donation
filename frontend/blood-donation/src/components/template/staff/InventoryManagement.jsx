@@ -61,12 +61,14 @@ const InventoryManagement = () => {
 
   const getBloodTypeName = (bloodTypeId) => {
     const type = bloodTypes.find((t) => t.bloodTypeId === bloodTypeId);
-    return type ? type.bloodTypeName : `Unknown (ID: ${bloodTypeId})`;
+    console.log({ type });
+
+    return type ? type.name : `Unknown (ID: ${bloodTypeId})`;
   };
 
   const getStatus = (quantity) => {
-    if (quantity >= 30) return "Sufficient";
-    if (quantity >= 15) return "Low";
+    if (quantity >= 10500) return "Sufficient";
+    if (quantity >= 5250) return "Low";
     return "Very Low";
   };
 
@@ -132,22 +134,38 @@ const InventoryManagement = () => {
       },
     },
     {
-      title: "Quantity (units)",
+      title: "Quantity (ml)",
       dataIndex: "quantity",
       key: "quantity",
-      render: (quantity) => (
-        <div className="flex items-center">
-          <span className="font-medium mr-2">{quantity}</span>
-          <div className="w-20 bg-gray-200 rounded-full h-1.5">
-            <div
-              className={`h-1.5 rounded-full ${getProgressColor(
-                getStatus(quantity)
-              )}`}
-              style={{ width: `${Math.min((quantity / 50) * 100, 100)}%` }}
-            ></div>
+      render: (quantity) => {
+        const status = getStatus(quantity);
+        // Ngưỡng để tính % progress (Very Low: 0-5250, Low: 5250-10500, Sufficient: 10500+)
+        const maxThreshold = 10500; // Ngưỡng tối đa để đạt 100%
+        const progressPercentage = Math.min(
+          (quantity / maxThreshold) * 100,
+          100
+        );
+
+        return (
+          <div className="flex items-center gap-3">
+            <span className="font-medium w-16">
+              {quantity.toLocaleString()} ml
+            </span>
+            <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+              <div
+                className={`h-2.5 rounded-full ${getProgressColor(status)}`}
+                style={{
+                  width: `${progressPercentage}%`,
+                  transition: "width 0.3s ease",
+                }}
+              ></div>
+            </div>
+            <span className="text-xs text-gray-500 w-10 text-right">
+              {Math.round(progressPercentage)}%
+            </span>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Status",
@@ -235,9 +253,9 @@ const InventoryManagement = () => {
       <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600">Total Blood Units</p>
+            <p className="text-sm text-gray-600">Total Blood</p>
             <p className="text-2xl font-bold text-blue-600">
-              {getTotalQuantity()}
+              {getTotalQuantity()} ml
             </p>
           </div>
           <Package className="h-8 w-8 text-blue-400" />
@@ -323,10 +341,14 @@ const InventoryManagement = () => {
           current={pagination.current}
           pageSize={pagination.pageSize}
           total={pagination.total}
-          onChange={(page, pageSize) => handleTableChange({ current: page, pageSize })}
+          onChange={(page, pageSize) =>
+            handleTableChange({ current: page, pageSize })
+          }
           showSizeChanger
           pageSizeOptions={["8", "16", "24", "32"]}
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`
+          }
         />
       </div>
     </div>
