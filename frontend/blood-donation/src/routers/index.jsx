@@ -202,7 +202,6 @@ import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
 import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
 import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
-import { AdminDashboard } from "../components/template/admin/AdminDashboard";
 // import ManageUser from "../components/template/admin/ManageUser";
 import ManageBlog from "../components/template/admin/ManageBlog";
 import { AdminDashboardPage } from "../components/ui/admin/AdminDashboardPage";
@@ -210,6 +209,7 @@ import ManageQA from "../components/template/admin/manageQA";
 import ManageUser from "../components/ui/admin/ManageUser";
 import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
 import Statistics from "../components/ui/admin/Statistics";
+import { AdminDashboard } from '../components/ui/admin/AdminDashboard'
     
 const router = [
   {
@@ -314,7 +314,7 @@ const router = [
     children: [
       {
         path: "dashboard",
-        element: <AdminDashboardPage />,
+        element: <AdminDashboard />,
       },
       {
         path: "manage-blog",

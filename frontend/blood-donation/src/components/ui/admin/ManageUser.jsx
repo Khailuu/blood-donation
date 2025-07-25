@@ -151,6 +151,13 @@ const ManageUser = () => {
   };
 
   const columns = [
+    {
+      title: "No.",
+      key: "index",
+      render: (_, __, index) => index + 1,
+      width: 60,
+      align: "center",
+    },
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
