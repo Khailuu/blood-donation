@@ -54,7 +54,25 @@ const ManageQA = () => {
   useEffect(() => {
     fetchQA(pagination.current, pagination.pageSize);
   }, []);
+  const handleDelete = async (id) => {
+    try {
+      await manageServicesQA.deleteQA(id);
+      message.success("Answer deleted successfully!");
+      fetchQA(pagination.current, pagination.pageSize);
+    } catch (error) {
+      message.error("Failed to delete the answer.");
+    }
+  };
 
+  const handleDeleteComment = async (id) => {
+    try {
+      await manageServicesQA.deleteComment(id);
+      message.success("Comment deleted successfully!");
+      fetchQA(pagination.current, pagination.pageSize);
+    } catch (error) {
+      message.error("Failed to delete the comment.");
+    }
+  };
   // 👉 columns
   const columns = [
     {
@@ -88,12 +106,23 @@ const ManageQA = () => {
             }}
           >
             <span>- {cmt.content}</span>
-            <Tooltip title="Edit">
-              <EditOutlined
-                style={{ color: "#52c41a", cursor: "pointer" }}
-                onClick={() => openEditModal(record, cmt)}
-              />
-            </Tooltip>
+            <div className="flex">
+              <Tooltip title="Edit" className="mr-[8px]">
+                <EditOutlined
+                  style={{ color: "#52c41a", cursor: "pointer" }}
+                  onClick={() => openEditModal(record, cmt)}
+                />
+              </Tooltip>
+              <Tooltip title="Delete">
+                <DeleteOutlined
+                  style={{ color: "#ff4d4f", cursor: "pointer" }}
+                  onClick={() => {
+                    console.log(cmt);
+                    handleDeleteComment(cmt.answerId);
+                  }}
+                />
+              </Tooltip>
+            </div>
           </div>
         ));
       },
@@ -119,7 +148,7 @@ const ManageQA = () => {
                 title="Are you sure to delete this answer?"
                 okText="Yes"
                 cancelText="No"
-                onConfirm={() => handleDelete(record)}
+                onConfirm={() => handleDelete(record?.questionId)}
               >
                 <Tooltip title="Delete">
                   <DeleteOutlined
@@ -154,10 +183,9 @@ const ManageQA = () => {
   const handleSubmitPost = async (values) => {
     try {
       const payload = {
-        questtionId: selectedQA?.id,
+        questtionId: selectedQA?.questionId,
         content: values.answer,
       };
-
       await manageServicesQA.postAnswer(payload);
       message.success("Answer submitted successfully!");
       setIsModalOpen(false);
