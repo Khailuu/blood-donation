@@ -12,6 +12,7 @@ import {
   Tooltip,
   Tag,
   Upload,
+  Spin,
 } from "antd";
 import {
   EditOutlined,
@@ -19,22 +20,12 @@ import {
   FileAddOutlined,
   FileTextOutlined,
   UploadOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { manageBlogService } from "../../../services/manageBlogService";
 
 const { Option } = Select;
-
-// const statusColor = {
-//   Public: "green",
-//   Hidden: "volcano",
-// };
-
-// const categoryColor = {
-//   Health: "blue",
-//   Guideline: "purple",
-//   Announcement: "gold",
-// };
 
 const ManageBlogPage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -42,22 +33,25 @@ const ManageBlogPage = () => {
   const [editingBlog, setEditingBlog] = useState(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Assume userLogin info is stored in localStorage as 'userLogin' (adjust if needed)
   const userLogin = JSON.parse(localStorage.getItem('userLogin') || '{}');
 
-  useEffect(() => {
-    manageBlogService.getBlogs(1, 20).then(res => {
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await manageBlogService.getBlogs(1, 20);
       setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
-    });
-  }, []);
-
-  const openAddModal = () => {
-    setEditingBlog(null);
-    form.resetFields();
-    setIsModalOpen(true);
-    setFileList([]);
+    } catch {
+      message.error("Failed to fetch blogs.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
   const openEditModal = (blog) => {
     setEditingBlog(blog);
@@ -67,45 +61,44 @@ const ManageBlogPage = () => {
 
   const handleDelete = (id) => {
     manageBlogService.deleteBlog(id)
-      .then(() => {   
+      .then(() => {
         message.success("Blog deleted successfully!");
-        // Sau khi xóa, gọi lại API để lấy danh sách blog mới nhất
-        manageBlogService.getBlogs(1, 20).then(res => {
-          setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
-        });
+        fetchBlogs(); // gọi lại dữ liệu
       })
       .catch(() => message.error("Failed to delete blog!"));
   };
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      // Chuẩn bị dữ liệu gửi đi
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("content", values.content);
       if (fileList[0]) {
         formData.append("image", fileList[0].originFileObj);
       }
-      // Set author and date
       formData.append("author", userLogin.name || "");
       formData.append("date", dayjs().format("YYYY-MM-DD"));
-      // Gọi API tạo blog
+
       manageBlogService.createBlog(formData)
         .then(() => {
           message.success("New blog added successfully!");
           setIsModalOpen(false);
           form.resetFields();
           setFileList([]);
-          // Reload blogs
-          manageBlogService.getBlogs(1, 20).then(res => {
-            setBlogs(Array.isArray(res.data?.data?.items) ? res.data?.data?.items : []);
-          });
+          fetchBlogs();
         })
         .catch(() => message.error("Failed to add blog!"));
     });
   };
 
   const columns = [
+    {
+      title: "No.",
+      key: "index",
+      render: (_, __, index) => index + 1,
+      width: 60,
+      align: "center",
+    },
     {
       title: "Title",
       dataIndex: "title",
@@ -115,19 +108,20 @@ const ManageBlogPage = () => {
       title: "Content",
       dataIndex: "content",
       key: "content",
-      render: (text) => <span style={{ maxWidth: 300, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{text}</span>
+      render: (text) => (
+        <span style={{ maxWidth: 300, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {text}
+        </span>
+      )
     },
     {
       title: "Image",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      render: (url) => url ? <img src={url} alt="blog" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6 }} /> : null
+      render: (url) => url ? (
+        <img src={url} alt="blog" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6 }} />
+      ) : null
     },
-    // {
-    //   title: "Author",
-    //   dataIndex: "author",
-    //   key: "author",
-    // },
     {
       title: "Date",
       dataIndex: "publishedDate",
@@ -148,10 +142,7 @@ const ManageBlogPage = () => {
           </Tooltip>
           <Popconfirm
             title="Are you sure to delete this blog?"
-            onConfirm={() => {
-              console.log(record);
-              handleDelete(record.postId)
-            }}
+            onConfirm={() => handleDelete(record.postId)}
             okText="Yes"
             cancelText="No"
           >
@@ -172,25 +163,41 @@ const ManageBlogPage = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ fontSize: 22, margin: 0, fontWeight: 600 }}>Blog Management</h2>
         <Button
-          style={{ background: "#3388ff", color: "white" }}
-          icon={<FileAddOutlined />}
-          onClick={openAddModal}
+          icon={<ReloadOutlined spin={loading} />}
+          onClick={fetchBlogs}
+          style={{
+            marginRight: 10,
+            fontFamily: "Raleway",
+            fontWeight: 600,
+            backgroundColor: "#fff",
+            color: "#bd0026",
+            border: "1px solid #bd0026",
+            borderRadius: 50,
+            height: 40,
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s",
+          }}
         >
-          Add Blog
+          {loading ? <Spin size="small" style={{ marginLeft: 8 }} /> : "Refresh"}
         </Button>
       </div>
+
       <Table
         dataSource={blogs}
         columns={columns}
         rowKey="id"
         pagination={{ pageSize: 6 }}
         bordered
+        loading={loading}
       />
 
       <Modal
         title={editingBlog ? "Update Blog" : "Add New Blog"}
         open={isModalOpen}
-        onCancel={() => { setIsModalOpen(false); setFileList([]); }}
+        onCancel={() => {
+          setIsModalOpen(false);
+          setFileList([]);
+        }}
         onOk={handleSubmit}
         okText="Save"
         cancelText="Cancel"

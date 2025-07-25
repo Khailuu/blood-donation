@@ -11,11 +11,13 @@ import {
   Popconfirm,
   Tooltip,
   Tag,
+  Spin,
 } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   DownloadOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { manageUserService } from "../../../services/manageUserService";
@@ -26,9 +28,9 @@ const { Option } = Select;
 const ROLE_MAP = { Admin: 1, Staff: 2, Member: 3 };
 const GENDER_MAP = { Male: 1, Female: 2 };
 const STATUS_MAP = { Active: 1, InActive: 2 };
-const ROLE_MAP_REVERSE = { 1: 'Admin', 2: 'Staff', 3: 'Member' };
-const GENDER_MAP_REVERSE = { 1: 'Male', 2: 'Female' };
-const STATUS_MAP_REVERSE = { 1: 'Active', 2: 'InActive' };
+const ROLE_MAP_REVERSE = { 1: "Admin", 2: "Staff", 3: "Member" };
+const GENDER_MAP_REVERSE = { 1: "Male", 2: "Female" };
+const STATUS_MAP_REVERSE = { 1: "Active", 2: "InActive" };
 
 const BLOOD_TYPE_COLOR = {
   "A+": "red",
@@ -43,14 +45,27 @@ const BLOOD_TYPE_COLOR = {
 
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [form] = Form.useForm();
-
   useEffect(() => {
-    manageUserService.getUsers(1, 20).then(res => {
-      setUsers(Array.isArray(res.data?.data?.items) ? res.data.data.items : []);
-    });
+    setLoading(true);
+    manageUserService
+      .getUsers(1, 20)
+      .then((res) => {
+        setUsers(
+          Array.isArray(res.data?.data?.items) ? res.data.data.items : []
+        );
+      })
+      .catch(() => {
+        toast.error("Failed to fetch users");
+      })
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(false);
+      });
   }, []);
 
   const handleExportExcel = () => {
@@ -63,15 +78,15 @@ const ManageUser = () => {
   const openEditModal = (user) => {
     setEditingUser(user);
     form.setFieldsValue({
-      fullName: user?.name ?? '',
-      email: user?.email ?? '',
-      role: ROLE_MAP_REVERSE?.[user?.role] || '',
-      status: STATUS_MAP_REVERSE?.[user?.status] || '',
-      gender: GENDER_MAP_REVERSE?.[user?.gender] || '',
-      bloodType: user?.bloodType ?? '',
+      fullName: user?.name ?? "",
+      email: user?.email ?? "",
+      role: ROLE_MAP_REVERSE?.[user?.role] || "",
+      status: STATUS_MAP_REVERSE?.[user?.status] || "",
+      gender: GENDER_MAP_REVERSE?.[user?.gender] || "",
+      bloodType: user?.bloodType ?? "",
       dateOfBirth: user?.dateOfBirth ? dayjs(user?.dateOfBirth) : null,
-      address: user?.address ?? '',
-      phone: user?.phone ?? '',
+      address: user?.address ?? "",
+      phone: user?.phone ?? "",
       isDonor: user?.isDonor ?? false,
     });
     setIsModalOpen(true);
@@ -81,6 +96,26 @@ const ManageUser = () => {
     setUsers(users.filter((u) => u.id !== id));
     toast.success("Deleted successfully!");
   };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    manageUserService
+      .getUsers(1, 20)
+      .then((res) => {
+        setUsers(
+          Array.isArray(res.data?.data?.items) ? res.data.data.items : []
+        );
+      })
+      .finally(() => setRefreshing(false));
+  };
+  if (loading) {
+    return (
+      <div className="p-20 text-center">
+        <Spin size="large" />
+        <p>Loading donation schedules...</p>
+      </div>
+    );
+  }
 
   const handleSubmit = async () => {
     try {
@@ -92,24 +127,37 @@ const ManageUser = () => {
         role: ROLE_MAP[values.role],
         status: STATUS_MAP[values.status],
         bloodType: values.bloodType,
-        dateOfBirth: values.dateOfBirth.format('YYYY-MM-DD'),
+        dateOfBirth: values.dateOfBirth.format("YYYY-MM-DD"),
         gender: GENDER_MAP[values.gender],
         address: values.address,
         phone: values.phone,
         isDonor: values.isDonor,
       };
       await manageUserService.updateUser(payload);
-      setUsers(users.map(u => (u.userId === payload.userId || u.id === payload.userId) ? { ...u, ...payload } : u));
-      toast.success('Updated successfully!');
+      setUsers(
+        users.map((u) =>
+          u.userId === payload.userId || u.id === payload.userId
+            ? { ...u, ...payload }
+            : u
+        )
+      );
+      toast.success("Updated successfully!");
       setIsModalOpen(false);
       form.resetFields();
     // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      toast.error('Update failed!');
+      toast.error("Update failed!");
     }
   };
 
   const columns = [
+    {
+      title: "No.",
+      key: "index",
+      render: (_, __, index) => index + 1,
+      width: 60,
+      align: "center",
+    },
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
@@ -120,10 +168,25 @@ const ManageUser = () => {
         <Tag color={BLOOD_TYPE_COLOR[bloodType] || "default"}>{bloodType}</Tag>
       ),
     },
-    { title: "Role", dataIndex: "role", key: "role", render: (role) => ROLE_MAP_REVERSE[role] || 'Unknown' },
-    { title: "Gender", dataIndex: "gender", key: "gender", render: (g) => GENDER_MAP_REVERSE[g] || 'Other' },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => ROLE_MAP_REVERSE[role] || "Unknown",
+    },
+    {
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
+      render: (g) => GENDER_MAP_REVERSE[g] || "Other",
+    },
     { title: "Date of Birth", dataIndex: "dateOfBirth", key: "dateOfBirth" },
-    { title: "Is Donor", dataIndex: "isDonor", key: "isDonor", render: (d) => d ? "Yes" : "No" },
+    {
+      title: "Is Donor",
+      dataIndex: "isDonor",
+      key: "isDonor",
+      render: (d) => (d ? "Yes" : "No"),
+    },
     { title: "Address", dataIndex: "address", key: "address" },
     { title: "Phone", dataIndex: "phone", key: "phone" },
     {
@@ -139,7 +202,7 @@ const ManageUser = () => {
               onClick={() => openEditModal(record)}
             />
           </Tooltip>
-          <Popconfirm
+          {/* <Popconfirm
             title="Are you sure to delete?"
             onConfirm={() => handleDelete(record.id)}
             okText="Yes"
@@ -151,16 +214,67 @@ const ManageUser = () => {
                 icon={<DeleteOutlined style={{ color: "#ff4d4f" }} />}
               />
             </Tooltip>
-          </Popconfirm>
+          </Popconfirm> */}
         </div>
       ),
     },
   ];
 
   return (
-    <div style={{ background: "#fff", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px #f0f1f2" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2 style={{ fontSize: 22, margin: 0, fontWeight: 600 }}>User Management</h2>
+    <div
+      style={{
+        background: "#fff",
+        padding: 24,
+        borderRadius: 12,
+        boxShadow: "0 2px 8px #f0f1f2",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+        <h2 style={{ fontSize: 22, margin: 0, fontWeight: 600 }}>
+          User Management
+        </h2>
+        <Button
+          onClick={handleRefresh}
+          type="primary"
+          loading={refreshing} // dùng loading cho nút
+          icon={
+            refreshing ? (
+              <Spin size="small">
+                <SyncOutlined />
+              </Spin>
+            ) : (
+              <SyncOutlined />
+            )
+          }
+          style={{
+            marginRight: 10,
+            fontFamily: "Raleway",
+            fontWeight: 600,
+            backgroundColor: "#fff",
+            color: "#bd0026",
+            border: "1px solid #bd0026",
+            borderRadius: 50,
+            height: 40,
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = "scale(0.95)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          Refresh
+        </Button>
+
         <Button
           type="primary"
           icon={<DownloadOutlined />}
@@ -194,20 +308,41 @@ const ManageUser = () => {
         destroyOnClose
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="fullName" label="Full Name" rules={[{ required: true }]}>
+          <Form.Item
+            name="fullName"
+            label="Full Name"
+            rules={[{ required: true }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true, type: "email" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item name="dateOfBirth" label="Date of Birth" rules={[{ required: true }]}>
+          <Form.Item
+            name="dateOfBirth"
+            label="Date of Birth"
+            rules={[{ required: true }]}
+          >
             <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="bloodType" label="Blood Type" disabled rules={[{ required: true }]}>
+          <Form.Item
+            name="bloodType"
+            label="Blood Type"
+            disabled
+            rules={[{ required: true }]}
+          >
             <Select placeholder="Select blood type">
-              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(type => (
-                <Option key={type} value={type}>{type}</Option>
-              ))}
+              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                (type) => (
+                  <Option key={type} value={type}>
+                    {type}
+                  </Option>
+                )
+              )}
             </Select>
           </Form.Item>
           <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
@@ -216,7 +351,11 @@ const ManageUser = () => {
               <Option value="Female">Female</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true }]}
+          >
             <Input />
           </Form.Item>
           <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>

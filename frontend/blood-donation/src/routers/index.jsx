@@ -202,15 +202,15 @@ import { BlogDetailPage } from "../components/template/guest/blog/BlogDetailPage
 import { BlogDetailPageMember } from "../components/template/member/blog/BlogDetailPageMember";
 import { UnauthorizedPage } from "../components/ui/common/UnauthorizedPage";
 import { UnauthorizedLayout } from "../components/layouts/UnauthorizedLayout";
-
-
-
+// import ManageUser from "../components/template/admin/ManageUser";
+import ManageBlog from "../components/template/admin/ManageBlog";
 import { AdminDashboardPage } from "../components/ui/admin/AdminDashboardPage";
+import ManageQA from "../components/template/admin/manageQA";
 import ManageUser from "../components/ui/admin/ManageUser";
 import ManageBlogPage from "../components/ui/admin/ManageBlogPage";
-import { AdminDashboard } from "../components/ui/admin/AdminDashboard";
 import Statistics from "../components/ui/admin/Statistics";
-
+import { AdminDashboard } from '../components/ui/admin/AdminDashboard'
+    
 const router = [
   {
     element: <UnauthorizedLayout />,
@@ -304,6 +304,36 @@ const router = [
     ],
   },
 
+  {
+    path: "admin",
+    element: (
+      <RoleRoute allowedRoles={["admin"]}>
+        <DashboardLayout />
+      </RoleRoute>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "manage-blog",
+        element: <ManageBlogPage />,
+      },
+      {
+        path: "manage-user",
+        element: <ManageUser />,
+      },
+      {
+        path: "question-answer",
+        element: <ManageQA />,
+      },
+      {
+        path: "statistics",
+        element: <Statistics />
+      }
+    ],
+  },
   { path: "*", element: <Navigate to="/" replace /> },
 ];
 
