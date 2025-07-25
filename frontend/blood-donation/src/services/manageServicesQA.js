@@ -11,5 +11,7 @@ export const manageServicesQA = {
         console.log(payload);
         return api.post(`/comment`, payload)
     },
-    updateAnswer: (payload) => api.put('/comment/update', payload)
+    updateAnswer: (payload) => api.put('/comment/update', payload),
+    deleteQA: (id) => api.delete(`/delete/${id}`),
+    deleteComment: (id) => api.delete(`/comment/delete/${id}`)
 }
