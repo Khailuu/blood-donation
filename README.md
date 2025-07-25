@@ -1,3 +1,6 @@
+Link deloy Frontend: https://blood-donation-dvon.vercel.app/
+Link deloy Backend: https://blood-donation-sys.up.railway.app/swagger/index.html
+
 Account user:
 - Member:
   + Email: member@gmail.com
