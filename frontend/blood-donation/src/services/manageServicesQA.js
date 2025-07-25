@@ -6,6 +6,7 @@ const api = apiInstance.create({
 })
 
 export const manageServicesQA = {
+    postQA: (payload) => api.post('/create-q&a-question', payload),
     getQA: (pageNumber = 1, pageSize = 10) => api.get(`/get-q&a?pageNumber=${pageNumber}&pageSize=${pageSize}`) ,
     postAnswer: (payload) => {
         console.log(payload);

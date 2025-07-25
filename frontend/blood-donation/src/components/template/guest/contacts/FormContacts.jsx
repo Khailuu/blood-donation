@@ -1,11 +1,20 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Typography, Row, Col } from "antd";
 import { requirement_donation } from "../../../../assets";
+import { manageServicesQA } from "../../../../services/manageServicesQA";
 
 const { Title, Text, Paragraph } = Typography;
 
 export const FormContacts = () => {
   const [form] = Form.useForm();
+
+  const handleSubmitQA = async (values) => {
+    try {
+      await manageServicesQA.postQA(values);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div
@@ -55,8 +64,8 @@ export const FormContacts = () => {
 
       <Row>
         <Col md={14} style={{ display: "flex", alignItems: "center" }}>
-          <Form form={form} layout="vertical" style={{ width: "80%" }}>
-            <Title
+          <Form form={form} layout="vertical" style={{ width: "80%" }} onFinish={handleSubmitQA}>
+            {/* <Title
               level={5}
               style={{
                 fontFamily: "Raleway",
@@ -93,8 +102,7 @@ export const FormContacts = () => {
               
             >
               <Input placeholder="E-mail" size="large" />
-            </Form.Item>
-
+            </Form.Item> */}
             <Title
               level={5}
               style={{
@@ -106,7 +114,7 @@ export const FormContacts = () => {
             </Title>
 
             <Form.Item
-              name="message"
+              name="content"
               rules={[
                 { required: true, message: "Please input your message!" },
               ]}
@@ -136,6 +144,9 @@ export const FormContacts = () => {
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = "scale(1)";
+                }}
+                onClick={() => {
+                  form.submit();
                 }}
               >
                 Submit
