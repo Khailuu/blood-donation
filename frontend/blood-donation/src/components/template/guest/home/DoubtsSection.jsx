@@ -1,19 +1,48 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Collapse } from "antd";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import { questions } from "../../../../assets/questions";
 import "../../../../css/guest/DoubtsSection.css";
 import { Link } from "react-router-dom";
+import { manageServicesQA } from "../../../../services/manageServicesQA";
 
 const { Panel } = Collapse;
 
 export const DoubtsSection = () => {
   const [activeKeys, setActiveKeys] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const handlePanelChange = (keys) => {
     setActiveKeys(keys);
   };
 
+  const fetchQA = async (page = 1, pageSize = 100) => {
+    setLoading(true);
+    try {
+      const res = await manageServicesQA.getQA(page, pageSize);
+      const { data } = res.data;
+      setQuestions(data.items);
+      setPagination({
+        current: page,
+        pageSize,
+        total: data.totalItems,
+      });
+    } catch (error) {
+      message.error("Failed to load QA data!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log(questions);
+  useEffect(() => {
+    fetchQA(pagination.current, pagination.pageSize);
+  }, []);
   const expandIcon = ({ isActive }) =>
     isActive ? (
       <MinusOutlined style={{ fontSize: 18, color: "#e53935" }} />
@@ -43,11 +72,23 @@ export const DoubtsSection = () => {
         expandIconPosition="end"
         className="custom-accordion"
       >
-        {questions.map((item) => (
-          <Panel header={item.question} key={item.id} className="custom-panel">
-            <div className="answer-content">{item.answer}</div>
-          </Panel>
-        ))}
+        {questions
+          .filter(
+            (item) => Array.isArray(item?.comments) && item.comments.length > 0
+          )
+          .map((item) => (
+            <Panel
+              header={item?.content}
+              key={item?.questionId}
+              className="custom-panel"
+            >
+              {item.comments.map((cmt) => (
+                <div key={cmt?.id}>
+                  <p className="text-bold">- {cmt?.content}</p>
+                </div>
+              ))}
+            </Panel>
+          ))}
       </Collapse>
 
       <div
@@ -84,7 +125,7 @@ export const DoubtsSection = () => {
             e.currentTarget.style.color = "black";
           }}
         >
-          <Link>Contact us if you still have any doubts</Link>
+          <Link to="contacts">Contact us if you still have any doubts</Link>
         </Button>
       </div>
     </div>
