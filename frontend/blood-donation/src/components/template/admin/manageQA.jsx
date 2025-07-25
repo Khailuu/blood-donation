@@ -154,10 +154,9 @@ const ManageQA = () => {
   const handleSubmitPost = async (values) => {
     try {
       const payload = {
-        questtionId: selectedQA?.id,
+        questtionId: selectedQA?.questionId,
         content: values.answer,
       };
-
       await manageServicesQA.postAnswer(payload);
       message.success("Answer submitted successfully!");
       setIsModalOpen(false);
